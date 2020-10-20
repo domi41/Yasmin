@@ -23,7 +23,6 @@
         "laravel-discord/collection": "^0.3.0",
         "laravel-discord/eventemitter": "^0.2.0",
         "laravel-discord/validator": "^0.4.0",
-        "clue/buzz-react": "^2.6.0",
         "psr/http-message": "^1.0",
         "ratchet/pawl": "^0.3.1",
         "react/event-loop": "^1.0|^0.5|^0.4.3",
