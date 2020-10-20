@@ -9,9 +9,9 @@
 
 namespace CharlotteDunois\Yasmin\Utils;
 
-use Clue\React\Buzz\Browser;
 use Psr\Http\Message\RequestInterface;
 use React\EventLoop\LoopInterface;
+use React\Http\Browser;
 use React\Promise\PromiseInterface;
 use RingCentral\Psr7\MultipartStream;
 use RingCentral\Psr7\Request;
