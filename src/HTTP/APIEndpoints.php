@@ -38,8 +38,8 @@ class APIEndpoints {
      * @internal
      */
     const HTTP = array(
-        'url' => 'https://discordapp.com/api/',
-        'version' => 7,
+        'url' => 'https://discord.com/api/',
+        'version' => 8,
         'invite' => 'https://discord.gg/'
     );
     
