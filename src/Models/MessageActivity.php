@@ -5,90 +5,106 @@
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
-*/
+ */
 
 namespace CharlotteDunois\Yasmin\Models;
+
+use CharlotteDunois\Yasmin\Client;
+use CharlotteDunois\Yasmin\Utils\DataHelpers;
 
 /**
  * Represents a message activity.
  *
- * @property string|null                                   $partyID   The party ID associated with this message activity, or null.
- * @property int                                           $type      The message activity type. ({@see self::TYPES})
- * @property \CharlotteDunois\Yasmin\Models\User|null      $user      The user this message activity is for.
+ * @property string|null $partyID   The party ID associated with this message activity, or null.
+ * @property int $type      The message activity type. ({@see self::TYPES})
+ * @property \CharlotteDunois\Yasmin\Models\User|null $user      The user this message activity is for.
  *
- * @property \CharlotteDunois\Yasmin\Models\Activity|null  $activity  The activity this message activity points to, or null.
+ * @property \CharlotteDunois\Yasmin\Models\Activity|null $activity  The activity this message activity points to, or null.
  */
-class MessageActivity extends ClientBase {
+class MessageActivity extends ClientBase
+{
     /**
      * The Message Activity types.
+     *
      * @var array
      * @source
      */
-    const TYPES = array(
-        'JOIN' => 1,
-        'SPECTATE' => 2,
-        'LISTEN' => 3,
-        'JOIN_REQUEST' => 5
-    );
-    
+    const TYPES = [
+        'JOIN'         => 1,
+        'SPECTATE'     => 2,
+        'LISTEN'       => 3,
+        'JOIN_REQUEST' => 5,
+    ];
+
     /**
      * The party ID associated with this message activity, or null.
+     *
      * @var string|null
      */
     protected $partyID;
-    
+
     /**
      * The message activity type.
+     *
      * @var int
      */
     protected $type;
-    
+
     /**
      * The user this message activity is for.
+     *
      * @var \CharlotteDunois\Yasmin\Models\User|null
      */
     protected $user;
-    
+
     /**
+     * @param  Client  $client
+     * @param  array  $activity
+     *
      * @internal
      */
-    function __construct(\CharlotteDunois\Yasmin\Client $client, array $activity) {
+    function __construct(Client $client, array $activity)
+    {
         parent::__construct($client);
-        
-        $this->partyID = \CharlotteDunois\Yasmin\Utils\DataHelpers::typecastVariable(($activity['party_id'] ?? null), 'string');
+
+        $this->partyID = DataHelpers::typecastVariable(
+            ($activity['party_id'] ?? null),
+            'string'
+        );
         $this->type = (int) $activity['type'];
-        
-        if($activity['party_id'] !== null) {
+
+        if ($activity['party_id'] !== null) {
             $name = \explode(':', $activity['party_id']);
             $uid = (string) ($name[1] ?? $name[0]);
             $this->user = $this->client->users->get($uid);
         }
     }
-    
+
     /**
      * {@inheritdoc}
      * @return mixed
      * @throws \RuntimeException
      * @internal
      */
-    function __get($name) {
-        if(\property_exists($this, $name)) {
+    function __get($name)
+    {
+        if (property_exists($this, $name)) {
             return $this->$name;
         }
-        
-        switch($name) {
+
+        switch ($name) {
             case 'activity':
-                if($this->user) {
+                if ($this->user) {
                     $presence = $this->user->getPresence();
-                    if($presence !== null && $presence->activity !== null) {
+                    if ($presence !== null && $presence->activity !== null) {
                         return $presence->activity;
                     }
                 }
-                
+
                 return null;
-            break;
+                break;
         }
-        
+
         return parent::__get($name);
     }
 }
