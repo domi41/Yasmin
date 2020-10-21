@@ -5,134 +5,162 @@
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
-*/
+ */
 
 namespace CharlotteDunois\Yasmin\HTTP;
 
+use CharlotteDunois\Yasmin\HTTP\Endpoints\Channel;
+use CharlotteDunois\Yasmin\HTTP\Endpoints\Emoji;
+use CharlotteDunois\Yasmin\HTTP\Endpoints\Guild;
+use CharlotteDunois\Yasmin\HTTP\Endpoints\Invite;
+use CharlotteDunois\Yasmin\HTTP\Endpoints\User;
+use CharlotteDunois\Yasmin\HTTP\Endpoints\Voice;
+use CharlotteDunois\Yasmin\HTTP\Endpoints\Webhook;
+
 /**
  * Handles the API endpoints.
+ *
  * @internal
  */
-class APIEndpoints {
+class APIEndpoints
+{
     /**
      * CDN constants.
+     *
      * @var array
      * @internal
      */
-    const CDN = array(
-        'url' => 'https://cdn.discordapp.com/',
-        'emojis' => 'emojis/%s.%s',
-        'icons' => 'icons/%s/%s.%s',
-        'splashes' => 'splashes/%s/%s.%s',
+    const CDN = [
+        'url'            => 'https://cdn.discordapp.com/',
+        'emojis'         => 'emojis/%s.%s',
+        'icons'          => 'icons/%s/%s.%s',
+        'splashes'       => 'splashes/%s/%s.%s',
         'defaultavatars' => 'embed/avatars/%s.%s',
-        'avatars' => 'avatars/%s/%s.%s',
-        'appicons' => 'app-icons/%s/%s.png',
-        'appassets' => 'app-assets/%s/%s.png',
-        'channelicons' => 'channel-icons/%s/%s.png',
-        'guildbanners' => 'banners/%s/%s.%s'
-    );
-    
+        'avatars'        => 'avatars/%s/%s.%s',
+        'appicons'       => 'app-icons/%s/%s.png',
+        'appassets'      => 'app-assets/%s/%s.png',
+        'channelicons'   => 'channel-icons/%s/%s.png',
+        'guildbanners'   => 'banners/%s/%s.%s',
+    ];
+
     /**
      * HTTP constants.
+     *
      * @var array
      * @internal
      */
-    const HTTP = array(
-        'url' => 'https://discord.com/api/',
+    const HTTP = [
+        'url'     => 'https://discord.com/api/',
         'version' => 8,
-        'invite' => 'https://discord.gg/'
-    );
-    
+        'invite'  => 'https://discord.gg/',
+    ];
+
     /**
      * Endpoints General.
+     *
      * @var array
      * @internal
      */
-    const ENDPOINTS = array(
-        'currentOAuthApplication' => 'oauth2/applications/@me'
-    );
-    
+    const ENDPOINTS = [
+        'currentOAuthApplication' => 'oauth2/applications/@me',
+    ];
+
     /**
      * The API manager.
-     * @var \CharlotteDunois\Yasmin\HTTP\APIManager
+     *
+     * @var APIManager
      */
     protected $api;
-    
+
     /**
      * The channel endpoints.
-     * @var \CharlotteDunois\Yasmin\HTTP\Endpoints\Channel
+     *
+     * @var Channel
      */
     public $channel;
-    
+
     /**
      * The emoji endpoints.
-     * @var \CharlotteDunois\Yasmin\HTTP\Endpoints\Emoji
+     *
+     * @var Emoji
      */
     public $emoji;
-    
+
     /**
      * The guild endpoints.
-     * @var \CharlotteDunois\Yasmin\HTTP\Endpoints\Guild
+     *
+     * @var Guild
      */
     public $guild;
-    
+
     /**
      * The invite endpoints.
-     * @var \CharlotteDunois\Yasmin\HTTP\Endpoints\Invite
+     *
+     * @var Invite
      */
     public $invite;
-    
+
     /**
      * The user endpoints.
-     * @var \CharlotteDunois\Yasmin\HTTP\Endpoints\User
+     *
+     * @var User
      */
     public $user;
-    
+
     /**
      * The voice endpoints.
-     * @var \CharlotteDunois\Yasmin\HTTP\Endpoints\Voice
+     *
+     * @var Voice
      */
     public $voice;
-    
+
     /**
      * The webhook endpoints.
-     * @var \CharlotteDunois\Yasmin\HTTP\Endpoints\Webhook
+     *
+     * @var Webhook
      */
     public $webhook;
-    
-    
+
     /**
      * DO NOT initialize this class yourself.
-     * @param \CharlotteDunois\Yasmin\HTTP\APIManager $api
+     *
+     * @param  APIManager  $api
      */
-    function __construct(\CharlotteDunois\Yasmin\HTTP\APIManager $api) {
+    public function __construct(APIManager $api)
+    {
         $this->api = $api;
-        
-        $this->channel = new \CharlotteDunois\Yasmin\HTTP\Endpoints\Channel($api);
-        $this->emoji = new \CharlotteDunois\Yasmin\HTTP\Endpoints\Emoji($api);
-        $this->guild = new \CharlotteDunois\Yasmin\HTTP\Endpoints\Guild($api);
-        $this->invite = new \CharlotteDunois\Yasmin\HTTP\Endpoints\Invite($api);
-        $this->user = new \CharlotteDunois\Yasmin\HTTP\Endpoints\User($api);
-        $this->voice = new \CharlotteDunois\Yasmin\HTTP\Endpoints\Voice($api);
-        $this->webhook = new \CharlotteDunois\Yasmin\HTTP\Endpoints\Webhook($api);
+
+        $this->channel = new Channel($api);
+        $this->emoji = new Emoji($api);
+        $this->guild = new Guild($api);
+        $this->invite = new Invite($api);
+        $this->user = new User($api);
+        $this->voice = new Voice($api);
+        $this->webhook = new Webhook($api);
     }
-    
+
     /**
      * Gets the current OAuth application.
+     *
      * @return \React\Promise\ExtendedPromiseInterface
      */
-    function getCurrentApplication() {
-        $url = \CharlotteDunois\Yasmin\HTTP\APIEndpoints::ENDPOINTS['currentOAuthApplication'];
-        return $this->api->makeRequest('GET', $url, array());
+    public function getCurrentApplication()
+    {
+        $url = APIEndpoints::ENDPOINTS['currentOAuthApplication'];
+
+        return $this->api->makeRequest('GET', $url, []);
     }
-    
+
     /**
      * Formats Endpoints strings.
-     * @param string  $endpoint
-     * @param string  ...$args
+     *
+     * @param  string  $endpoint
+     * @param  string  ...$args
+     *
      * @return string
      */
-    static function format(string $endpoint, ...$args) {
-        return \sprintf($endpoint, ...$args);
+    public static function format(string $endpoint, ...$args)
+    {
+        return sprintf($endpoint, ...$args);
     }
 }
