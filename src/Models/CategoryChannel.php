@@ -11,6 +11,7 @@ namespace CharlotteDunois\Yasmin\Models;
 
 use CharlotteDunois\Collect\Collection;
 use CharlotteDunois\Yasmin\Client;
+use CharlotteDunois\Yasmin\Interfaces\CategoryChannelInterface;
 use CharlotteDunois\Yasmin\Traits\GuildChannelTrait;
 use CharlotteDunois\Yasmin\Utils\DataHelpers;
 use CharlotteDunois\Yasmin\Utils\Snowflake;
@@ -26,8 +27,15 @@ use CharlotteDunois\Yasmin\Utils\Snowflake;
  * @property Collection $permissionOverwrites   A collection of PermissionOverwrite instances.
  *
  * @property \DateTime $createdAt              The DateTime instance of createdTimestamp.
+ * @method string getId()
+ * @method int getCreatedTimestamp()
+ * @method string getName()
+ * @method \CharlotteDunois\Yasmin\Models\Guild getGuild()
+ * @method int getPosition()
+ * @method \CharlotteDunois\Collect\Collection getPermissionOverwrites()
+ * @method null getParent()
  */
-class CategoryChannel extends ClientBase implements \CharlotteDunois\Yasmin\Interfaces\CategoryChannelInterface
+class CategoryChannel extends ClientBase implements CategoryChannelInterface
 {
     use GuildChannelTrait;
 
@@ -153,5 +161,16 @@ class CategoryChannel extends ClientBase implements \CharlotteDunois\Yasmin\Inte
                 );
             }
         }
+    }
+
+    public function __call($name, $arguments)
+    {
+        // TODO: Implement @method string getId()
+        // TODO: Implement @method int getCreatedTimestamp()
+        // TODO: Implement @method string getName()
+        // TODO: Implement @method \CharlotteDunois\Yasmin\Models\Guild getGuild()
+        // TODO: Implement @method int getPosition()
+        // TODO: Implement @method \CharlotteDunois\Collect\Collection getPermissionOverwrites()
+        // TODO: Implement @method null getParent()
     }
 }
