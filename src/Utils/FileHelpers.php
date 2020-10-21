@@ -5,79 +5,99 @@
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
-*/
+ */
 
 namespace CharlotteDunois\Yasmin\Utils;
+
+use React\EventLoop\LoopInterface;
+use React\Filesystem\Filesystem;
+use React\Filesystem\FilesystemInterface;
+use React\Promise\PromiseInterface;
+
+use function React\Promise\reject;
+use function React\Promise\resolve;
 
 /**
  * File Helper methods.
  */
-class FileHelpers {
+class FileHelpers
+{
     /**
-     * @var \React\EventLoop\LoopInterface
+     * @var LoopInterface
      */
     protected static $loop;
-    
+
     /**
-     * @var \React\Filesystem\FilesystemInterface|null
+     * @var FilesystemInterface|null
      */
     protected static $filesystem;
-    
+
     /**
      * Sets the Event Loop.
-     * @param \React\EventLoop\LoopInterface  $loop
+     *
+     * @param  LoopInterface  $loop
+     *
      * @return void
      * @internal
      */
-    static function setLoop(\React\EventLoop\LoopInterface $loop) {
+    static function setLoop(LoopInterface $loop)
+    {
         self::$loop = $loop;
-        
-        if(self::$filesystem === null) {
-            $adapters = \React\Filesystem\Filesystem::getSupportedAdapters();
-            if(!empty($adapters)) {
-                self::$filesystem = \React\Filesystem\Filesystem::create($loop);
+
+        if (self::$filesystem === null) {
+            $adapters = Filesystem::getSupportedAdapters();
+            if (! empty($adapters)) {
+                self::$filesystem = Filesystem::create($loop);
             }
         }
     }
-    
+
     /**
      * Returns the stored React Filesystem instance, or null.
-     * @return \React\Filesystem\FilesystemInterface|false|null
+     *
+     * @return FilesystemInterface|false|null
      */
-    static function getFilesystem() {
+    static function getFilesystem()
+    {
         return self::$filesystem;
     }
-    
+
     /**
      * Sets the React Filesystem instance, or disables it.
-     * @param \React\Filesystem\FilesystemInterface|null  $filesystem
+     *
+     * @param  FilesystemInterface|null  $filesystem
+     *
      * @return void
      */
-    static function setFilesystem(?\React\Filesystem\FilesystemInterface $filesystem) {
-        if($filesystem === null) {
+    static function setFilesystem(?FilesystemInterface $filesystem)
+    {
+        if ($filesystem === null) {
             $filesystem = false;
         }
-        
+
         self::$filesystem = $filesystem;
     }
-    
+
     /**
      * Resolves filepath and URL into file data - returns it if it's neither. Resolves with a string.
-     * @param string  $file
-     * @return \React\Promise\ExtendedPromiseInterface
+     *
+     * @param  string  $file
+     *
+     * @return PromiseInterface
      */
-    static function resolveFileResolvable(string $file) {
-        $rfile = @\realpath($file);
-        if($rfile) {
-            if(self::$filesystem) {
+    static function resolveFileResolvable(string $file)
+    {
+        $rfile = @realpath($file);
+        if ($rfile) {
+            if (self::$filesystem) {
                 return self::$filesystem->getContents($file);
             }
-            
-            return \React\Promise\resolve(\file_get_contents($rfile));
-        } elseif(\filter_var($file, FILTER_VALIDATE_URL)) {
-            return \CharlotteDunois\Yasmin\Utils\URLHelpers::resolveURLToData($file);
+
+            return resolve(file_get_contents($rfile));
+        } elseif (filter_var($file, FILTER_VALIDATE_URL)) {
+            return URLHelpers::resolveURLToData($file);
         }
-        
-        return \React\Promise\reject(new \RuntimeException('Given file is not resolvable'));
+
+        return reject(new \RuntimeException('Given file is not resolvable'));
     }
 }
