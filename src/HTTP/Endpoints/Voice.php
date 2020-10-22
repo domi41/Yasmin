@@ -5,38 +5,47 @@
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
-*/
+ */
 
 namespace CharlotteDunois\Yasmin\HTTP\Endpoints;
 
+use CharlotteDunois\Yasmin\HTTP\APIManager;
+
 /**
  * Handles the API endpoints "Voice".
+ *
  * @internal
  */
-class Voice {
+class Voice
+{
     /**
      * Endpoints Voice.
+     *
      * @var array
      */
-    const ENDPOINTS = array(
-        'regions' => 'voice/regions'
-    );
-    
+    const ENDPOINTS = [
+        'regions' => 'voice/regions',
+    ];
+
     /**
-     * @var \CharlotteDunois\Yasmin\HTTP\APIManager
+     * @var APIManager
      */
     protected $api;
-    
+
     /**
      * Constructor.
-     * @param \CharlotteDunois\Yasmin\HTTP\APIManager $api
+     *
+     * @param  APIManager  $api
      */
-    function __construct(\CharlotteDunois\Yasmin\HTTP\APIManager $api) {
+    function __construct(APIManager $api)
+    {
         $this->api = $api;
     }
-    
-    function listVoiceRegions() {
+
+    function listVoiceRegions()
+    {
         $url = self::ENDPOINTS['regions'];
-        return $this->api->makeRequest('GET', $url, array());
+
+        return $this->api->makeRequest('GET', $url, []);
     }
 }
