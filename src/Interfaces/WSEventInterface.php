@@ -5,23 +5,33 @@
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
-*/
+ */
 
 namespace CharlotteDunois\Yasmin\Interfaces;
 
+use CharlotteDunois\Yasmin\Client;
+use CharlotteDunois\Yasmin\WebSocket\WSConnection;
+use CharlotteDunois\Yasmin\WebSocket\WSManager;
+
 /**
  * WS Event interface.
+ *
  * @internal
  */
-interface WSEventInterface {
+interface WSEventInterface
+{
     /**
      * Constructor.
      */
-    function __construct(\CharlotteDunois\Yasmin\Client $client, \CharlotteDunois\Yasmin\WebSocket\WSManager $wsmanager);
-    
+    function __construct(
+        Client $client,
+        WSManager $wsmanager
+    );
+
     /**
      * Handles events.
+     *
      * @return void
      */
-    function handle(\CharlotteDunois\Yasmin\WebSocket\WSConnection $ws, $data): void;
+    function handle(WSConnection $ws, $data): void;
 }

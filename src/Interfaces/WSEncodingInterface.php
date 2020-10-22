@@ -5,47 +5,60 @@
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
-*/
+ */
 
 namespace CharlotteDunois\Yasmin\Interfaces;
+
+use CharlotteDunois\Yasmin\WebSocket\DiscordGatewayException;
+use Ratchet\RFC6455\Messaging\Message;
+use RuntimeException;
 
 /**
  * Interface for WS encodings. This is used internally.
  */
-interface WSEncodingInterface {
+interface WSEncodingInterface
+{
     /**
      * Returns encoding name (for gateway query string).
+     *
      * @return string
      */
     function getName(): string;
-    
+
     /**
      * Checks if the system supports it.
+     *
      * @return void
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     static function supported(): void;
-    
+
     /**
      * Decodes data.
-     * @param string  $data
+     *
+     * @param  string  $data
+     *
      * @return mixed
-     * @throws \CharlotteDunois\Yasmin\WebSocket\DiscordGatewayException
+     * @throws DiscordGatewayException
      */
     function decode(string $data);
-    
+
     /**
      * Encodes data.
-     * @param mixed  $data
+     *
+     * @param  mixed  $data
+     *
      * @return string
-     * @throws \CharlotteDunois\Yasmin\WebSocket\DiscordGatewayException
+     * @throws DiscordGatewayException
      */
     function encode($data): string;
-    
+
     /**
      * Prepares the data to be sent.
-     * @param string  $data
-     * @return \Ratchet\RFC6455\Messaging\Message
+     *
+     * @param  string  $data
+     *
+     * @return Message
      */
-    function prepareMessage(string $data): \Ratchet\RFC6455\Messaging\Message;
+    function prepareMessage(string $data): Message;
 }
