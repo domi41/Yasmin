@@ -84,7 +84,7 @@ class Client implements EventEmitterInterface
      *
      * @var string
      */
-    const VERSION = '0.7.0';
+    const VERSION = '1.0.0-dev';
 
     /**
      * WS connection status: Disconnected.
