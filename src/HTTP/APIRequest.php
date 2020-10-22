@@ -12,7 +12,6 @@ namespace CharlotteDunois\Yasmin\HTTP;
 use CharlotteDunois\Yasmin\Client;
 use CharlotteDunois\Yasmin\Interfaces\RatelimitBucketInterface;
 use CharlotteDunois\Yasmin\Utils\URLHelpers;
-use JsonException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use React\Promise\Deferred;
@@ -95,7 +94,7 @@ class APIRequest
         $this->options = $options;
 
         if (self::$jsonOptions === null) {
-            self::$jsonOptions = (PHP_VERSION_ID >= 70300 ? JSON_THROW_ON_ERROR : 0);
+            self::$jsonOptions = JSON_THROW_ON_ERROR;
         }
     }
 
@@ -258,7 +257,6 @@ class APIRequest
      *
      * @return mixed
      * @throws RuntimeException
-     * @throws JsonException
      */
     static function decodeBody(ResponseInterface $response)
     {
