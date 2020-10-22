@@ -5,63 +5,76 @@
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
-*/
+ */
 
 namespace CharlotteDunois\Yasmin\Models;
+
+use CharlotteDunois\Yasmin\Client;
 
 /**
  * Represents a voice region.
  *
- * @property string  $id          The ID of the region.
- * @property string  $name        The name of the region.
- * @property bool    $vip         Whether this is a VIP voice region.
- * @property bool    $optimal     Whether this is an optimal voice region for the client user.
- * @property bool    $deprecated  Whether this voice region is deprecated and therefore should be avoided.
- * @property bool    $custom      Whether the region is custom.
+ * @property string $id          The ID of the region.
+ * @property string $name        The name of the region.
+ * @property bool $vip         Whether this is a VIP voice region.
+ * @property bool $optimal     Whether this is an optimal voice region for the client user.
+ * @property bool $deprecated  Whether this voice region is deprecated and therefore should be avoided.
+ * @property bool $custom      Whether the region is custom.
  */
-class VoiceRegion extends ClientBase {
+class VoiceRegion extends ClientBase
+{
     /**
      * The ID of the region.
+     *
      * @var string
      */
     protected $id;
-    
+
     /**
      * The name of the region.
+     *
      * @var string
      */
     protected $name;
-    
+
     /**
      * Whether this is a VIP voice region.
+     *
      * @var bool
      */
     protected $vip;
-    
+
     /**
      * Whether this is an optimal voice region for the client user.
+     *
      * @var bool
      */
     protected $optimal;
-    
+
     /**
      * Whether this voice region is deprecated and therefore should be avoided.
+     *
      * @var bool
      */
     protected $deprecated;
-    
+
     /**
      * Whether the region is custom.
+     *
      * @var bool
      */
     protected $custom;
-    
+
     /**
+     * @param  Client  $client
+     * @param  array  $region
+     *
      * @internal
      */
-    function __construct(\CharlotteDunois\Yasmin\Client $client, array $region) {
+    function __construct(Client $client, array $region)
+    {
         parent::__construct($client);
-        
+
         $this->id = (string) $region['id'];
         $this->name = (string) $region['name'];
         $this->vip = (bool) $region['vip'];
@@ -69,18 +82,19 @@ class VoiceRegion extends ClientBase {
         $this->deprecated = (bool) $region['deprecated'];
         $this->custom = (bool) $region['custom'];
     }
-    
+
     /**
      * {@inheritdoc}
      * @return mixed
      * @throws \RuntimeException
      * @internal
      */
-    function __get($name) {
-        if(\property_exists($this, $name)) {
+    function __get($name)
+    {
+        if (\property_exists($this, $name)) {
             return $this->$name;
         }
-        
+
         return parent::__get($name);
     }
 }
