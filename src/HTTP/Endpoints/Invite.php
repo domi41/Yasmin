@@ -5,56 +5,69 @@
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
-*/
+ */
 
 namespace CharlotteDunois\Yasmin\HTTP\Endpoints;
 
+use CharlotteDunois\Yasmin\HTTP\APIEndpoints;
+use CharlotteDunois\Yasmin\HTTP\APIManager;
+
 /**
  * Handles the API endpoints "Invite".
+ *
  * @internal
  */
-class Invite {
+class Invite
+{
     /**
      * Endpoints Invites.
+     *
      * @var array
      */
-    const ENDPOINTS = array(
-        'get' => 'invites/%s',
+    const ENDPOINTS = [
+        'get'    => 'invites/%s',
         'delete' => 'invites/%s',
-        'accept' => 'invites/%s'
-    );
-    
+        'accept' => 'invites/%s',
+    ];
+
     /**
-     * @var \CharlotteDunois\Yasmin\HTTP\APIManager
+     * @var APIManager
      */
     protected $api;
-    
+
     /**
      * Constructor.
-     * @param \CharlotteDunois\Yasmin\HTTP\APIManager $api
+     *
+     * @param  APIManager  $api
      */
-    function __construct(\CharlotteDunois\Yasmin\HTTP\APIManager $api) {
+    function __construct(APIManager $api)
+    {
         $this->api = $api;
     }
-    
-    function getInvite(string $code, bool $withCounts = false) {
-        $url = \CharlotteDunois\Yasmin\HTTP\APIEndpoints::format(self::ENDPOINTS['get'], $code);
-        
-        $opts = array();
-        if($withCounts) {
-            $opts['querystring'] = array('with_counts' => 'true');
+
+    function getInvite(string $code, bool $withCounts = false)
+    {
+        $url = APIEndpoints::format(self::ENDPOINTS['get'], $code);
+
+        $opts = [];
+        if ($withCounts) {
+            $opts['querystring'] = ['with_counts' => 'true'];
         }
-        
+
         return $this->api->makeRequest('GET', $url, $opts);
     }
-    
-    function deleteInvite(string $code, string $reason = '') {
-        $url = \CharlotteDunois\Yasmin\HTTP\APIEndpoints::format(self::ENDPOINTS['delete'], $code);
-        return $this->api->makeRequest('DELETE', $url, array('auditLogReason' => $reason));
+
+    function deleteInvite(string $code, string $reason = '')
+    {
+        $url = APIEndpoints::format(self::ENDPOINTS['delete'], $code);
+
+        return $this->api->makeRequest('DELETE', $url, ['auditLogReason' => $reason]);
     }
-    
-    function acceptInvite(string $code) {
-        $url = \CharlotteDunois\Yasmin\HTTP\APIEndpoints::format(self::ENDPOINTS['accept'], $code);
-        return $this->api->makeRequest('POST', $url, array());
+
+    function acceptInvite(string $code)
+    {
+        $url = APIEndpoints::format(self::ENDPOINTS['accept'], $code);
+
+        return $this->api->makeRequest('POST', $url, []);
     }
 }

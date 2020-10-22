@@ -5,62 +5,80 @@
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
-*/
+ */
 
 namespace CharlotteDunois\Yasmin\HTTP\Endpoints;
 
+use CharlotteDunois\Yasmin\HTTP\APIEndpoints;
+use CharlotteDunois\Yasmin\HTTP\APIManager;
+
 /**
  * Handles the API endpoints "Emoji".
+ *
  * @internal
  */
-class Emoji {
+class Emoji
+{
     /**
      * Endpoints Emojis.
+     *
      * @var array
      */
-    const ENDPOINTS = array(
-        'list' => 'guilds/%s/emojis',
-        'get' => 'guilds/%s/emojis/%s',
+    const ENDPOINTS = [
+        'list'   => 'guilds/%s/emojis',
+        'get'    => 'guilds/%s/emojis/%s',
         'create' => 'guilds/%s/emojis',
         'modify' => 'guilds/%s/emojis/%s',
-        'delete' => 'guilds/%s/emojis/%s'
-    );
-    
+        'delete' => 'guilds/%s/emojis/%s',
+    ];
+
     /**
-     * @var \CharlotteDunois\Yasmin\HTTP\APIManager
+     * @var APIManager
      */
     protected $api;
-    
+
     /**
      * Constructor.
-     * @param \CharlotteDunois\Yasmin\HTTP\APIManager $api
+     *
+     * @param  APIManager  $api
      */
-    function __construct(\CharlotteDunois\Yasmin\HTTP\APIManager $api) {
+    function __construct(APIManager $api)
+    {
         $this->api = $api;
     }
-    
-    function listGuildEmojis(string $guildid) {
-        $url = \CharlotteDunois\Yasmin\HTTP\APIEndpoints::format(self::ENDPOINTS['list'], $guildid);
-        return $this->api->makeRequest('GET', $url, array());
+
+    function listGuildEmojis(string $guildid)
+    {
+        $url = APIEndpoints::format(self::ENDPOINTS['list'], $guildid);
+
+        return $this->api->makeRequest('GET', $url, []);
     }
-    
-    function getGuildEmoji(string $guildid, string $emojiid) {
-        $url = \CharlotteDunois\Yasmin\HTTP\APIEndpoints::format(self::ENDPOINTS['get'], $guildid, $emojiid);
-        return $this->api->makeRequest('GET', $url, array());
+
+    function getGuildEmoji(string $guildid, string $emojiid)
+    {
+        $url = APIEndpoints::format(self::ENDPOINTS['get'], $guildid, $emojiid);
+
+        return $this->api->makeRequest('GET', $url, []);
     }
-    
-    function createGuildEmoji(string $guildid, array $options, string $reason = '') {
-        $url = \CharlotteDunois\Yasmin\HTTP\APIEndpoints::format(self::ENDPOINTS['create'], $guildid);
-        return $this->api->makeRequest('POST', $url, array('auditLogReason' => $reason, 'data' => $options));
+
+    function createGuildEmoji(string $guildid, array $options, string $reason = '')
+    {
+        $url = APIEndpoints::format(self::ENDPOINTS['create'], $guildid);
+
+        return $this->api->makeRequest('POST', $url, ['auditLogReason' => $reason, 'data' => $options]);
     }
-    
-    function modifyGuildEmoji(string $guildid, string $emojiid, array $options, string $reason = '') {
-        $url = \CharlotteDunois\Yasmin\HTTP\APIEndpoints::format(self::ENDPOINTS['modify'], $guildid, $emojiid);
-        return $this->api->makeRequest('PATCH', $url, array('auditLogReason' => $reason, 'data' => $options));
+
+    function modifyGuildEmoji(string $guildid, string $emojiid, array $options, string $reason = '')
+    {
+        $url = APIEndpoints::format(self::ENDPOINTS['modify'], $guildid, $emojiid);
+
+        return $this->api->makeRequest('PATCH', $url, ['auditLogReason' => $reason, 'data' => $options]);
     }
-    
-    function deleteGuildEmoji(string $guildid, string $emojiid, string $reason = '') {
-        $url = \CharlotteDunois\Yasmin\HTTP\APIEndpoints::format(self::ENDPOINTS['delete'], $guildid, $emojiid);
-        return $this->api->makeRequest('DELETE', $url, array('auditLogReason' => $reason));
+
+    function deleteGuildEmoji(string $guildid, string $emojiid, string $reason = '')
+    {
+        $url = APIEndpoints::format(self::ENDPOINTS['delete'], $guildid, $emojiid);
+
+        return $this->api->makeRequest('DELETE', $url, ['auditLogReason' => $reason]);
     }
 }
