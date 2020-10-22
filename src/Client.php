@@ -12,23 +12,63 @@ namespace CharlotteDunois\Yasmin;
 use CharlotteDunois\Collect\Collection;
 use CharlotteDunois\Events\EventEmitterErrorTrait;
 use CharlotteDunois\Events\EventEmitterInterface;
+use CharlotteDunois\Validation\Validator;
 use CharlotteDunois\Yasmin\HTTP\APIManager;
+use CharlotteDunois\Yasmin\Interfaces\ChannelStorageInterface;
+use CharlotteDunois\Yasmin\Interfaces\EmojiStorageInterface;
+use CharlotteDunois\Yasmin\Interfaces\GuildMemberStorageInterface;
+use CharlotteDunois\Yasmin\Interfaces\GuildStorageInterface;
+use CharlotteDunois\Yasmin\Interfaces\MessageStorageInterface;
+use CharlotteDunois\Yasmin\Interfaces\PresenceStorageInterface;
+use CharlotteDunois\Yasmin\Interfaces\RatelimitBucketInterface;
+use CharlotteDunois\Yasmin\Interfaces\RoleStorageInterface;
+use CharlotteDunois\Yasmin\Interfaces\UserStorageInterface;
+use CharlotteDunois\Yasmin\Models\CategoryChannel;
+use CharlotteDunois\Yasmin\Models\ChannelStorage;
+use CharlotteDunois\Yasmin\Models\ClientUser;
+use CharlotteDunois\Yasmin\Models\EmojiStorage;
+use CharlotteDunois\Yasmin\Models\GuildMemberStorage;
+use CharlotteDunois\Yasmin\Models\GuildStorage;
+use CharlotteDunois\Yasmin\Models\Invite;
+use CharlotteDunois\Yasmin\Models\MessageStorage;
+use CharlotteDunois\Yasmin\Models\OAuthApplication;
+use CharlotteDunois\Yasmin\Models\Permissions;
+use CharlotteDunois\Yasmin\Models\PresenceStorage;
+use CharlotteDunois\Yasmin\Models\RoleStorage;
+use CharlotteDunois\Yasmin\Models\Shard;
+use CharlotteDunois\Yasmin\Models\User;
+use CharlotteDunois\Yasmin\Models\UserStorage;
+use CharlotteDunois\Yasmin\Models\VoiceRegion;
+use CharlotteDunois\Yasmin\Models\Webhook;
+use CharlotteDunois\Yasmin\Utils\DataHelpers;
+use CharlotteDunois\Yasmin\Utils\FileHelpers;
+use CharlotteDunois\Yasmin\WebSocket\WSConnection;
 use CharlotteDunois\Yasmin\WebSocket\WSManager;
+use Exception;
+use InvalidArgumentException;
+use RangeException;
 use React\EventLoop\Factory;
 use React\EventLoop\LoopInterface;
+use React\EventLoop\Timer\Timer;
+use React\EventLoop\TimerInterface;
+use React\Promise\ExtendedPromiseInterface;
+use React\Promise\Promise;
+use RuntimeException;
+
+use function React\Promise\resolve;
 
 /**
  * The client. What else do you expect this to say?
  *
  * @property LoopInterface $loop       The event loop.
- * @property \CharlotteDunois\Yasmin\Interfaces\ChannelStorageInterface $channels   Holds all cached channels, mapped by ID.
- * @property \CharlotteDunois\Yasmin\Interfaces\EmojiStorageInterface $emojis     Holds all emojis, mapped by ID (custom emojis) and/or name (unicode emojis).
- * @property \CharlotteDunois\Yasmin\Interfaces\GuildStorageInterface $guilds     Holds all guilds, mapped by ID.
- * @property \CharlotteDunois\Yasmin\Interfaces\PresenceStorageInterface $presences  Holds all cached presences (latest ones), mapped by user ID.
- * @property \CharlotteDunois\Yasmin\Interfaces\UserStorageInterface $users      Holds all cached users, mapped by ID.
+ * @property ChannelStorageInterface $channels   Holds all cached channels, mapped by ID.
+ * @property EmojiStorageInterface $emojis     Holds all emojis, mapped by ID (custom emojis) and/or name (unicode emojis).
+ * @property GuildStorageInterface $guilds     Holds all guilds, mapped by ID.
+ * @property PresenceStorageInterface $presences  Holds all cached presences (latest ones), mapped by user ID.
+ * @property UserStorageInterface $users      Holds all cached users, mapped by ID.
  * @property int[] $pings      The last 3 websocket pings of each shard.
  * @property Collection $shards     Holds all shards, mapped by shard ID.
- * @property \CharlotteDunois\Yasmin\Models\ClientUser|null $user       User that the client is logged in as. The instance gets created when the client turns ready.
+ * @property ClientUser|null $user       User that the client is logged in as. The instance gets created when the client turns ready.
  *
  * @method on(string $event, callable $listener)               Attach a listener to an event. The method is from the trait - only for documentation purpose here.
  * @method once(string $event, callable $listener)             Attach a listener to an event, for exactly once. The method is from the trait - only for documentation purpose here.
@@ -98,7 +138,7 @@ class Client implements EventEmitterInterface
     /**
      * It holds all cached channels, mapped by ID.
      *
-     * @var \CharlotteDunois\Yasmin\Models\ChannelStorage
+     * @var ChannelStorage
      * @internal
      */
     protected $channels;
@@ -106,7 +146,7 @@ class Client implements EventEmitterInterface
     /**
      * It holds all emojis, mapped by ID (custom emojis) and/or name (unicode emojis).
      *
-     * @var \CharlotteDunois\Yasmin\Models\EmojiStorage
+     * @var EmojiStorage
      * @internal
      */
     protected $emojis;
@@ -114,7 +154,7 @@ class Client implements EventEmitterInterface
     /**
      * It holds all guilds, mapped by ID.
      *
-     * @var \CharlotteDunois\Yasmin\Models\GuildStorage
+     * @var GuildStorage
      * @internal
      */
     protected $guilds;
@@ -122,7 +162,7 @@ class Client implements EventEmitterInterface
     /**
      * It holds all cached presences (latest ones), mapped by user ID.
      *
-     * @var \CharlotteDunois\Yasmin\Models\PresenceStorage
+     * @var PresenceStorage
      * @internal
      */
     protected $presences;
@@ -130,7 +170,7 @@ class Client implements EventEmitterInterface
     /**
      * It holds all cached users, mapped by ID.
      *
-     * @var \CharlotteDunois\Yasmin\Models\UserStorage
+     * @var UserStorage
      * @internal
      */
     protected $users;
@@ -176,7 +216,7 @@ class Client implements EventEmitterInterface
     /**
      * The Client User.
      *
-     * @var \CharlotteDunois\Yasmin\Models\ClientUser|null
+     * @var ClientUser|null
      * @internal
      */
     protected $user;
@@ -261,21 +301,21 @@ class Client implements EventEmitterInterface
      * @param  array  $options  Any client options.
      * @param  LoopInterface  $loop  You can pass an event loop to the class, or it will automatically create one (you still need to make it run yourself).
      *
-     * @throws \Exception
-     * @throws \RuntimeException
-     * @throws \InvalidArgumentException
+     * @throws Exception
+     * @throws RuntimeException
+     * @throws InvalidArgumentException
      * @see \CharlotteDunois\Yasmin\ClientEvents
      * @see https://discordapp.com/developers/docs/topics/gateway#update-status
      */
     function __construct(array $options = [], ?LoopInterface $loop = null)
     {
-        if (\PHP_SAPI !== 'cli') {
-            throw new \Exception('Yasmin can only be used in the CLI SAPI. Please use PHP CLI to run Yasmin.');
+        if (PHP_SAPI !== 'cli') {
+            throw new Exception('Yasmin can only be used in the CLI SAPI. Please use PHP CLI to run Yasmin.');
         }
 
         if (! empty($options)) {
             $this->validateClientOptions($options);
-            $this->options = \array_merge($this->options, $options);
+            $this->options = array_merge($this->options, $options);
         }
 
         if (! $loop) {
@@ -286,7 +326,7 @@ class Client implements EventEmitterInterface
 
         // ONLY use this if you know to 100% the consequences and know what you are doing
         if (! empty($options['internal.api.instance'])) {
-            if (\is_string($options['internal.api.instance'])) {
+            if (is_string($options['internal.api.instance'])) {
                 $api = $options['internal.api.instance'];
                 $this->api = new $api($this);
             } else {
@@ -300,7 +340,7 @@ class Client implements EventEmitterInterface
         if (($options['internal.ws.disable'] ?? false) !== true) {
             // ONLY use this if you know to 100% the consequences and know what you are doing
             if (! empty($options['internal.ws.instance'])) {
-                if (\is_string($options['internal.ws.instance'])) {
+                if (is_string($options['internal.ws.instance'])) {
                     $ws = $options['internal.ws.instance'];
                     $this->ws = new $ws($this);
                 } else {
@@ -313,7 +353,7 @@ class Client implements EventEmitterInterface
             $this->ws->on(
                 'ready',
                 function () {
-                    $this->readyTimestamp = \time();
+                    $this->readyTimestamp = time();
                     $this->emit('ready');
                 }
             );
@@ -321,7 +361,7 @@ class Client implements EventEmitterInterface
             $this->ws->once(
                 'ready',
                 function () {
-                    while ([$event, $args] = \array_shift($this->eventsQueue)) {
+                    while ([$event, $args] = array_shift($this->eventsQueue)) {
                         $this->emit($event, ...$args);
                     }
                 }
@@ -345,14 +385,14 @@ class Client implements EventEmitterInterface
      * @param  string  $name
      *
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      * @internal
      */
     function __isset($name)
     {
         try {
             return $this->$name !== null;
-        } catch (\RuntimeException $e) {
+        } catch (RuntimeException $e) {
             if ($e->getTrace()[0]['function'] === '__get') {
                 return false;
             }
@@ -365,14 +405,14 @@ class Client implements EventEmitterInterface
      * @param  string  $name
      *
      * @return mixed
-     * @throws \RuntimeException
+     * @throws RuntimeException
      * @internal
      */
     function __get($name)
     {
         $props = ['loop', 'channels', 'emojis', 'guilds', 'presences', 'users', 'shards', 'user'];
 
-        if (\in_array($name, $props)) {
+        if (in_array($name, $props)) {
             return $this->$name;
         }
 
@@ -381,14 +421,14 @@ class Client implements EventEmitterInterface
                 $pings = [];
 
                 foreach ($this->shards as $shard) {
-                    $pings = \array_merge($pings, $shard->ws->pings);
+                    $pings = array_merge($pings, $shard->ws->pings);
                 }
 
                 return $pings;
                 break;
         }
 
-        throw new \RuntimeException('Unknown property '.\get_class($this).'::$'.$name);
+        throw new RuntimeException('Unknown property '.get_class($this).'::$'.$name);
     }
 
     /**
@@ -448,13 +488,13 @@ class Client implements EventEmitterInterface
     function getPing()
     {
         $pings = $this->pings;
-        $cpings = \count($pings);
+        $cpings = count($pings);
 
         if ($cpings === 0) {
-            return \NAN;
+            return NAN;
         }
 
-        return ((int) \ceil(\array_sum($pings) / $cpings));
+        return ((int) ceil(array_sum($pings) / $cpings));
     }
 
     /**
@@ -483,27 +523,27 @@ class Client implements EventEmitterInterface
      * @param  string  $token  Your token.
      * @param  bool  $force  Forces the client to get the gateway address from Discord.
      *
-     * @return \React\Promise\ExtendedPromiseInterface
-     * @throws \RuntimeException
+     * @return ExtendedPromiseInterface
+     * @throws RuntimeException
      */
     function login(string $token, bool $force = false)
     {
-        $token = \trim($token);
+        $token = trim($token);
 
         if (empty($token)) {
-            throw new \RuntimeException('Token can not be empty');
+            throw new RuntimeException('Token can not be empty');
         }
 
         $this->token = $token;
 
-        return (new \React\Promise\Promise(
+        return (new Promise(
             function (callable $resolve, callable $reject) use ($force) {
                 if ($this->ws === null) {
                     return $resolve();
                 }
 
                 if (! empty($this->gateway) && ! $force) {
-                    $gateway = \React\Promise\resolve($this->gateway);
+                    $gateway = resolve($this->gateway);
                 } else {
                     $gateway = $this->api->getGateway(true);
                 }
@@ -515,7 +555,7 @@ class Client implements EventEmitterInterface
                         $wsquery = WSManager::WS;
                         $encoding = $this->getOption('ws.encoding');
 
-                        if (! empty($encoding) && \is_string($encoding)) {
+                        if (! empty($encoding) && is_string($encoding)) {
                             $wsquery['encoding'] = $encoding;
                         }
 
@@ -530,14 +570,14 @@ class Client implements EventEmitterInterface
 
                         $this->options['numShards'] = $maxShard - $minShard + 1;
 
-                        $remlogin = ($url['remaining'] ?? \INF);
+                        $remlogin = ($url['remaining'] ?? INF);
                         if ($remlogin < $this->options['numShards']) {
-                            throw new \RangeException(
+                            throw new RangeException(
                                 'Remaining gateway identify limit is not sufficient ('.$remlogin.' - '.$this->options['numShards'].' shards)'
                             );
                         }
 
-                        $prom = \React\Promise\resolve();
+                        $prom = resolve();
 
                         for ($shard = $minShard; $shard <= $maxShard; $shard++) {
                             $prom = $prom->then(
@@ -546,8 +586,8 @@ class Client implements EventEmitterInterface
 
                                     if (! $this->shards->has($shard)) {
                                         $prom = $prom->then(
-                                            function (\CharlotteDunois\Yasmin\WebSocket\WSConnection $ws) use ($shard) {
-                                                $shard = new \CharlotteDunois\Yasmin\Models\Shard($this, $shard, $ws);
+                                            function (WSConnection $ws) use ($shard) {
+                                                $shard = new Shard($this, $shard, $ws);
                                                 $this->shards->set($shard->id, $shard);
                                             }
                                         );
@@ -586,11 +626,11 @@ class Client implements EventEmitterInterface
      *
      * @param  bool  $destroyUtils  Stop timers of utils which have an instance of the event loop.
      *
-     * @return \React\Promise\ExtendedPromiseInterface
+     * @return ExtendedPromiseInterface
      */
     function destroy(bool $destroyUtils = true)
     {
-        return (new \React\Promise\Promise(
+        return (new Promise(
             function (callable $resolve) use ($destroyUtils) {
                 if ($this->api !== null) {
                     $this->api->clear();
@@ -652,25 +692,25 @@ class Client implements EventEmitterInterface
      *
      * @param  array  $options
      *
-     * @return \React\Promise\ExtendedPromiseInterface
-     * @throws \InvalidArgumentException
+     * @return ExtendedPromiseInterface
+     * @throws InvalidArgumentException
      * @see \CharlotteDunois\Yasmin\Models\Guild
      */
     function createGuild(array $options)
     {
         if (empty($options['name'])) {
-            throw new \InvalidArgumentException('Guild name can not be empty');
+            throw new InvalidArgumentException('Guild name can not be empty');
         }
 
         if (empty($options['region'])) {
-            throw new \InvalidArgumentException('Guild region can not be empty');
+            throw new InvalidArgumentException('Guild region can not be empty');
         }
 
-        return (new \React\Promise\Promise(
+        return (new Promise(
             function (callable $resolve, callable $reject) use ($options) {
                 $data = [
                     'name'                          => $options['name'],
-                    'region'                        => ($options['region'] instanceof \CharlotteDunois\Yasmin\Models\VoiceRegion ? $options['region']->id : $options['region']),
+                    'region'                        => ($options['region'] instanceof VoiceRegion ? $options['region']->id : $options['region']),
                     'verification_level'            => ((int) ($options['verificationLevel'] ?? 0)),
                     'default_message_notifications' => ((int) ($options['defaultMessageNotifications'] ?? 0)),
                     'explicit_content_filter'       => ((int) ($options['explicitContentFilter'] ?? 0)),
@@ -698,7 +738,7 @@ class Client implements EventEmitterInterface
                             'id'          => $roleint,
                             'name'        => ((string) $role['name']),
                             'permissions' => ($role['permissions'] ?? 0),
-                            'color'       => (! empty($role['color']) ? \CharlotteDunois\Yasmin\Utils\DataHelpers::resolveColor(
+                            'color'       => (! empty($role['color']) ? DataHelpers::resolveColor(
                                 $role['color']
                             ) : 0),
                             'hoist'       => ((bool) ($role['hoist'] ?? false)),
@@ -718,7 +758,7 @@ class Client implements EventEmitterInterface
                     foreach ($options['channels'] as $channel) {
                         $cdata = [
                             'name' => ((string) $channel['name']),
-                            'type' => (\CharlotteDunois\Yasmin\Models\ChannelStorage::CHANNEL_TYPES[($channel['type'] ?? 'text')] ?? 0),
+                            'type' => (ChannelStorage::CHANNEL_TYPES[($channel['type'] ?? 'text')] ?? 0),
                         ];
 
                         if (isset($channel['bitrate'])) {
@@ -733,7 +773,7 @@ class Client implements EventEmitterInterface
                             $overwrites = [];
 
                             foreach ($channel['permissionOverwrites'] as $overwrite) {
-                                $id = ($overwrite['id'] instanceof \CharlotteDunois\Yasmin\Models\User ? $overwrite['id']->id : ($rolemap[$overwrite['id']] ?? $overwrite['id']));
+                                $id = ($overwrite['id'] instanceof User ? $overwrite['id']->id : ($rolemap[$overwrite['id']] ?? $overwrite['id']));
 
                                 $overwrites[] = [
                                     'id'    => $id,
@@ -747,7 +787,7 @@ class Client implements EventEmitterInterface
                         }
 
                         if (isset($channel['parent'])) {
-                            $cdata['parent_id'] = ($channel['parent'] instanceof \CharlotteDunois\Yasmin\Models\CategoryChannel ? $channel['parent']->id : $channel['parent']);
+                            $cdata['parent_id'] = ($channel['parent'] instanceof CategoryChannel ? $channel['parent']->id : $channel['parent']);
                         }
 
                         if (isset($channel['nsfw'])) {
@@ -759,13 +799,13 @@ class Client implements EventEmitterInterface
                 }
 
                 if (! empty($options['icon'])) {
-                    $pr = \CharlotteDunois\Yasmin\Utils\FileHelpers::resolveFileResolvable($options['icon'])->then(
+                    $pr = FileHelpers::resolveFileResolvable($options['icon'])->then(
                         function ($icon) use (&$data) {
                             $data['icon'] = $icon;
                         }
                     );
                 } else {
-                    $pr = \React\Promise\resolve(null);
+                    $pr = resolve(null);
                 }
 
                 $pr->then(
@@ -784,16 +824,16 @@ class Client implements EventEmitterInterface
     /**
      * Obtains the OAuth Application of the bot from Discord.
      *
-     * @return \React\Promise\ExtendedPromiseInterface
+     * @return ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Models\OAuthApplication
      */
     function fetchApplication()
     {
-        return (new \React\Promise\Promise(
+        return (new Promise(
             function (callable $resolve, callable $reject) {
                 $this->api->endpoints->getCurrentApplication()->done(
                     function ($data) use ($resolve) {
-                        $app = new \CharlotteDunois\Yasmin\Models\OAuthApplication($this, $data);
+                        $app = new OAuthApplication($this, $data);
                         $resolve($app);
                     },
                     $reject
@@ -808,21 +848,21 @@ class Client implements EventEmitterInterface
      * @param  string  $invite  The invite code or an invite URL.
      * @param  bool  $withCounts  Whether the invite should contain approximate counts.
      *
-     * @return \React\Promise\ExtendedPromiseInterface
+     * @return ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Models\Invite
      */
     function fetchInvite(string $invite, bool $withCounts = false)
     {
-        return (new \React\Promise\Promise(
+        return (new Promise(
             function (callable $resolve, callable $reject) use ($invite, $withCounts) {
-                \preg_match('/discord(?:app\.com\/invite|\.gg)\/([\w-]{2,255})/i', $invite, $matches);
+                preg_match('/discord(?:app\.com\/invite|\.gg)\/([\w-]{2,255})/i', $invite, $matches);
                 if (! empty($matches[1])) {
                     $invite = $matches[1];
                 }
 
                 $this->api->endpoints->invite->getInvite($invite, $withCounts)->done(
                     function ($data) use ($resolve) {
-                        $invite = new \CharlotteDunois\Yasmin\Models\Invite($this, $data);
+                        $invite = new Invite($this, $data);
                         $resolve($invite);
                     },
                     $reject
@@ -836,12 +876,12 @@ class Client implements EventEmitterInterface
      *
      * @param  string  $userid  The User ID to fetch.
      *
-     * @return \React\Promise\ExtendedPromiseInterface
+     * @return ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Models\User
      */
     function fetchUser(string $userid)
     {
-        return (new \React\Promise\Promise(
+        return (new Promise(
             function (callable $resolve, callable $reject) use ($userid) {
                 if ($this->users->has($userid)) {
                     return $resolve($this->users->get($userid));
@@ -861,19 +901,19 @@ class Client implements EventEmitterInterface
     /**
      * Obtains the available voice regions from Discord. Resolves with a Collection of Voice Region instances, mapped by their ID.
      *
-     * @return \React\Promise\ExtendedPromiseInterface
+     * @return ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Models\VoiceRegion
      */
     function fetchVoiceRegions()
     {
-        return (new \React\Promise\Promise(
+        return (new Promise(
             function (callable $resolve, callable $reject) {
                 $this->api->endpoints->voice->listVoiceRegions()->done(
                     function ($data) use ($resolve) {
                         $collect = new Collection();
 
                         foreach ($data as $region) {
-                            $voice = new \CharlotteDunois\Yasmin\Models\VoiceRegion($this, $region);
+                            $voice = new VoiceRegion($this, $region);
                             $collect->set($voice->id, $voice);
                         }
 
@@ -891,18 +931,18 @@ class Client implements EventEmitterInterface
      * @param  string  $id
      * @param  string|null  $token
      *
-     * @return \React\Promise\ExtendedPromiseInterface
+     * @return ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Models\Webhook
      */
     function fetchWebhook(string $id, ?string $token = null)
     {
-        return (new \React\Promise\Promise(
+        return (new Promise(
             function (callable $resolve, callable $reject) use ($id, $token) {
                 $method = (! empty($token) ? 'getWebhookToken' : 'getWebhook');
 
                 $this->api->endpoints->webhook->$method($id, $token)->done(
                     function ($data) use ($resolve) {
-                        $hook = new \CharlotteDunois\Yasmin\Models\Webhook($this, $data);
+                        $hook = new Webhook($this, $data);
                         $resolve($hook);
                     },
                     $reject
@@ -916,12 +956,12 @@ class Client implements EventEmitterInterface
      *
      * @param  string|int  ...$permissions
      *
-     * @return \React\Promise\ExtendedPromiseInterface
-     * @throws \InvalidArgumentException
+     * @return ExtendedPromiseInterface
+     * @throws InvalidArgumentException
      */
     function generateOAuthInvite(...$permissions)
     {
-        $perm = new \CharlotteDunois\Yasmin\Models\Permissions();
+        $perm = new Permissions();
         if (! empty($permissions)) {
             $perm->add(...$permissions);
         }
@@ -939,7 +979,7 @@ class Client implements EventEmitterInterface
      * @param  float|int  $timeout
      * @param  callable  $callback
      *
-     * @return \React\EventLoop\Timer\Timer
+     * @return Timer
      */
     function addTimer($timeout, callable $callback)
     {
@@ -962,7 +1002,7 @@ class Client implements EventEmitterInterface
      * @param  float|int  $interval
      * @param  callable  $callback
      *
-     * @return \React\EventLoop\Timer\Timer
+     * @return Timer
      */
     function addPeriodicTimer($interval, callable $callback)
     {
@@ -981,7 +1021,7 @@ class Client implements EventEmitterInterface
     /**
      * Cancels a timer.
      *
-     * @param  \React\EventLoop\TimerInterface  $timer
+     * @param  TimerInterface  $timer
      *
      * @return bool
      */
@@ -989,7 +1029,7 @@ class Client implements EventEmitterInterface
     {
         $this->loop->cancelTimer($timer);
 
-        $key = \array_search($timer, $this->timers, true);
+        $key = array_search($timer, $this->timers, true);
         if ($key !== false) {
             unset($this->timers[$key]);
         }
@@ -1018,7 +1058,7 @@ class Client implements EventEmitterInterface
      */
     function setClientUser(array $user)
     {
-        $this->user = new \CharlotteDunois\Yasmin\Models\ClientUser($this, $user);
+        $this->user = new ClientUser($this, $user);
         $this->users->set($this->user->id, $this->user);
     }
 
@@ -1042,7 +1082,7 @@ class Client implements EventEmitterInterface
      */
     function registerUtil(string $name)
     {
-        if (\method_exists($name, 'setLoop')) {
+        if (method_exists($name, 'setLoop')) {
             $name::setLoop($this->loop);
             $this->utils[] = $name;
         }
@@ -1057,9 +1097,9 @@ class Client implements EventEmitterInterface
      */
     function destroyUtil(string $name)
     {
-        $pos = \array_search($name, $this->utils, true);
+        $pos = array_search($name, $this->utils, true);
         if ($pos !== false) {
-            if (\method_exists($name, 'destroy')) {
+            if (method_exists($name, 'destroy')) {
                 $name::destroy();
             }
 
@@ -1075,13 +1115,13 @@ class Client implements EventEmitterInterface
      */
     function registerUtils()
     {
-        $utils = \glob(__DIR__.'/Utils/*.php');
+        $utils = glob(__DIR__.'/Utils/*.php');
         foreach ($utils as $util) {
-            $parts = \explode('/', \str_replace('\\', '/', $util));
-            $name = \substr(\array_pop($parts), 0, -4);
+            $parts = explode('/', str_replace('\\', '/', $util));
+            $name = substr(array_pop($parts), 0, -4);
             $fqn = '\\CharlotteDunois\\Yasmin\\Utils\\'.$name;
 
-            if (\method_exists($fqn, 'setLoop')) {
+            if (method_exists($fqn, 'setLoop')) {
                 $fqn::setLoop($this->loop);
                 $this->utils[] = $fqn;
             }
@@ -1097,7 +1137,7 @@ class Client implements EventEmitterInterface
     function destroyUtils()
     {
         foreach ($this->utils as $util) {
-            if (\method_exists($util, 'destroy')) {
+            if (method_exists($util, 'destroy')) {
                 $util::destroy();
             }
         }
@@ -1120,11 +1160,11 @@ class Client implements EventEmitterInterface
      * @param  array  $options
      *
      * @return void
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     protected function validateClientOptions(array $options)
     {
-        \CharlotteDunois\Validation\Validator::make(
+        Validator::make(
             $options,
             [
                 'disableClones'                        => 'boolean|array:string',
@@ -1138,7 +1178,7 @@ class Client implements EventEmitterInterface
                 'maxShardID'                           => 'integer|min:0',
                 'shardCount'                           => 'integer|min:1',
                 'userSweepInterval'                    => 'integer|min:0',
-                'http.ratelimitbucket.name'            => 'class:'.\CharlotteDunois\Yasmin\Interfaces\RatelimitBucketInterface::class.'=string',
+                'http.ratelimitbucket.name'            => 'class:'.RatelimitBucketInterface::class.'=string',
                 'http.ratelimitbucket.athena'          => 'class:CharlotteDunois\\Athena\\AthenaCache=object',
                 'http.requestErrorDelay'               => 'integer|min:15',
                 'http.requestMaxRetries'               => 'integer|min:0',
@@ -1150,36 +1190,36 @@ class Client implements EventEmitterInterface
                 'ws.presence'                          => 'array',
                 'ws.presenceUpdate.ignoreUnknownUsers' => 'boolean',
                 'internal.api.instance'                => 'class:'.APIManager::class,
-                'internal.storages.channels'           => 'class:'.\CharlotteDunois\Yasmin\Interfaces\ChannelStorageInterface::class.'=string',
-                'internal.storages.emojis'             => 'class:'.\CharlotteDunois\Yasmin\Interfaces\EmojiStorageInterface::class.'=string',
-                'internal.storages.guilds'             => 'class:'.\CharlotteDunois\Yasmin\Interfaces\GuildStorageInterface::class.'=string',
-                'internal.storages.messages'           => 'class:'.\CharlotteDunois\Yasmin\Interfaces\MessageStorageInterface::class.'=string',
-                'internal.storages.members'            => 'class:'.\CharlotteDunois\Yasmin\Interfaces\GuildMemberStorageInterface::class.'=string',
-                'internal.storages.presences'          => 'class:'.\CharlotteDunois\Yasmin\Interfaces\PresenceStorageInterface::class.'=string',
-                'internal.storages.roles'              => 'class:'.\CharlotteDunois\Yasmin\Interfaces\RoleStorageInterface::class.'=string',
-                'internal.storages.users'              => 'class:'.\CharlotteDunois\Yasmin\Interfaces\UserStorageInterface::class.'=string',
+                'internal.storages.channels'           => 'class:'.ChannelStorageInterface::class.'=string',
+                'internal.storages.emojis'             => 'class:'.EmojiStorageInterface::class.'=string',
+                'internal.storages.guilds'             => 'class:'.GuildStorageInterface::class.'=string',
+                'internal.storages.messages'           => 'class:'.MessageStorageInterface::class.'=string',
+                'internal.storages.members'            => 'class:'.GuildMemberStorageInterface::class.'=string',
+                'internal.storages.presences'          => 'class:'.PresenceStorageInterface::class.'=string',
+                'internal.storages.roles'              => 'class:'.RoleStorageInterface::class.'=string',
+                'internal.storages.users'              => 'class:'.UserStorageInterface::class.'=string',
                 'internal.ws.instance'                 => 'class:'.WSManager::class,
             ]
-        )->throw(\InvalidArgumentException::class);
+        )->throw(InvalidArgumentException::class);
     }
 
     /**
      * Validates the passed client options storages.
      *
      * @return void
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     protected function checkOptionsStorages()
     {
         $storages = [
-            'channels'  => \CharlotteDunois\Yasmin\Models\ChannelStorage::class,
-            'emojis'    => \CharlotteDunois\Yasmin\Models\EmojiStorage::class,
-            'guilds'    => \CharlotteDunois\Yasmin\Models\GuildStorage::class,
-            'messages'  => \CharlotteDunois\Yasmin\Models\MessageStorage::class,
-            'members'   => \CharlotteDunois\Yasmin\Models\GuildMemberStorage::class,
-            'presences' => \CharlotteDunois\Yasmin\Models\PresenceStorage::class,
-            'roles'     => \CharlotteDunois\Yasmin\Models\RoleStorage::class,
-            'users'     => \CharlotteDunois\Yasmin\Models\UserStorage::class,
+            'channels'  => ChannelStorage::class,
+            'emojis'    => EmojiStorage::class,
+            'guilds'    => GuildStorage::class,
+            'messages'  => MessageStorage::class,
+            'members'   => GuildMemberStorage::class,
+            'presences' => PresenceStorage::class,
+            'roles'     => RoleStorage::class,
+            'users'     => UserStorage::class,
         ];
 
         foreach ($storages as $name => $base) {
