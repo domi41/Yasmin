@@ -10,6 +10,13 @@
 namespace CharlotteDunois\Yasmin\Utils;
 
 use CharlotteDunois\Collect\Collection;
+use CharlotteDunois\Events\EventEmitterInterface;
+use Closure;
+use OutOfBoundsException;
+use RangeException;
+use React\EventLoop\LoopInterface;
+use React\EventLoop\Timer\TimerInterface;
+use React\Promise\ExtendedPromiseInterface;
 use React\Promise\Promise;
 
 /**
@@ -18,7 +25,7 @@ use React\Promise\Promise;
 class Collector
 {
     /**
-     * @var \CharlotteDunois\Events\EventEmitterInterface
+     * @var EventEmitterInterface
      */
     protected $emitter;
 
@@ -43,17 +50,17 @@ class Collector
     protected $options;
 
     /**
-     * @var \Closure
+     * @var Closure
      */
     protected $listener;
 
     /**
-     * @var \Closure
+     * @var Closure
      */
     protected $resolve;
 
     /**
-     * @var \Closure
+     * @var Closure
      */
     protected $reject;
 
@@ -63,12 +70,12 @@ class Collector
     protected $bucket;
 
     /**
-     * @var \React\EventLoop\TimerInterface|\React\EventLoop\Timer\TimerInterface
+     * @var \React\EventLoop\TimerInterface|TimerInterface
      */
     protected $timer;
 
     /**
-     * @var \React\EventLoop\LoopInterface
+     * @var LoopInterface
      */
     protected static $loop;
 
@@ -84,7 +91,7 @@ class Collector
      * )
      * ```
      *
-     * @param  \CharlotteDunois\Events\EventEmitterInterface  $emitter
+     * @param  EventEmitterInterface  $emitter
      * @param  string  $event
      * @param  callable  $handler  How the collect item should be handled. Must return an array of `[ $key, $value ]`.
      * @param  callable|null  $filter
@@ -103,12 +110,12 @@ class Collector
     /**
      * Sets the Event Loop.
      *
-     * @param  \React\EventLoop\LoopInterface  $loop
+     * @param  LoopInterface  $loop
      *
      * @return void
      * @internal
      */
-    static function setLoop(\React\EventLoop\LoopInterface $loop)
+    static function setLoop(LoopInterface $loop)
     {
         self::$loop = $loop;
     }
@@ -116,9 +123,9 @@ class Collector
     /**
      * Starts collecting. Resolves with a collection.
      *
-     * @return \React\Promise\ExtendedPromiseInterface   This promise is cancellable.
-     * @throws \RangeException          The exception the promise gets rejected with, if collecting times out.
-     * @throws \OutOfBoundsException    The exception the promise gets rejected with, if the promise gets cancelled.
+     * @return ExtendedPromiseInterface   This promise is cancellable.
+     * @throws RangeException          The exception the promise gets rejected with, if collecting times out.
+     * @throws OutOfBoundsException    The exception the promise gets rejected with, if the promise gets cancelled.
      */
     function collect()
     {
@@ -135,7 +142,7 @@ class Collector
                         [$key, $value] = $handler(...$item);
                         $this->bucket->set($key, $value);
 
-                        if (($this->options['max'] ?? \INF) <= $this->bucket->count()) {
+                        if (($this->options['max'] ?? INF) <= $this->bucket->count()) {
                             $this->stop();
                         }
                     }
@@ -158,7 +165,7 @@ class Collector
             }
 
             $this->emitter->removeListener($this->event, $this->listener);
-            $reject(new \OutOfBoundsException('Operation cancelled'));
+            $reject(new OutOfBoundsException('Operation cancelled'));
         }
         ));
     }
@@ -178,10 +185,10 @@ class Collector
         $this->emitter->removeListener($this->event, $this->listener);
 
         $errors = (array) ($this->options['errors'] ?? []);
-        if (\in_array('max', $errors, true) && ($this->options['max'] ?? 0) > 0 && $this->bucket->count(
+        if (in_array('max', $errors, true) && ($this->options['max'] ?? 0) > 0 && $this->bucket->count(
             ) < $this->options['max']) {
             $reject = $this->reject;
-            $reject(new \RangeException('Collecting timed out (max not reached in time)'));
+            $reject(new RangeException('Collecting timed out (max not reached in time)'));
 
             return;
         }

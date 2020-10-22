@@ -9,6 +9,7 @@
 
 namespace CharlotteDunois\Yasmin\Utils;
 
+use LogicException;
 use Psr\Http\Message\RequestInterface;
 use React\EventLoop\LoopInterface;
 use React\Http\Browser;
@@ -16,6 +17,7 @@ use React\Promise\PromiseInterface;
 use RingCentral\Psr7\MultipartStream;
 use RingCentral\Psr7\Request;
 use RingCentral\Psr7\Stream;
+use RuntimeException;
 
 use function React\Promise\reject;
 
@@ -69,12 +71,12 @@ class URLHelpers
      * The HTTP client is after setting **immutable**.
      *
      * @return void
-     * @throws \LogicException
+     * @throws LogicException
      */
     static function setHTTPClient(Browser $client)
     {
         if (static::$http !== null) {
-            throw new \LogicException('Client has already been set');
+            throw new LogicException('Client has already been set');
         }
 
         static::$http = $client;
@@ -140,7 +142,7 @@ class URLHelpers
 
             try {
                 $request = static::applyRequestOptions($request, $requestOptions);
-            } catch (\RuntimeException $e) {
+            } catch (RuntimeException $e) {
                 return reject($e);
             }
         }
@@ -169,7 +171,7 @@ class URLHelpers
 
         foreach ($requestHeaders as $key => $val) {
             unset($requestHeaders[$key]);
-            $nkey = \ucwords($key, '-');
+            $nkey = ucwords($key, '-');
             $requestHeaders[$nkey] = $val;
         }
 
@@ -203,7 +205,7 @@ class URLHelpers
      * @param  array  $requestOptions
      *
      * @return RequestInterface
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     static function applyRequestOptions(RequestInterface $request, array $requestOptions)
     {
@@ -218,24 +220,24 @@ class URLHelpers
         }
 
         if (isset($requestOptions['json'])) {
-            $resource = \fopen('php://temp', 'r+');
+            $resource = fopen('php://temp', 'r+');
             if ($resource === false) {
-                throw new \RuntimeException('Unable to create stream for JSON data');
+                throw new RuntimeException('Unable to create stream for JSON data');
             }
 
-            $json = \json_encode($requestOptions['json']);
+            $json = json_encode($requestOptions['json']);
             if ($json === false) {
-                throw new \RuntimeException('Unable to encode json. Error: '.\json_last_error_msg());
+                throw new RuntimeException('Unable to encode json. Error: '.json_last_error_msg());
             }
 
-            \fwrite($resource, $json);
-            \fseek($resource, 0);
+            fwrite($resource, $json);
+            fseek($resource, 0);
 
-            $stream = new Stream($resource, ['size' => \strlen($json)]);
+            $stream = new Stream($resource, ['size' => strlen($json)]);
             $request = $request->withBody($stream);
 
             $request = $request->withHeader('Content-Type', 'application/json')
-                               ->withHeader('Content-Length', \strlen($json));
+                               ->withHeader('Content-Length', strlen($json));
         }
 
         if (isset($requestOptions['query'])) {

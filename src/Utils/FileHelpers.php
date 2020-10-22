@@ -14,6 +14,8 @@ use React\Filesystem\Filesystem;
 use React\Filesystem\FilesystemInterface;
 use React\Promise\PromiseInterface;
 
+use RuntimeException;
+
 use function React\Promise\reject;
 use function React\Promise\resolve;
 
@@ -98,6 +100,6 @@ class FileHelpers
             return URLHelpers::resolveURLToData($file);
         }
 
-        return reject(new \RuntimeException('Given file is not resolvable'));
+        return reject(new RuntimeException('Given file is not resolvable'));
     }
 }

@@ -11,6 +11,8 @@ namespace CharlotteDunois\Yasmin\Utils;
 
 use CharlotteDunois\Collect\Collection;
 use CharlotteDunois\Events\EventEmitterInterface;
+use OutOfBoundsException;
+use RangeException;
 use React\Promise\ExtendedPromiseInterface;
 
 /**
@@ -34,8 +36,8 @@ class EventHelpers
      * @param  array  $options
      *
      * @return ExtendedPromiseInterface  This promise is cancellable.
-     * @throws \RangeException          The exception the promise gets rejected with, if waiting times out.
-     * @throws \OutOfBoundsException    The exception the promise gets rejected with, if the promise gets cancelled.
+     * @throws RangeException          The exception the promise gets rejected with, if waiting times out.
+     * @throws OutOfBoundsException    The exception the promise gets rejected with, if the promise gets cancelled.
      */
     static function waitForEvent($emitter, string $event, ?callable $filter = null, array $options = [])
     {

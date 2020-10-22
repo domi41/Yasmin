@@ -16,7 +16,12 @@ use CharlotteDunois\Yasmin\Models\Message;
 use CharlotteDunois\Yasmin\Models\MessageAttachment;
 use CharlotteDunois\Yasmin\Models\Role;
 use CharlotteDunois\Yasmin\Models\User;
+use InvalidArgumentException;
+use React\Promise\ExtendedPromiseInterface;
 use React\Promise\Promise;
+
+use function React\Promise\all;
+use function React\Promise\resolve;
 
 /**
  * Message Helper methods.
@@ -35,19 +40,19 @@ class MessageHelpers
     {
         /** @var ChannelInterface $channel */
         foreach ($message->mentions->channels as $channel) {
-            $text = \str_replace('<#'.$channel->getId().'>', '#'.$channel->name, $text);
+            $text = str_replace('<#'.$channel->getId().'>', '#'.$channel->name, $text);
         }
 
         /** @var Role $role */
         foreach ($message->mentions->roles as $role) {
-            $text = \str_replace($role->__toString(), $role->name, $text);
+            $text = str_replace($role->__toString(), $role->name, $text);
         }
 
         /** @var User $user */
         foreach ($message->mentions->users as $user) {
             $guildCheck = ($message->channel instanceof GuildChannelInterface && $message->channel->getGuild(
                 )->members->has($user->id));
-            $text = \preg_replace(
+            $text = preg_replace(
                 '/<@!?'.$user->id.'>/',
                 ($guildCheck ? $message->channel->getGuild()->members->get($user->id)->displayName : $user->username),
                 $text
@@ -69,14 +74,14 @@ class MessageHelpers
     static function escapeMarkdown(string $text, bool $onlyCodeBlock = false, bool $onlyInlineCode = false)
     {
         if ($onlyCodeBlock) {
-            return \preg_replace('/(```)/miu', "\\`\\`\\`", $text);
+            return preg_replace('/(```)/miu', "\\`\\`\\`", $text);
         }
 
         if ($onlyInlineCode) {
-            return \preg_replace('/(`)/miu', '\\\\$1', $text);
+            return preg_replace('/(`)/miu', '\\\\$1', $text);
         }
 
-        return \preg_replace('/(\\*|_|`|~)/miu', '\\\\$1', $text);
+        return preg_replace('/(\\*|_|`|~)/miu', '\\\\$1', $text);
     }
 
     /**
@@ -87,7 +92,7 @@ class MessageHelpers
      * @param  Client|null  $client
      * @param  string  $content
      *
-     * @return \React\Promise\ExtendedPromiseInterface
+     * @return ExtendedPromiseInterface
      */
     static function parseMentions(?Client $client, string $content)
     {
@@ -96,7 +101,7 @@ class MessageHelpers
                 $bucket = [];
                 $promises = [];
 
-                \preg_match_all('/(?:<(@&|@!?|#|a?:.+?:)(\d+)>)|@everyone|@here/su', $content, $matches);
+                preg_match_all('/(?:<(@&|@!?|#|a?:.+?:)(\d+)>)|@everyone|@here/su', $content, $matches);
                 foreach ($matches[0] as $key => $val) {
                     if ($val === '@everyone') {
                         $bucket[$key] = ['type' => 'everyone', 'ref' => $val];
@@ -133,7 +138,7 @@ class MessageHelpers
                         } else {
                             $bucket[$key] = ['type' => $type, 'ref' => $val];
                         }
-                    } elseif (\substr_count($matches[1][$key], ':') === 2) {
+                    } elseif (substr_count($matches[1][$key], ':') === 2) {
                         $type = 'emoji';
 
                         if ($client) {
@@ -168,7 +173,7 @@ class MessageHelpers
                     }
                 }
 
-                \React\Promise\all($promises)->done(
+                all($promises)->done(
                     function () use (&$bucket, $resolve) {
                         $resolve($bucket);
                     }
@@ -182,13 +187,13 @@ class MessageHelpers
      *
      * @param  array  $options
      *
-     * @return \React\Promise\ExtendedPromiseInterface
-     * @throws \InvalidArgumentException
+     * @return ExtendedPromiseInterface
+     * @throws InvalidArgumentException
      */
     static function resolveMessageOptionsFiles(array $options)
     {
         if (empty($options['files'])) {
-            return \React\Promise\resolve([]);
+            return resolve([]);
         }
 
         $promises = [];
@@ -197,48 +202,48 @@ class MessageHelpers
                 $file = $file->_getMessageFilesArray();
             }
 
-            if (\is_string($file)) {
-                if (\filter_var($file, \FILTER_VALIDATE_URL)) {
+            if (is_string($file)) {
+                if (filter_var($file, FILTER_VALIDATE_URL)) {
                     $promises[] = URLHelpers::resolveURLToData($file)->then(
                         function ($data) use ($file) {
-                            return ['name' => \basename($file), 'data' => $data];
+                            return ['name' => basename($file), 'data' => $data];
                         }
                     );
-                } elseif (\realpath($file)) {
+                } elseif (realpath($file)) {
                     $promises[] = FileHelpers::resolveFileResolvable($file)->then(
                         function ($data) use ($file) {
-                            return ['name' => \basename($file), 'data' => $data];
+                            return ['name' => basename($file), 'data' => $data];
                         }
                     );
                 } else {
-                    $promises[] = \React\Promise\resolve(
-                        ['name' => 'file-'.\bin2hex(\random_bytes(3)).'.jpg', 'data' => $file]
+                    $promises[] = resolve(
+                        ['name' => 'file-'.bin2hex(random_bytes(3)).'.jpg', 'data' => $file]
                     );
                 }
 
                 continue;
             }
 
-            if (! \is_array($file)) {
+            if (! is_array($file)) {
                 continue;
             }
 
             if (! isset($file['data']) && ! isset($file['path'])) {
-                throw new \InvalidArgumentException(
+                throw new InvalidArgumentException(
                     'Invalid file array passed, missing data and path, one is required'
                 );
             }
 
             if (! isset($file['name'])) {
                 if (isset($file['path'])) {
-                    $file['name'] = \basename($file['path']);
+                    $file['name'] = basename($file['path']);
                 } else {
-                    $file['name'] = 'file-'.\bin2hex(\random_bytes(3)).'.jpg';
+                    $file['name'] = 'file-'.bin2hex(random_bytes(3)).'.jpg';
                 }
             }
 
             if (isset($file['path'])) {
-                if (filter_var($file['path'], \FILTER_VALIDATE_URL)) {
+                if (filter_var($file['path'], FILTER_VALIDATE_URL)) {
                     $promises[] = URLHelpers::resolveURLToData($file['path'])->then(
                         function ($data) use ($file) {
                             $file['data'] = $data;
@@ -255,15 +260,15 @@ class MessageHelpers
                         }
                     );
                 } else {
-                    $file['data'] = \file_get_contents($file['path']);
-                    $promises[] = \React\Promise\resolve($file);
+                    $file['data'] = file_get_contents($file['path']);
+                    $promises[] = resolve($file);
                 }
             } else {
-                $promises[] = \React\Promise\resolve($file);
+                $promises[] = resolve($file);
             }
         }
 
-        return \React\Promise\all($promises);
+        return all($promises);
     }
 
     /**
@@ -287,19 +292,19 @@ class MessageHelpers
      */
     static function splitMessage(string $text, array $options = [])
     {
-        $options = \array_merge(Message::DEFAULT_SPLIT_OPTIONS, $options);
+        $options = array_merge(Message::DEFAULT_SPLIT_OPTIONS, $options);
 
-        if (\mb_strlen($text) > $options['maxLength']) {
+        if (mb_strlen($text) > $options['maxLength']) {
             $i = 0;
             $messages = [];
 
-            $parts = \explode($options['char'], $text);
+            $parts = explode($options['char'], $text);
             foreach ($parts as $part) {
                 if (! isset($messages[$i])) {
                     $messages[$i] = '';
                 }
 
-                if ((\mb_strlen($messages[$i]) + \mb_strlen($part) + 2) >= $options['maxLength']) {
+                if ((mb_strlen($messages[$i]) + mb_strlen($part) + 2) >= $options['maxLength']) {
                     $i++;
                     $messages[$i] = '';
                 }
