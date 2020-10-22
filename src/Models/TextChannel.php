@@ -12,12 +12,17 @@ namespace CharlotteDunois\Yasmin\Models;
 use CharlotteDunois\Collect\Collection;
 use CharlotteDunois\Yasmin\Client;
 use CharlotteDunois\Yasmin\Interfaces\GuildTextChannelInterface;
+use CharlotteDunois\Yasmin\Interfaces\MessageStorageInterface;
+use CharlotteDunois\Yasmin\Interfaces\StorageInterface;
 use CharlotteDunois\Yasmin\Traits\GuildChannelTrait;
 use CharlotteDunois\Yasmin\Traits\TextChannelTrait;
 use CharlotteDunois\Yasmin\Utils\DataHelpers;
 use CharlotteDunois\Yasmin\Utils\FileHelpers;
 use CharlotteDunois\Yasmin\Utils\Snowflake;
+use DateTime;
+use React\Promise\ExtendedPromiseInterface;
 use React\Promise\Promise;
+use RuntimeException;
 
 use function React\Promise\resolve;
 
@@ -35,10 +40,10 @@ use function React\Promise\resolve;
  * @property int $slowmode               Ratelimit to send one message for each non-bot user, without `MANAGE_CHANNEL` and `MANAGE_MESSAGES` permissions, in seconds (0-120).
  * @property Collection $permissionOverwrites   A collection of PermissionOverwrite instances, mapped by their ID.
  * @property string|null $lastMessageID          The last message ID, or null.
- * @property \CharlotteDunois\Yasmin\Interfaces\MessageStorageInterface $messages               The storage with all cached messages.
+ * @property MessageStorageInterface $messages               The storage with all cached messages.
  *
- * @property \DateTime $createdAt              The DateTime instance of createdTimestamp.
- * @property \CharlotteDunois\Yasmin\Models\CategoryChannel|null $parent                 The channel's parent, or null.
+ * @property DateTime $createdAt              The DateTime instance of createdTimestamp.
+ * @property CategoryChannel|null $parent                 The channel's parent, or null.
  * @method string getId()
  * @method int getCreatedTimestamp()
  * @method string getName()
@@ -46,7 +51,7 @@ use function React\Promise\resolve;
  * @method int getPosition()
  * @method Collection getPermissionOverwrites()
  * @method null getParent()
- * @method \CharlotteDunois\Yasmin\Interfaces\MessageStorageInterface getMessages()
+ * @method MessageStorageInterface getMessages()
  * @method string getLastMessageID()
  */
 class TextChannel extends ClientBase implements GuildTextChannelInterface
@@ -63,7 +68,7 @@ class TextChannel extends ClientBase implements GuildTextChannelInterface
     /**
      * The storage with all cached messages.
      *
-     * @var \CharlotteDunois\Yasmin\Interfaces\StorageInterface
+     * @var StorageInterface
      */
     protected $messages;
 
@@ -164,7 +169,7 @@ class TextChannel extends ClientBase implements GuildTextChannelInterface
     /**
      * {@inheritdoc}
      * @return mixed
-     * @throws \RuntimeException
+     * @throws RuntimeException
      * @internal
      */
     function __get($name)
@@ -192,7 +197,7 @@ class TextChannel extends ClientBase implements GuildTextChannelInterface
      * @param  string|null  $avatar  An URL or file path, or data.
      * @param  string  $reason
      *
-     * @return \React\Promise\ExtendedPromiseInterface
+     * @return ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Models\Webhook
      */
     function createWebhook(string $name, ?string $avatar = null, string $reason = '')
@@ -233,7 +238,7 @@ class TextChannel extends ClientBase implements GuildTextChannelInterface
     /**
      * Fetches the channel's webhooks. Resolves with a Collection of Webhook instances, mapped by their ID.
      *
-     * @return \React\Promise\ExtendedPromiseInterface
+     * @return ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Models\Webhook
      */
     function fetchWebhooks()
@@ -263,7 +268,7 @@ class TextChannel extends ClientBase implements GuildTextChannelInterface
      * @param  int  $slowmode  0-21600
      * @param  string  $reason
      *
-     * @return \React\Promise\ExtendedPromiseInterface
+     * @return ExtendedPromiseInterface
      */
     function setSlowmode(int $slowmode, string $reason = '')
     {

@@ -12,9 +12,14 @@ namespace CharlotteDunois\Yasmin\Models;
 use CharlotteDunois\Collect\Collection;
 use CharlotteDunois\Yasmin\Client;
 use CharlotteDunois\Yasmin\Interfaces\DMChannelInterface;
+use CharlotteDunois\Yasmin\Interfaces\MessageStorageInterface;
+use CharlotteDunois\Yasmin\Interfaces\StorageInterface;
 use CharlotteDunois\Yasmin\Traits\TextChannelTrait;
 use CharlotteDunois\Yasmin\Utils\DataHelpers;
 use CharlotteDunois\Yasmin\Utils\Snowflake;
+use DateTime;
+use InvalidArgumentException;
+use RuntimeException;
 
 /**
  * Represents a classic DM channel.
@@ -24,13 +29,13 @@ use CharlotteDunois\Yasmin\Utils\Snowflake;
  * @property string|null $ownerID            The owner ID of this channel, or null.
  * @property Collection $recipients         The recipients of this channel, mapped by user ID.
  * @property string|null $lastMessageID      The last message ID, or null.
- * @property \CharlotteDunois\Yasmin\Interfaces\StorageInterface $messages           The storage with all cached messages.
+ * @property StorageInterface $messages           The storage with all cached messages.
  *
- * @property \DateTime $createdAt          The DateTime instance of createdTimestamp.
- * @property \CharlotteDunois\Yasmin\Models\User|null $owner              The owner of this channel, or null.
+ * @property DateTime $createdAt          The DateTime instance of createdTimestamp.
+ * @property User|null $owner              The owner of this channel, or null.
  * @method string getId()
  * @method int getCreatedTimestamp()
- * @method \CharlotteDunois\Yasmin\Interfaces\MessageStorageInterface getMessages()
+ * @method MessageStorageInterface getMessages()
  * @method string getLastMessageID()
  */
 class DMChannel extends ClientBase implements DMChannelInterface
@@ -40,7 +45,7 @@ class DMChannel extends ClientBase implements DMChannelInterface
     /**
      * The storage with all cached messages.
      *
-     * @var \CharlotteDunois\Yasmin\Interfaces\StorageInterface
+     * @var StorageInterface
      */
     protected $messages;
 
@@ -113,7 +118,7 @@ class DMChannel extends ClientBase implements DMChannelInterface
     /**
      * {@inheritdoc}
      * @return mixed
-     * @throws \RuntimeException
+     * @throws RuntimeException
      * @internal
      */
     function __get($name)
@@ -137,10 +142,10 @@ class DMChannel extends ClientBase implements DMChannelInterface
     /**
      * Determines whether a given user is a recipient of this channel.
      *
-     * @param  \CharlotteDunois\Yasmin\Models\User|string  $user  The User instance or user ID.
+     * @param  User|string  $user  The User instance or user ID.
      *
      * @return bool
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     function isRecipient($user)
     {

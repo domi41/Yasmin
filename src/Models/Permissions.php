@@ -9,6 +9,10 @@
 
 namespace CharlotteDunois\Yasmin\Models;
 
+use InvalidArgumentException;
+use RuntimeException;
+
+
 /**
  * Permissions. Something fabulous.
  *
@@ -94,12 +98,12 @@ class Permissions extends Base
     /**
      * {@inheritdoc}
      * @return mixed
-     * @throws \RuntimeException
+     * @throws RuntimeException
      * @internal
      */
     function __get($name)
     {
-        if (\property_exists($this, $name)) {
+        if (property_exists($this, $name)) {
             return $this->$name;
         }
 
@@ -122,11 +126,11 @@ class Permissions extends Base
      * @param  bool  $checkAdmin
      *
      * @return bool
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     function has($permissions, bool $checkAdmin = true)
     {
-        if (! \is_array($permissions)) {
+        if (! is_array($permissions)) {
             $permissions = [$permissions];
         }
 
@@ -151,7 +155,7 @@ class Permissions extends Base
      * @param  bool  $checkAdmin
      *
      * @return bool
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     function missing($permissions, bool $checkAdmin = true)
     {
@@ -164,7 +168,7 @@ class Permissions extends Base
      * @param  int|string  ...$permissions
      *
      * @return $this
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     function add(...$permissions)
     {
@@ -185,7 +189,7 @@ class Permissions extends Base
      * @param  int|string  ...$permissions
      *
      * @return $this
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     function remove(...$permissions)
     {
@@ -206,17 +210,17 @@ class Permissions extends Base
      * @param  int|string  $permission
      *
      * @return int
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     static function resolve($permission)
     {
-        if (\is_int($permission)) {
+        if (is_int($permission)) {
             return $permission;
-        } elseif (\is_string($permission) && isset(self::PERMISSIONS[$permission])) {
+        } elseif (is_string($permission) && isset(self::PERMISSIONS[$permission])) {
             return self::PERMISSIONS[$permission];
         }
 
-        throw new \InvalidArgumentException('Unable to resolve unknown permission');
+        throw new InvalidArgumentException('Unable to resolve unknown permission');
     }
 
     /**
@@ -225,19 +229,19 @@ class Permissions extends Base
      * @param  int|string  $permission
      *
      * @return string
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     static function resolveToName($permission)
     {
-        if (\is_int($permission)) {
-            $index = \array_search($permission, self::PERMISSIONS, true);
+        if (is_int($permission)) {
+            $index = array_search($permission, self::PERMISSIONS, true);
             if ($index) {
                 return $index;
             }
-        } elseif (\is_string($permission) && isset(self::PERMISSIONS[$permission])) {
+        } elseif (is_string($permission) && isset(self::PERMISSIONS[$permission])) {
             return $permission;
         }
 
-        throw new \InvalidArgumentException('Unable to resolve unknown permission');
+        throw new InvalidArgumentException('Unable to resolve unknown permission');
     }
 }

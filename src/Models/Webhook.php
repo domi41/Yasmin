@@ -9,13 +9,17 @@
 
 namespace CharlotteDunois\Yasmin\Models;
 
+use BadMethodCallException;
 use CharlotteDunois\Collect\Collection;
 use CharlotteDunois\Yasmin\Client;
 use CharlotteDunois\Yasmin\Interfaces\TextChannelInterface;
 use CharlotteDunois\Yasmin\Utils\DataHelpers;
 use CharlotteDunois\Yasmin\Utils\FileHelpers;
 use CharlotteDunois\Yasmin\Utils\MessageHelpers;
+use InvalidArgumentException;
+use React\Promise\ExtendedPromiseInterface;
 use React\Promise\Promise;
+use RuntimeException;
 
 use function React\Promise\resolve;
 
@@ -27,7 +31,7 @@ use function React\Promise\resolve;
  * @property string|null $avatar     The webhook default avatar, or null.
  * @property string|null $channelID  The channel ID the webhook belongs to.
  * @property string|null $guildID    The guild ID the webhook belongs to, or null.
- * @property \CharlotteDunois\Yasmin\Models\User|null $owner      The owner of the webhook, or null.
+ * @property User|null $owner      The owner of the webhook, or null.
  * @property string|null $token      The webhook token, or null.
  */
 class Webhook extends ClientBase
@@ -70,7 +74,7 @@ class Webhook extends ClientBase
     /**
      * The owner of the webhook, or null.
      *
-     * @var \CharlotteDunois\Yasmin\Models\User|null
+     * @var User|null
      */
     protected $owner;
 
@@ -98,7 +102,7 @@ class Webhook extends ClientBase
     /**
      * {@inheritdoc}
      * @return mixed
-     * @throws \RuntimeException
+     * @throws RuntimeException
      * @internal
      */
     function __get($name)
@@ -126,8 +130,8 @@ class Webhook extends ClientBase
      * @param  array  $options
      * @param  string  $reason
      *
-     * @return \React\Promise\ExtendedPromiseInterface
-     * @throws \InvalidArgumentException
+     * @return ExtendedPromiseInterface
+     * @throws InvalidArgumentException
      */
     function edit(array $options, string $reason = '')
     {
@@ -176,7 +180,7 @@ class Webhook extends ClientBase
      *
      * @param  string  $reason
      *
-     * @return \React\Promise\ExtendedPromiseInterface
+     * @return ExtendedPromiseInterface
      */
     function delete(string $reason = '')
     {
@@ -228,15 +232,15 @@ class Webhook extends ClientBase
      * @param  string  $content  The webhook message content.
      * @param  array  $options  Any webhook message options.
      *
-     * @return \React\Promise\ExtendedPromiseInterface
-     * @throws \BadMethodCallException
+     * @return ExtendedPromiseInterface
+     * @throws BadMethodCallException
      * @see \CharlotteDunois\Yasmin\Models\Message
      * @see https://discordapp.com/developers/docs/resources/channel#message-object
      */
     function send(string $content, array $options = [])
     {
         if (empty($this->token)) {
-            throw new \BadMethodCallException('Can not use webhook without token to send message');
+            throw new BadMethodCallException('Can not use webhook without token to send message');
         }
 
         return (new Promise(
@@ -260,7 +264,7 @@ class Webhook extends ClientBase
                             false
                         ));
                         if ($disableEveryone) {
-                            $msg['content'] = \str_replace(
+                            $msg['content'] = str_replace(
                                 ['@everyone', '@here'],
                                 ["@\u{200b}everyone", "@\u{200b}here"],
                                 $msg['content']
@@ -352,7 +356,7 @@ class Webhook extends ClientBase
      * @param  array  $opts
      * @param  array  $files
      *
-     * @return \React\Promise\ExtendedPromiseInterface
+     * @return ExtendedPromiseInterface
      * @internal
      */
     protected function executeWebhook(array $opts, array $files)

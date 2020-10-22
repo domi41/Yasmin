@@ -9,12 +9,16 @@
 
 namespace CharlotteDunois\Yasmin\Models;
 
+use BadMethodCallException;
 use CharlotteDunois\Collect\Collection;
 use CharlotteDunois\Yasmin\Client;
 use CharlotteDunois\Yasmin\HTTP\APIEndpoints;
 use CharlotteDunois\Yasmin\Utils\DataHelpers;
 use CharlotteDunois\Yasmin\Utils\Snowflake;
+use DateTime;
+use React\Promise\ExtendedPromiseInterface;
 use React\Promise\Promise;
+use RuntimeException;
 
 use function React\Promise\resolve;
 
@@ -23,7 +27,7 @@ use function React\Promise\resolve;
  *
  * @property string|null $id                 The emoji ID, or null for unicode emoji.
  * @property string $name               The emoji name.
- * @property \CharlotteDunois\Yasmin\Models\User|null $user               The user that created the emoji, or null.
+ * @property User|null $user               The user that created the emoji, or null.
  * @property Guild|null $guild              The guild this emoji belongs to, or null.
  * @property int|null $createdTimestamp   The timestamp of when this emoji was created, or null for unicode emoji.
  * @property bool $animated           Whether this emoji is animated.
@@ -31,7 +35,7 @@ use function React\Promise\resolve;
  * @property bool $requireColons      Does the emoji require colons?
  * @property Collection $roles              A collection of roles that this emoji is active for (empty if all).
  *
- * @property \DateTime|null $createdAt          An DateTime instance of the createdTimestamp, or null for unicode emoji.
+ * @property DateTime|null $createdAt          An DateTime instance of the createdTimestamp, or null for unicode emoji.
  * @property string $identifier         The identifier for the emoji.
  * @property int|string $uid                The used identifier in the system (ID or name, that is).
  */
@@ -68,7 +72,7 @@ class Emoji extends ClientBase
     /**
      * The user that created the emoji, or null.
      *
-     * @var \CharlotteDunois\Yasmin\Models\User|null
+     * @var User|null
      */
     protected $user;
 
@@ -112,12 +116,12 @@ class Emoji extends ClientBase
     /**
      * {@inheritdoc}
      * @return mixed
-     * @throws \RuntimeException
+     * @throws RuntimeException
      * @internal
      */
     function __get($name)
     {
-        if (\property_exists($this, $name)) {
+        if (property_exists($this, $name)) {
             return $this->$name;
         }
 
@@ -134,7 +138,7 @@ class Emoji extends ClientBase
                     return $this->name.':'.$this->id;
                 }
 
-                return \rawurlencode($this->name);
+                return rawurlencode($this->name);
                 break;
             case 'uid':
                 return ($this->id ?? $this->name);
@@ -149,8 +153,8 @@ class Emoji extends ClientBase
      *
      * @param  Role|string  $role
      *
-     * @return \React\Promise\ExtendedPromiseInterface
-     * @throws \BadMethodCallException  Throws on unicode emojis.
+     * @return ExtendedPromiseInterface
+     * @throws BadMethodCallException  Throws on unicode emojis.
      */
     function addRestrictedRole($role)
     {
@@ -161,7 +165,7 @@ class Emoji extends ClientBase
         )->all();
         $roles[] = $role;
 
-        return $this->edit(['roles' => \array_values($roles)]);
+        return $this->edit(['roles' => array_values($roles)]);
     }
 
     /**
@@ -169,8 +173,8 @@ class Emoji extends ClientBase
      *
      * @param  Role|string  ...$role
      *
-     * @return \React\Promise\ExtendedPromiseInterface
-     * @throws \BadMethodCallException  Throws on unicode emojis.
+     * @return ExtendedPromiseInterface
+     * @throws BadMethodCallException  Throws on unicode emojis.
      */
     function addRestrictedRoles(...$role)
     {
@@ -184,7 +188,7 @@ class Emoji extends ClientBase
             $roles[] = ($r instanceof Role ? $r->id : $r);
         }
 
-        return $this->edit(['roles' => \array_values($roles)]);
+        return $this->edit(['roles' => array_values($roles)]);
     }
 
     /**
@@ -202,13 +206,13 @@ class Emoji extends ClientBase
      * @param  array  $options
      * @param  string  $reason
      *
-     * @return \React\Promise\ExtendedPromiseInterface
-     * @throws \BadMethodCallException  Throws on unicode emojis.
+     * @return ExtendedPromiseInterface
+     * @throws BadMethodCallException  Throws on unicode emojis.
      */
     function edit(array $options, string $reason = '')
     {
         if ($this->id === null) {
-            throw new \BadMethodCallException('Unable to edit an unicode emoji');
+            throw new BadMethodCallException('Unable to edit an unicode emoji');
         }
 
         return (new Promise(
@@ -218,7 +222,7 @@ class Emoji extends ClientBase
                         $options['roles'] = $options['roles']->all();
                     }
 
-                    $options['roles'] = \array_map(
+                    $options['roles'] = array_map(
                         function ($role) {
                             if ($role instanceof Role) {
                                 return $role->id;
@@ -250,13 +254,13 @@ class Emoji extends ClientBase
      *
      * @param  string  $reason
      *
-     * @return \React\Promise\ExtendedPromiseInterface
-     * @throws \BadMethodCallException  Throws on unicode emojis.
+     * @return ExtendedPromiseInterface
+     * @throws BadMethodCallException  Throws on unicode emojis.
      */
     function delete(string $reason = '')
     {
         if ($this->id === null) {
-            throw new \BadMethodCallException('Unable to delete a non-guild emoji');
+            throw new BadMethodCallException('Unable to delete a non-guild emoji');
         }
 
         return (new Promise(
@@ -279,12 +283,12 @@ class Emoji extends ClientBase
      * Get the image URL of the custom emoji.
      *
      * @return string
-     * @throws \BadMethodCallException  Throws on unicode emojis.
+     * @throws BadMethodCallException  Throws on unicode emojis.
      */
     function getImageURL()
     {
         if ($this->id === null) {
-            throw new \BadMethodCallException('Unable to get image url of a non-guild emoji');
+            throw new BadMethodCallException('Unable to get image url of a non-guild emoji');
         }
 
         return APIEndpoints::CDN['url'].APIEndpoints::format(
@@ -299,8 +303,8 @@ class Emoji extends ClientBase
      *
      * @param  Role|string  $role
      *
-     * @return \React\Promise\ExtendedPromiseInterface
-     * @throws \BadMethodCallException  Throws on unicode emojis.
+     * @return ExtendedPromiseInterface
+     * @throws BadMethodCallException  Throws on unicode emojis.
      */
     function removeRestrictedRole($role)
     {
@@ -314,7 +318,7 @@ class Emoji extends ClientBase
             }
         )->all();
 
-        $key = \array_search(($role instanceof Role ? $role->id : $role), $roles, true);
+        $key = array_search(($role instanceof Role ? $role->id : $role), $roles, true);
         if ($key !== false) {
             unset($roles[$key]);
         }
@@ -327,8 +331,8 @@ class Emoji extends ClientBase
      *
      * @param  Role|string  ...$role
      *
-     * @return \React\Promise\ExtendedPromiseInterface
-     * @throws \BadMethodCallException  Throws on unicode emojis.
+     * @return ExtendedPromiseInterface
+     * @throws BadMethodCallException  Throws on unicode emojis.
      */
     function removeRestrictedRoles(...$role)
     {
@@ -344,7 +348,7 @@ class Emoji extends ClientBase
 
         foreach ($role as $r) {
             $id = ($r instanceof Role ? $r->id : $r);
-            $key = \array_search($id, $roles, true);
+            $key = array_search($id, $roles, true);
             if ($key !== false) {
                 unset($roles[$key]);
             }
@@ -359,8 +363,8 @@ class Emoji extends ClientBase
      * @param  string  $name
      * @param  string  $reason
      *
-     * @return \React\Promise\ExtendedPromiseInterface
-     * @throws \BadMethodCallException  Throws on unicode emojis.
+     * @return ExtendedPromiseInterface
+     * @throws BadMethodCallException  Throws on unicode emojis.
      */
     function setName(string $name, string $reason = '')
     {

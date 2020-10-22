@@ -12,6 +12,8 @@ namespace CharlotteDunois\Yasmin\Models;
 use CharlotteDunois\Yasmin\Client;
 use CharlotteDunois\Yasmin\Utils\DataHelpers;
 
+use RuntimeException;
+
 /**
  * Something someone does.
  *
@@ -40,12 +42,12 @@ class Activity extends ClientBase
      * @source
      */
     const FLAGS = [
-        'INSTANCE' => 1,
-        'JOIN' => 2,
-        'SPECTATE' => 4,
+        'INSTANCE'     => 1,
+        'JOIN'         => 2,
+        'SPECTATE'     => 4,
         'JOIN_REQUEST' => 8,
-        'SYNC' => 16,
-        'PLAY' => 32,
+        'SYNC'         => 16,
+        'PLAY'         => 32,
     ];
 
     /**
@@ -194,12 +196,12 @@ class Activity extends ClientBase
     /**
      * {@inheritdoc}
      * @return mixed
-     * @throws \RuntimeException
+     * @throws RuntimeException
      * @internal
      */
     function __get($name)
     {
-        if (\property_exists($this, $name)) {
+        if (property_exists($this, $name)) {
             return $this->$name;
         }
 

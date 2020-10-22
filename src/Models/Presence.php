@@ -10,6 +10,7 @@
 namespace CharlotteDunois\Yasmin\Models;
 
 use CharlotteDunois\Yasmin\Client;
+use RuntimeException;
 
 /**
  * Represents a presence.
@@ -20,7 +21,7 @@ use CharlotteDunois\Yasmin\Client;
  * @property ClientStatus|null $clientStatus    The client's status on desktop/mobile/web, or null.
  * @property string $userID          The user ID this presence belongs to.
  *
- * @property \CharlotteDunois\Yasmin\Models\User|null $user            The user this presence belongs to.
+ * @property User|null $user            The user this presence belongs to.
  */
 class Presence extends ClientBase
 {
@@ -65,7 +66,7 @@ class Presence extends ClientBase
      * @param  Client  $client  The client this instance is for.
      * @param  array  $presence  An array containing user (as array, with an element id), activity (as array) and status.
      *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     function __construct(Client $client, array $presence)
     {
@@ -78,12 +79,12 @@ class Presence extends ClientBase
     /**
      * {@inheritdoc}
      * @return mixed
-     * @throws \RuntimeException
+     * @throws RuntimeException
      * @internal
      */
     function __get($name)
     {
-        if (\property_exists($this, $name)) {
+        if (property_exists($this, $name)) {
             return $this->$name;
         }
 
@@ -103,9 +104,9 @@ class Presence extends ClientBase
     function jsonSerialize()
     {
         return [
-            'status' => $this->status,
+            'status'       => $this->status,
             'clientStatus' => $this->clientStatus,
-            'game' => $this->activity,
+            'game'         => $this->activity,
         ];
     }
 
@@ -120,7 +121,7 @@ class Presence extends ClientBase
         $this->clientStatus = (! empty($presence['client_status']) ? (new ClientStatus(
             $presence['client_status']
         )) : null);
-        $this->activities = (! empty($presence['activities']) ? \array_map(
+        $this->activities = (! empty($presence['activities']) ? array_map(
             function (array $activitiy) {
                 return (new Activity($this->client, $activitiy));
             },

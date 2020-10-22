@@ -17,7 +17,11 @@ use CharlotteDunois\Yasmin\Interfaces\GroupDMChannelInterface;
 use CharlotteDunois\Yasmin\Utils\DataHelpers;
 use CharlotteDunois\Yasmin\Utils\ImageHelpers;
 use CharlotteDunois\Yasmin\Utils\Snowflake;
+use DateTime;
+use InvalidArgumentException;
+use React\Promise\ExtendedPromiseInterface;
 use React\Promise\Promise;
+use RuntimeException;
 
 /**
  * Represents an user on Discord.
@@ -33,7 +37,7 @@ use React\Promise\Promise;
  * @property bool $webhook            Determines wether the user is a webhook or not.
  * @property int $createdTimestamp   The timestamp of when this user was created.
  *
- * @property \DateTime $createdAt          An DateTime instance of the createdTimestamp.
+ * @property DateTime $createdAt          An DateTime instance of the createdTimestamp.
  * @property string $tag                Username#Discriminator.
  */
 class User extends ClientBase
@@ -138,12 +142,12 @@ class User extends ClientBase
     /**
      * {@inheritdoc}
      * @return mixed
-     * @throws \RuntimeException
+     * @throws RuntimeException
      * @internal
      */
     function __get($name)
     {
-        if (\property_exists($this, $name)) {
+        if (property_exists($this, $name)) {
             return $this->$name;
         }
 
@@ -174,7 +178,7 @@ class User extends ClientBase
     /**
      * Opens a DM channel to this user. Resolves with an instance of DMChannel.
      *
-     * @return \React\Promise\ExtendedPromiseInterface
+     * @return ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Models\DMChannel
      */
     function createDM()
@@ -209,7 +213,7 @@ class User extends ClientBase
     /**
      * Deletes an existing DM channel to this user. Resolves with $this.
      *
-     * @return \React\Promise\ExtendedPromiseInterface
+     * @return ExtendedPromiseInterface
      */
     function deleteDM()
     {
@@ -242,12 +246,12 @@ class User extends ClientBase
      * @param  int|null  $size  Any powers of 2 (16-2048).
      *
      * @return string
-     * @throws \InvalidArgumentException Thrown if $size is not a power of 2
+     * @throws InvalidArgumentException Thrown if $size is not a power of 2
      */
     function getDefaultAvatarURL(?int $size = 1024)
     {
         if (! ImageHelpers::isPowerOfTwo($size)) {
-            throw new \InvalidArgumentException('Invalid size "'.$size.'", expected any powers of 2');
+            throw new InvalidArgumentException('Invalid size "'.$size.'", expected any powers of 2');
         }
 
         return APIEndpoints::CDN['url'].APIEndpoints::format(
@@ -264,12 +268,12 @@ class User extends ClientBase
      * @param  string  $format  One of png, webp, jpg or gif (empty = default format).
      *
      * @return string|null
-     * @throws \InvalidArgumentException Thrown if $size is not a power of 2
+     * @throws InvalidArgumentException Thrown if $size is not a power of 2
      */
     function getAvatarURL(?int $size = 1024, string $format = '')
     {
         if (! ImageHelpers::isPowerOfTwo($size)) {
-            throw new \InvalidArgumentException('Invalid size "'.$size.'", expected any powers of 2');
+            throw new InvalidArgumentException('Invalid size "'.$size.'", expected any powers of 2');
         }
 
         if ($this->avatar === null) {
@@ -295,7 +299,7 @@ class User extends ClientBase
      * @param  string  $format  One of png, webp, jpg or gif (empty = default format).
      *
      * @return string
-     * @throws \InvalidArgumentException Thrown if $size is not a power of 2
+     * @throws InvalidArgumentException Thrown if $size is not a power of 2
      */
     function getDisplayAvatarURL(?int $size = 1024, string $format = '')
     {
@@ -305,7 +309,7 @@ class User extends ClientBase
     /**
      * Gets the presence for this user, or null.
      *
-     * @return \CharlotteDunois\Yasmin\Models\Presence|null
+     * @return Presence|null
      */
     function getPresence()
     {
@@ -330,7 +334,7 @@ class User extends ClientBase
      *
      * @param  string  $accessToken
      *
-     * @return \React\Promise\ExtendedPromiseInterface
+     * @return ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Models\UserConnection
      */
     function fetchUserConnections(string $accessToken)

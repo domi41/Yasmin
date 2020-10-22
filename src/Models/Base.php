@@ -10,12 +10,16 @@
 namespace CharlotteDunois\Yasmin\Models;
 
 use CharlotteDunois\Collect\Collection;
+use Exception;
+use JsonSerializable;
+use ReflectionMethod;
 use RuntimeException;
+use Serializable;
 
 /**
  * Something all Models extend.
  */
-abstract class Base implements \JsonSerializable, \Serializable
+abstract class Base implements JsonSerializable, Serializable
 {
     /**
      * Default constructor.
@@ -41,7 +45,7 @@ abstract class Base implements \JsonSerializable, \Serializable
      * @param  string  $name
      *
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      * @internal
      */
     function __isset($name)
@@ -159,7 +163,7 @@ abstract class Base implements \JsonSerializable, \Serializable
                             } else {
                                 $class = '\\'.get_class($this->$key);
 
-                                $exp = \ReflectionMethod::export($class, '__construct', true);
+                                $exp = ReflectionMethod::export($class, '__construct', true);
 
                                 $count = [];
                                 preg_match('/Parameters \[(\d+)\]/', $exp, $count);
@@ -208,7 +212,7 @@ abstract class Base implements \JsonSerializable, \Serializable
 
         foreach ($data as $key => $val) {
             if (strpos($key, '_') !== false) {
-                $key = lcfirst(str_replace('_', '', \ucwords($key, '_')));
+                $key = lcfirst(str_replace('_', '', ucwords($key, '_')));
             }
 
             if (array_key_exists($key, $oldData) && ($oldData[$key] !== $val)) {

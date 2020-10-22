@@ -11,17 +11,22 @@ namespace CharlotteDunois\Yasmin\Models;
 
 use CharlotteDunois\Yasmin\Client;
 use CharlotteDunois\Yasmin\HTTP\APIEndpoints;
+use CharlotteDunois\Yasmin\Interfaces\GuildChannelInterface;
 use CharlotteDunois\Yasmin\Utils\DataHelpers;
+use DateTime;
+use Exception;
+use React\Promise\ExtendedPromiseInterface;
 use React\Promise\Promise;
+use RuntimeException;
 
 /**
  * Represents an invite.
  *
  * @property string $code                The invite code.
- * @property \CharlotteDunois\Yasmin\Models\Guild|PartialGuild|null $guild               The guild which this invite belongs to, or null.
- * @property \CharlotteDunois\Yasmin\Interfaces\GuildChannelInterface|PartialChannel $channel             The channel which this invite belongs to.
+ * @property Guild|PartialGuild|null $guild               The guild which this invite belongs to, or null.
+ * @property GuildChannelInterface|PartialChannel $channel             The channel which this invite belongs to.
  * @property int|null $createdTimestamp    When this invite was created, or null.
- * @property \CharlotteDunois\Yasmin\Models\User|null $inviter             The inviter, or null.
+ * @property User|null $inviter             The inviter, or null.
  * @property int|null $maxUses             Maximum uses until the invite expires, or null.
  * @property int|null $maxAge              Duration (in seconds) until the invite expires, or null.
  * @property bool|null $temporary           If this invite grants temporary membership, or null.
@@ -29,7 +34,7 @@ use React\Promise\Promise;
  * @property int|null $presenceCount       Approximate amount of presences, or null.
  * @property int|null $memberCount         Approximate amount of members, or null.
  *
- * @property \DateTime|null $createdAt           The DateTime instance of the createdTimestamp, or null.
+ * @property DateTime|null $createdAt           The DateTime instance of the createdTimestamp, or null.
  * @property string $url                 Returns the URL for the invite.
  */
 class Invite extends ClientBase
@@ -44,14 +49,14 @@ class Invite extends ClientBase
     /**
      * The guild this invite belongs to.
      *
-     * @var \CharlotteDunois\Yasmin\Models\Guild
+     * @var Guild
      */
     protected $guild;
 
     /**
      * The channel which this invite belongs to.
      *
-     * @var \CharlotteDunois\Yasmin\Interfaces\GuildChannelInterface|PartialChannel
+     * @var GuildChannelInterface|PartialChannel
      */
     protected $channel;
 
@@ -65,7 +70,7 @@ class Invite extends ClientBase
     /**
      * The inviter, or null.
      *
-     * @var \CharlotteDunois\Yasmin\Models\User|null
+     * @var User|null
      */
     protected $inviter;
 
@@ -115,7 +120,7 @@ class Invite extends ClientBase
      * @param  Client  $client
      * @param  array  $invite
      *
-     * @throws \Exception
+     * @throws Exception
      * @internal
      */
     function __construct(Client $client, array $invite)
@@ -130,7 +135,7 @@ class Invite extends ClientBase
                 $invite['channel']['id']
             ) ?? (new PartialChannel($client, $invite['channel'])));
 
-        $this->createdTimestamp = (! empty($invite['created_at']) ? (new \DateTime(
+        $this->createdTimestamp = (! empty($invite['created_at']) ? (new DateTime(
             $invite['created_at']
         ))->getTimestamp() : null);
         $this->inviter = (! empty($invite['inviter']) ? $client->users->patch($invite['inviter']) : null);
@@ -146,7 +151,7 @@ class Invite extends ClientBase
     /**
      * {@inheritdoc}
      * @return mixed
-     * @throws \RuntimeException
+     * @throws RuntimeException
      * @internal
      */
     function __get($name)
@@ -176,7 +181,7 @@ class Invite extends ClientBase
      *
      * @param  string  $reason
      *
-     * @return \React\Promise\ExtendedPromiseInterface
+     * @return ExtendedPromiseInterface
      */
     function delete(string $reason = '')
     {

@@ -11,6 +11,7 @@ namespace CharlotteDunois\Yasmin\Models;
 
 use CharlotteDunois\Yasmin\Client;
 use CharlotteDunois\Yasmin\Interfaces\RoleStorageInterface;
+use InvalidArgumentException;
 
 /**
  * Role Storage to store a guild's roles, utilizes Collection.
@@ -45,7 +46,7 @@ class RoleStorage extends Storage implements RoleStorageInterface
      * @param  Role|string|int  $role  string/int = role ID
      *
      * @return Role
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     function resolve($role)
     {
@@ -53,15 +54,15 @@ class RoleStorage extends Storage implements RoleStorageInterface
             return $role;
         }
 
-        if (\is_int($role)) {
+        if (is_int($role)) {
             $role = (string) $role;
         }
 
-        if (\is_string($role) && parent::has($role)) {
+        if (is_string($role) && parent::has($role)) {
             return parent::get($role);
         }
 
-        throw new \InvalidArgumentException('Unable to resolve unknown role');
+        throw new InvalidArgumentException('Unable to resolve unknown role');
     }
 
     /**

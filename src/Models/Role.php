@@ -9,10 +9,15 @@
 
 namespace CharlotteDunois\Yasmin\Models;
 
+use CharlotteDunois\Collect\Collection;
 use CharlotteDunois\Yasmin\Client;
 use CharlotteDunois\Yasmin\Utils\DataHelpers;
 use CharlotteDunois\Yasmin\Utils\Snowflake;
+use DateTime;
+use InvalidArgumentException;
+use React\Promise\ExtendedPromiseInterface;
 use React\Promise\Promise;
+use RuntimeException;
 
 /**
  * Represents a role.
@@ -28,9 +33,9 @@ use React\Promise\Promise;
  * @property bool $managed             Whether the role is managed by an integration.
  * @property bool $mentionable         Whether the role is mentionable.
  *
- * @property \DateTime $createdAt           The DateTime instance of createdTimestamp.
+ * @property DateTime $createdAt           The DateTime instance of createdTimestamp.
  * @property string $hexColor            Returns the hex color of the role color.
- * @property \CharlotteDunois\Collect\Collection $members             A collection of all (cached) guild members which have the role.
+ * @property Collection $members             A collection of all (cached) guild members which have the role.
  */
 class Role extends ClientBase
 {
@@ -150,12 +155,12 @@ class Role extends ClientBase
     /**
      * {@inheritdoc}
      * @return mixed
-     * @throws \RuntimeException
+     * @throws RuntimeException
      * @internal
      */
     function __get($name)
     {
-        if (\property_exists($this, $name)) {
+        if (property_exists($this, $name)) {
             return $this->$name;
         }
 
@@ -164,7 +169,7 @@ class Role extends ClientBase
                 return DataHelpers::makeDateTime($this->createdTimestamp);
                 break;
             case 'hexColor':
-                return '#'.\dechex($this->color);
+                return '#'.dechex($this->color);
                 break;
             case 'members':
                 if ($this->id === $this->guild->id) {
@@ -217,14 +222,14 @@ class Role extends ClientBase
      * @param  array  $options
      * @param  string  $reason
      *
-     * @return \React\Promise\ExtendedPromiseInterface
-     * @throws \InvalidArgumentException
+     * @return ExtendedPromiseInterface
+     * @throws InvalidArgumentException
      * @see \CharlotteDunois\Yasmin\Utils\DataHelpers::resolveColor()
      */
     function edit(array $options, string $reason = '')
     {
         if (empty($options)) {
-            throw new \InvalidArgumentException('Unable to edit role with zero information');
+            throw new InvalidArgumentException('Unable to edit role with zero information');
         }
 
         $data = DataHelpers::applyOptions(
@@ -261,7 +266,7 @@ class Role extends ClientBase
      *
      * @param  string  $reason
      *
-     * @return \React\Promise\ExtendedPromiseInterface
+     * @return ExtendedPromiseInterface
      */
     function delete(string $reason = '')
     {
@@ -322,8 +327,8 @@ class Role extends ClientBase
      * @param  int|string  $color
      * @param  string  $reason
      *
-     * @return \React\Promise\ExtendedPromiseInterface
-     * @throws \InvalidArgumentException
+     * @return ExtendedPromiseInterface
+     * @throws InvalidArgumentException
      * @see \CharlotteDunois\Yasmin\Utils\DataHelpers::resolveColor()
      */
     function setColor($color, string $reason = '')
@@ -337,8 +342,8 @@ class Role extends ClientBase
      * @param  bool  $hoist
      * @param  string  $reason
      *
-     * @return \React\Promise\ExtendedPromiseInterface
-     * @throws \InvalidArgumentException
+     * @return ExtendedPromiseInterface
+     * @throws InvalidArgumentException
      */
     function setHoist(bool $hoist, string $reason = '')
     {
@@ -351,8 +356,8 @@ class Role extends ClientBase
      * @param  bool  $mentionable
      * @param  string  $reason
      *
-     * @return \React\Promise\ExtendedPromiseInterface
-     * @throws \InvalidArgumentException
+     * @return ExtendedPromiseInterface
+     * @throws InvalidArgumentException
      */
     function setMentionable(bool $mentionable, string $reason = '')
     {
@@ -365,8 +370,8 @@ class Role extends ClientBase
      * @param  string  $name
      * @param  string  $reason
      *
-     * @return \React\Promise\ExtendedPromiseInterface
-     * @throws \InvalidArgumentException
+     * @return ExtendedPromiseInterface
+     * @throws InvalidArgumentException
      */
     function setName(string $name, string $reason = '')
     {
@@ -379,8 +384,8 @@ class Role extends ClientBase
      * @param  int|Permissions  $permissions
      * @param  string  $reason
      *
-     * @return \React\Promise\ExtendedPromiseInterface
-     * @throws \InvalidArgumentException
+     * @return ExtendedPromiseInterface
+     * @throws InvalidArgumentException
      */
     function setPermissions($permissions, string $reason = '')
     {
@@ -393,8 +398,8 @@ class Role extends ClientBase
      * @param  int  $position
      * @param  string  $reason
      *
-     * @return \React\Promise\ExtendedPromiseInterface
-     * @throws \InvalidArgumentException
+     * @return ExtendedPromiseInterface
+     * @throws InvalidArgumentException
      */
     function setPosition(int $position, string $reason = '')
     {

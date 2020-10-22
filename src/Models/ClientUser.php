@@ -13,7 +13,10 @@ use CharlotteDunois\Yasmin\Client;
 use CharlotteDunois\Yasmin\Utils\DataHelpers;
 use CharlotteDunois\Yasmin\Utils\FileHelpers;
 use CharlotteDunois\Yasmin\WebSocket\WSManager;
+use InvalidArgumentException;
+use React\Promise\ExtendedPromiseInterface;
 use React\Promise\Promise;
+use RuntimeException;
 
 use function React\Promise\all;
 use function React\Promise\reject;
@@ -53,12 +56,12 @@ class ClientUser extends User
     /**
      * {@inheritdoc}
      * @return mixed
-     * @throws \RuntimeException
+     * @throws RuntimeException
      * @internal
      */
     function __get($name)
     {
-        if (\property_exists($this, $name)) {
+        if (property_exists($this, $name)) {
             return $this->$name;
         }
 
@@ -82,7 +85,7 @@ class ClientUser extends User
      *
      * @param  string|null  $avatar  An URL or the filepath or the data. Null resets your avatar.
      *
-     * @return \React\Promise\ExtendedPromiseInterface
+     * @return ExtendedPromiseInterface
      * @example ../../examples/docs-examples.php 15 4
      */
     function setAvatar(?string $avatar)
@@ -119,7 +122,7 @@ class ClientUser extends User
      *
      * @param  string  $status  Valid values are: `online`, `idle`, `dnd` and `invisible`.
      *
-     * @return \React\Promise\ExtendedPromiseInterface
+     * @return ExtendedPromiseInterface
      * @example ../../examples/docs-examples.php 25 2
      */
     function setStatus(string $status)
@@ -138,7 +141,7 @@ class ClientUser extends User
      * @param  int  $type  Optional if first argument is an Activity. The type of your activity. Should be listening (2) or watching (3). For playing/streaming use ClientUser::setGame.
      * @param  int|null  $shardID  Unless explicitely given, all presences will be fanned out to all shards.
      *
-     * @return \React\Promise\ExtendedPromiseInterface
+     * @return ExtendedPromiseInterface
      */
     function setActivity($name, int $type = 0, ?int $shardID = null)
     {
@@ -176,7 +179,7 @@ class ClientUser extends User
      * @param  string  $url  If you're streaming, this is the url to the stream.
      * @param  int|null  $shardID  Unless explicitely given, all presences will be fanned out to all shards.
      *
-     * @return \React\Promise\ExtendedPromiseInterface
+     * @return ExtendedPromiseInterface
      * @example ../../examples/docs-examples.php 21 2
      */
     function setGame(?string $name, string $url = '', ?int $shardID = null)
@@ -227,31 +230,31 @@ class ClientUser extends User
      * @param  array  $presence
      * @param  int|null  $shardID  Unless explicitely given, all presences will be fanned out to all shards.
      *
-     * @return \React\Promise\ExtendedPromiseInterface
+     * @return ExtendedPromiseInterface
      * @example ../../examples/docs-examples.php 29 10
      */
     function setPresence(array $presence, ?int $shardID = null)
     {
         if (empty($presence)) {
-            return reject(new \InvalidArgumentException('Presence argument can not be empty'));
+            return reject(new InvalidArgumentException('Presence argument can not be empty'));
         }
 
         $packet = [
             'op' => WSManager::OPCODES['STATUS_UPDATE'],
             'd'  => [
-                'afk'    => (\array_key_exists(
+                'afk'    => (array_key_exists(
                     'afk',
                     $presence
                 ) ? ((bool) $presence['afk']) : $this->clientPresence['afk']),
-                'since'  => (\array_key_exists(
+                'since'  => (array_key_exists(
                     'since',
                     $presence
                 ) ? $presence['since'] : $this->clientPresence['since']),
-                'status' => (\array_key_exists(
+                'status' => (array_key_exists(
                     'status',
                     $presence
                 ) ? $presence['status'] : $this->clientPresence['status']),
-                'game'   => (\array_key_exists('game', $presence) ? $presence['game'] : $this->clientPresence['game']),
+                'game'   => (array_key_exists('game', $presence) ? $presence['game'] : $this->clientPresence['game']),
             ],
         ];
 
@@ -287,7 +290,7 @@ class ClientUser extends User
      *
      * @param  string  $username
      *
-     * @return \React\Promise\ExtendedPromiseInterface
+     * @return ExtendedPromiseInterface
      * @example ../../examples/docs-examples.php 41 2
      */
     function setUsername(string $username)
@@ -318,7 +321,7 @@ class ClientUser extends User
      * @param  array  $userWithAccessTokens
      * @param  array  $nicks
      *
-     * @return \React\Promise\ExtendedPromiseInterface
+     * @return ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Models\GroupDMChannel
      */
     function createGroupDM(array $userWithAccessTokens, array $nicks = [])
@@ -352,31 +355,31 @@ class ClientUser extends User
 
     /**
      * @return void
-     * @throws \RuntimeException
+     * @throws RuntimeException
      * @internal
      */
     function createDM()
     {
-        throw new \RuntimeException('Can not use this method in ClientUser');
+        throw new RuntimeException('Can not use this method in ClientUser');
     }
 
     /**
      * @return void
-     * @throws \RuntimeException
+     * @throws RuntimeException
      * @internal
      */
     function deleteDM()
     {
-        throw new \RuntimeException('Can not use this method in ClientUser');
+        throw new RuntimeException('Can not use this method in ClientUser');
     }
 
     /**
      * @return void
-     * @throws \RuntimeException
+     * @throws RuntimeException
      * @internal
      */
     function fetchUserConnections(string $accessToken)
     {
-        throw new \RuntimeException('Can not use this method in ClientUser');
+        throw new RuntimeException('Can not use this method in ClientUser');
     }
 }

@@ -9,6 +9,7 @@
 
 namespace CharlotteDunois\Yasmin\Models;
 
+use BadMethodCallException;
 use CharlotteDunois\Collect\Collection;
 use CharlotteDunois\Yasmin\Client;
 use CharlotteDunois\Yasmin\Interfaces\GuildChannelInterface;
@@ -16,8 +17,15 @@ use CharlotteDunois\Yasmin\Interfaces\TextChannelInterface;
 use CharlotteDunois\Yasmin\Utils\Collector;
 use CharlotteDunois\Yasmin\Utils\DataHelpers;
 use CharlotteDunois\Yasmin\Utils\EventHelpers;
+use CharlotteDunois\Yasmin\Utils\MessageHelpers;
 use CharlotteDunois\Yasmin\Utils\Snowflake;
+use DateTime;
+use InvalidArgumentException;
+use OutOfBoundsException;
+use RangeException;
+use React\Promise\ExtendedPromiseInterface;
 use React\Promise\Promise;
+use RuntimeException;
 
 /**
  * Represents a message.
@@ -42,10 +50,10 @@ use React\Promise\Promise;
  * @property MessageActivity|null $activity           The activity attached to this message. Sent with Rich Presence-related chat embeds.
  * @property MessageApplication|null $application        The application attached to this message. Sent with Rich Presence-related chat embeds.
  *
- * @property \DateTime $createdAt          An DateTime instance of the createdTimestamp.
- * @property \DateTime|null $editedAt           An DateTime instance of the editedTimestamp, or null.
- * @property \CharlotteDunois\Yasmin\Models\Guild|null $guild              The correspondending guild (if message posted in a guild), or null.
- * @property \CharlotteDunois\Yasmin\Models\GuildMember|null $member             The correspondending guildmember of the author (if message posted in a guild), or null.
+ * @property DateTime $createdAt          An DateTime instance of the createdTimestamp.
+ * @property DateTime|null $editedAt           An DateTime instance of the editedTimestamp, or null.
+ * @property Guild|null $guild              The correspondending guild (if message posted in a guild), or null.
+ * @property GuildMember|null $member             The correspondending guildmember of the author (if message posted in a guild), or null.
  */
 class Message extends ClientBase
 {
@@ -262,7 +270,7 @@ class Message extends ClientBase
     /**
      * {@inheritdoc}
      * @return mixed
-     * @throws \RuntimeException
+     * @throws RuntimeException
      * @internal
      */
     function __get($name)
@@ -304,7 +312,7 @@ class Message extends ClientBase
     /**
      * Removes all reactions from the message. Resolves with $this.
      *
-     * @return \React\Promise\ExtendedPromiseInterface
+     * @return ExtendedPromiseInterface
      */
     function clearReactions()
     {
@@ -339,9 +347,9 @@ class Message extends ClientBase
      * @param  callable  $filter  The filter to only collect desired reactions. Signature: `function (MessageReaction $messageReaction, User $user): bool`
      * @param  array  $options  The collector options.
      *
-     * @return \React\Promise\ExtendedPromiseInterface  This promise is cancellable.
-     * @throws \RangeException          The exception the promise gets rejected with, if collecting times out.
-     * @throws \OutOfBoundsException    The exception the promise gets rejected with, if the promise gets cancelled.
+     * @return ExtendedPromiseInterface  This promise is cancellable.
+     * @throws RangeException          The exception the promise gets rejected with, if collecting times out.
+     * @throws OutOfBoundsException    The exception the promise gets rejected with, if the promise gets cancelled.
      * @see \CharlotteDunois\Yasmin\Models\MessageReaction
      * @see \CharlotteDunois\Yasmin\Models\User
      * @see \CharlotteDunois\Yasmin\Utils\Collector
@@ -366,7 +374,7 @@ class Message extends ClientBase
      * @param  string|null  $content  The message contents.
      * @param  array  $options  An array with options. Only embed is supported by edit.
      *
-     * @return \React\Promise\ExtendedPromiseInterface
+     * @return ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Traits\TextChannelTrait::send()
      */
     function edit(?string $content, array $options = [])
@@ -379,7 +387,7 @@ class Message extends ClientBase
                     $msg['content'] = $content;
                 }
 
-                if (\array_key_exists('embed', $options)) {
+                if (array_key_exists('embed', $options)) {
                     $msg['embed'] = $options['embed'];
                 }
 
@@ -403,7 +411,7 @@ class Message extends ClientBase
      * @param  float|int  $timeout  An integer or float as timeout in seconds, after which the message gets deleted.
      * @param  string  $reason
      *
-     * @return \React\Promise\ExtendedPromiseInterface
+     * @return ExtendedPromiseInterface
      */
     function delete($timeout = 0, string $reason = '')
     {
@@ -435,14 +443,14 @@ class Message extends ClientBase
     /**
      * Fetches the webhook used to create this message. Resolves with an instance of Webhook.
      *
-     * @return \React\Promise\ExtendedPromiseInterface
-     * @throws \BadMethodCallException
+     * @return ExtendedPromiseInterface
+     * @throws BadMethodCallException
      * @see \CharlotteDunois\Yasmin\Models\Webhook
      */
     function fetchWebhook()
     {
         if ($this->webhookID === null) {
-            throw new \BadMethodCallException(
+            throw new BadMethodCallException(
                 'Unable to fetch webhook from a message that was not posted by a webhook'
             );
         }
@@ -475,7 +483,7 @@ class Message extends ClientBase
     /**
      * Pins the message. Resolves with $this.
      *
-     * @return \React\Promise\ExtendedPromiseInterface
+     * @return ExtendedPromiseInterface
      */
     function pin()
     {
@@ -499,24 +507,24 @@ class Message extends ClientBase
      *
      * @param  Emoji|MessageReaction|string  $emoji
      *
-     * @return \React\Promise\ExtendedPromiseInterface
-     * @throws \InvalidArgumentException
+     * @return ExtendedPromiseInterface
+     * @throws InvalidArgumentException
      * @see \CharlotteDunois\Yasmin\Models\MessageReaction
      */
     function react($emoji)
     {
         try {
             $emoji = $this->client->emojis->resolve($emoji);
-        } catch (\InvalidArgumentException $e) {
-            if (\is_numeric($emoji)) {
+        } catch (InvalidArgumentException $e) {
+            if (is_numeric($emoji)) {
                 throw $e;
             }
 
-            $match = (bool) \preg_match('/(?:<a?:)?(.+):(\d+)/', $emoji, $matches);
+            $match = (bool) preg_match('/(?:<a?:)?(.+):(\d+)/', $emoji, $matches);
             if ($match) {
                 $emoji = $matches[1].':'.$matches[2];
             } else {
-                $emoji = \rawurlencode($emoji);
+                $emoji = rawurlencode($emoji);
             }
         }
 
@@ -535,9 +543,9 @@ class Message extends ClientBase
                         $resolve($args[0]);
                     },
                     function ($error) use ($reject) {
-                        if ($error instanceof \RangeException) {
-                            $reject(new \RangeException('Message Reaction did not arrive in time'));
-                        } elseif (! ($error instanceof \OutOfBoundsException)) {
+                        if ($error instanceof RangeException) {
+                            $reject(new RangeException('Message Reaction did not arrive in time'));
+                        } elseif (! ($error instanceof OutOfBoundsException)) {
                             $reject($error);
                         }
                     }
@@ -564,7 +572,7 @@ class Message extends ClientBase
      * @param  string  $content
      * @param  array  $options
      *
-     * @return \React\Promise\ExtendedPromiseInterface
+     * @return ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Traits\TextChannelTrait::send()
      */
     function reply(string $content, array $options = [])
@@ -575,7 +583,7 @@ class Message extends ClientBase
     /**
      * Unpins the message. Resolves with $this.
      *
-     * @return \React\Promise\ExtendedPromiseInterface
+     * @return ExtendedPromiseInterface
      */
     function unpin()
     {
@@ -652,7 +660,7 @@ class Message extends ClientBase
     function _patch(array $message)
     {
         $this->content = (string) ($message['content'] ?? $this->content ?? '');
-        $this->editedTimestamp = (! empty($message['edited_timestamp']) ? (new \DateTime(
+        $this->editedTimestamp = (! empty($message['edited_timestamp']) ? (new DateTime(
             $message['edited_timestamp']
         ))->getTimestamp() : $this->editedTimestamp);
 
@@ -678,7 +686,7 @@ class Message extends ClientBase
         }
 
         $this->mentions = new MessageMentions($this->client, $this, $message);
-        $this->cleanContent = \CharlotteDunois\Yasmin\Utils\MessageHelpers::cleanContent($this, $this->content);
+        $this->cleanContent = MessageHelpers::cleanContent($this, $this->content);
 
         if (! empty($message['member']) && $this->guild !== null && ! $this->guild->members->has($this->author->id)) {
             $member = $message['member'];

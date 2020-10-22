@@ -14,8 +14,11 @@ use CharlotteDunois\Yasmin\Client;
 use CharlotteDunois\Yasmin\Interfaces\GuildChannelInterface;
 use CharlotteDunois\Yasmin\Utils\DataHelpers;
 use DateTime;
+use Exception;
+use InvalidArgumentException;
 use React\Promise\ExtendedPromiseInterface;
 use React\Promise\Promise;
+use RuntimeException;
 
 /**
  * Represents a guild member.
@@ -131,7 +134,7 @@ class GuildMember extends ClientBase
      * @param  Guild  $guild
      * @param  array  $member
      *
-     * @throws \Exception
+     * @throws Exception
      * @internal
      */
     function __construct(Client $client, Guild $guild, array $member)
@@ -153,12 +156,12 @@ class GuildMember extends ClientBase
     /**
      * {@inheritdoc}
      * @return mixed
-     * @throws \RuntimeException
+     * @throws RuntimeException
      * @internal
      */
     function __get($name)
     {
-        if (\property_exists($this, $name)) {
+        if (property_exists($this, $name)) {
             return $this->$name;
         }
 
@@ -240,7 +243,7 @@ class GuildMember extends ClientBase
             $roles = $roles->all();
         }
 
-        $roles = \array_merge($this->roles->all(), $roles);
+        $roles = array_merge($this->roles->all(), $roles);
 
         return $this->edit(['roles' => $roles], $reason);
     }
@@ -277,7 +280,7 @@ class GuildMember extends ClientBase
      * @param  string  $reason
      *
      * @return ExtendedPromiseInterface
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     function edit(array $options, string $reason = '')
     {
@@ -291,8 +294,8 @@ class GuildMember extends ClientBase
                             $val = $val->all();
                         }
 
-                        return \array_unique(
-                            \array_map(
+                        return array_unique(
+                            array_map(
                                 function ($role) {
                                     if ($role instanceof Role) {
                                         return $role->id;
@@ -505,13 +508,13 @@ class GuildMember extends ClientBase
      * @param  GuildChannelInterface|string  $channel
      *
      * @return Permissions
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     function permissionsIn($channel)
     {
         $channel = $this->guild->channels->resolve($channel);
         if (! ($channel instanceof GuildChannelInterface)) {
-            throw new \InvalidArgumentException('Given channel is not a guild channel');
+            throw new InvalidArgumentException('Given channel is not a guild channel');
         }
 
         return $channel->permissionsFor($this);
@@ -562,10 +565,10 @@ class GuildMember extends ClientBase
             $roles = $roles->all();
         }
 
-        $roles = \array_filter(
+        $roles = array_filter(
             $this->roles->all(),
             function ($role) use ($roles) {
-                return (! \in_array($role, $roles, true) && ! \in_array(((string) $role->id), $roles, true));
+                return (! in_array($role, $roles, true) && ! in_array(((string) $role->id), $roles, true));
             }
         );
 
@@ -650,7 +653,7 @@ class GuildMember extends ClientBase
      * @param  string  $reason
      *
      * @return ExtendedPromiseInterface
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     function setVoiceChannel($channel, string $reason = '')
     {

@@ -11,6 +11,7 @@ namespace CharlotteDunois\Yasmin\Models;
 
 use CharlotteDunois\Yasmin\Client;
 use CharlotteDunois\Yasmin\WebSocket\WSConnection;
+use RuntimeException;
 use Serializable;
 
 /**
@@ -52,12 +53,12 @@ class Shard extends ClientBase implements Serializable
     /**
      * {@inheritdoc}
      * @return mixed
-     * @throws \RuntimeException
+     * @throws RuntimeException
      * @internal
      */
     function __get($name)
     {
-        if (\property_exists($this, $name)) {
+        if (property_exists($this, $name)) {
             return $this->$name;
         }
 
@@ -70,10 +71,10 @@ class Shard extends ClientBase implements Serializable
      */
     function serialize()
     {
-        $vars = \get_object_vars($this);
+        $vars = get_object_vars($this);
         unset($vars['client'], $vars['ws']);
 
-        return \serialize($vars);
+        return serialize($vars);
     }
 
     /**

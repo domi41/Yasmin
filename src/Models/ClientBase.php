@@ -10,6 +10,7 @@
 namespace CharlotteDunois\Yasmin\Models;
 
 use CharlotteDunois\Yasmin\Client;
+use Exception;
 
 /**
  * Something all Models, with the need for a client, extend.
@@ -97,13 +98,13 @@ abstract class ClientBase extends Base
 
     /**
      * @return void
-     * @throws \Exception
+     * @throws Exception
      * @internal
      */
     function unserialize($data)
     {
         if (self::$serializeClient === null) {
-            throw new \Exception('Unable to unserialize a class without ClientBase::$serializeClient being set');
+            throw new Exception('Unable to unserialize a class without ClientBase::$serializeClient being set');
         }
 
         parent::unserialize($data);

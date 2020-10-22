@@ -11,6 +11,8 @@ namespace CharlotteDunois\Yasmin\Models;
 
 use CharlotteDunois\Yasmin\Client;
 use CharlotteDunois\Yasmin\Interfaces\UserStorageInterface;
+use InvalidArgumentException;
+use React\EventLoop\Timer\TimerInterface;
 
 /**
  * User Storage to store and cache users, which utlizies Collection.
@@ -20,7 +22,7 @@ class UserStorage extends Storage implements UserStorageInterface
     /**
      * The sweep timer, or null.
      *
-     * @var \React\EventLoop\TimerInterface|\React\EventLoop\Timer\TimerInterface|null
+     * @var \React\EventLoop\TimerInterface|TimerInterface|null
      */
     protected $timer;
 
@@ -51,7 +53,7 @@ class UserStorage extends Storage implements UserStorageInterface
      * @param  User|GuildMember|string|int  $user  string/int = user ID
      *
      * @return User
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     function resolve($user)
     {
@@ -63,15 +65,15 @@ class UserStorage extends Storage implements UserStorageInterface
             return $user->user;
         }
 
-        if (\is_int($user)) {
+        if (is_int($user)) {
             $user = (string) $user;
         }
 
-        if (\is_string($user) && parent::has($user)) {
+        if (is_string($user) && parent::has($user)) {
             return parent::get($user);
         }
 
-        throw new \InvalidArgumentException('Unable to resolve unknown user');
+        throw new InvalidArgumentException('Unable to resolve unknown user');
     }
 
     /**
@@ -180,10 +182,10 @@ class UserStorage extends Storage implements UserStorageInterface
      */
     function sweep()
     {
-        $members = \array_unique(
+        $members = array_unique(
             $this->client->guilds->reduce(
                 function ($carry, $g) {
-                    return \array_merge($carry, \array_keys($g->members->all()));
+                    return array_merge($carry, array_keys($g->members->all()));
                 },
                 []
             )
@@ -191,7 +193,7 @@ class UserStorage extends Storage implements UserStorageInterface
 
         $amount = 0;
         foreach ($this->data as $key => $val) {
-            if ($val->id !== $this->client->user->id && ! $val->userFetched && ! \in_array($key, $members, true)) {
+            if ($val->id !== $this->client->user->id && ! $val->userFetched && ! in_array($key, $members, true)) {
                 $this->client->presences->delete($key);
                 $this->delete($key);
 

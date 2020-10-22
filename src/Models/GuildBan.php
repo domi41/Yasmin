@@ -10,6 +10,8 @@
 namespace CharlotteDunois\Yasmin\Models;
 
 use CharlotteDunois\Yasmin\Client;
+use React\Promise\ExtendedPromiseInterface;
+use RuntimeException;
 
 /**
  * Represents a guild ban.
@@ -65,7 +67,7 @@ class GuildBan extends ClientBase
     /**
      * {@inheritdoc}
      * @return mixed
-     * @throws \RuntimeException
+     * @throws RuntimeException
      * @internal
      */
     function __get($name)
@@ -82,7 +84,7 @@ class GuildBan extends ClientBase
      *
      * @param  string  $reason
      *
-     * @return \React\Promise\ExtendedPromiseInterface
+     * @return ExtendedPromiseInterface
      */
     function unban(string $reason = '')
     {
