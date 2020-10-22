@@ -12,8 +12,13 @@ namespace CharlotteDunois\Yasmin\HTTP;
 use CharlotteDunois\Yasmin\Client;
 use CharlotteDunois\Yasmin\Interfaces\RatelimitBucketInterface;
 use CharlotteDunois\Yasmin\Utils\URLHelpers;
+use JsonException;
+use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use React\Promise\Deferred;
+use React\Promise\ExtendedPromiseInterface;
 use RingCentral\Psr7\Request;
+use RuntimeException;
 
 /**
  * Represents a single HTTP request.
@@ -28,55 +33,48 @@ class APIRequest
      * @var int|null
      */
     static protected $jsonOptions;
-
+    /**
+     * The used deferred.
+     *
+     * @var Deferred
+     */
+    public $deferred;
     /**
      * The API manager.
      *
      * @var APIManager
      */
     protected $api;
-
     /**
      * The url.
      *
      * @var string
      */
     protected $url;
-
-    /**
-     * The used deferred.
-     *
-     * @var \React\Promise\Deferred
-     */
-    public $deferred;
-
-    /**
-     * The request method.
-     *
-     * @var string
-     */
-    private $method;
-
-    /**
-     * The endpoint.
-     *
-     * @var string
-     */
-    private $endpoint;
-
     /**
      * How many times we've retried.
      *
      * @var int
      */
     protected $retries = 0;
-
     /**
      * Any request options.
      *
      * @var array
      */
     protected $options = [];
+    /**
+     * The request method.
+     *
+     * @var string
+     */
+    private $method;
+    /**
+     * The endpoint.
+     *
+     * @var string
+     */
+    private $endpoint;
 
     /**
      * Creates a new API Request.
@@ -93,11 +91,11 @@ class APIRequest
         $this->url = APIEndpoints::HTTP['url'].'v'.APIEndpoints::HTTP['version'].'/';
 
         $this->method = $method;
-        $this->endpoint = \ltrim($endpoint, '/');
+        $this->endpoint = ltrim($endpoint, '/');
         $this->options = $options;
 
         if (self::$jsonOptions === null) {
-            self::$jsonOptions = (\PHP_VERSION_ID >= 70300 ? \JSON_THROW_ON_ERROR : 0);
+            self::$jsonOptions = (PHP_VERSION_ID >= 70300 ? JSON_THROW_ON_ERROR : 0);
         }
     }
 
@@ -122,86 +120,11 @@ class APIRequest
     }
 
     /**
-     * Returns whether this request is to a reaction endpoint.
-     *
-     * @return bool
-     */
-    function isReactionEndpoint()
-    {
-        return ! empty($this->options['reactionRatelimit']);
-    }
-
-    /**
-     * Returns the Guzzle Request.
-     *
-     * @return \Psr\Http\Message\RequestInterface
-     */
-    function request()
-    {
-        $url = $this->url.$this->endpoint;
-
-        $options = [
-            'http_errors' => false,
-            'headers'     => [
-                'X-RateLimit-Precision' => 'millisecond',
-                'User-Agent'            => 'DiscordBot (https://github.com/CharlotteDunois/Yasmin, '.Client::VERSION.')',
-            ],
-        ];
-
-        if (! empty($this->options['auth'])) {
-            $options['headers']['Authorization'] = $this->options['auth'];
-        } elseif (empty($this->options['noAuth']) && ! empty($this->api->client->token)) {
-            $options['headers']['Authorization'] = 'Bot '.$this->api->client->token;
-        }
-
-        if (! empty($this->options['files']) && is_array($this->options['files'])) {
-            $options['multipart'] = [];
-
-            foreach ($this->options['files'] as $file) {
-                if (! isset($file['data']) && ! isset($file['path'])) {
-                    continue;
-                }
-
-                $field = ($file['field'] ?? 'file-'.bin2hex(random_bytes(3)));
-                $options['multipart'][] = [
-                    'name'     => $field,
-                    'contents' => (isset($file['data']) ? $file['data'] : \fopen($file['path'], 'r')),
-                    'filename' => (isset($file['name']) ? $file['name'] : (isset($file['path']) ? basename(
-                        $file['path']
-                    ) : $field.'.jpg')),
-                ];
-            }
-
-            if (! empty($this->options['data'])) {
-                $options['multipart'][] = [
-                    'name'     => 'payload_json',
-                    'contents' => json_encode($this->options['data'], self::$jsonOptions),
-                ];
-            }
-        } elseif (! empty($this->options['data'])) {
-            $options['json'] = $this->options['data'];
-        }
-
-        if (! empty($this->options['querystring'])) {
-            $options['query'] = http_build_query($this->options['querystring'], '', '&', \PHP_QUERY_RFC3986);
-        }
-
-        if (! empty($this->options['auditLogReason'])) {
-            $options['headers']['X-Audit-Log-Reason'] = rawurlencode(trim($this->options['auditLogReason']));
-        }
-
-        $request = new Request($this->method, $url);
-        $request->requestOptions = $options;
-
-        return $request;
-    }
-
-    /**
      * Executes the request.
      *
      * @param  RatelimitBucketInterface|null  $ratelimit
      *
-     * @return \React\Promise\ExtendedPromiseInterface
+     * @return ExtendedPromiseInterface
      */
     function execute(?RatelimitBucketInterface $ratelimit = null)
     {
@@ -254,13 +177,88 @@ class APIRequest
     }
 
     /**
+     * Returns the Guzzle Request.
+     *
+     * @return RequestInterface
+     */
+    function request()
+    {
+        $url = $this->url.$this->endpoint;
+
+        $options = [
+            'http_errors' => false,
+            'headers'     => [
+                'X-RateLimit-Precision' => 'millisecond',
+                'User-Agent'            => 'DiscordBot (https://github.com/CharlotteDunois/Yasmin, '.Client::VERSION.')',
+            ],
+        ];
+
+        if (! empty($this->options['auth'])) {
+            $options['headers']['Authorization'] = $this->options['auth'];
+        } elseif (empty($this->options['noAuth']) && ! empty($this->api->client->token)) {
+            $options['headers']['Authorization'] = 'Bot '.$this->api->client->token;
+        }
+
+        if (! empty($this->options['files']) && is_array($this->options['files'])) {
+            $options['multipart'] = [];
+
+            foreach ($this->options['files'] as $file) {
+                if (! isset($file['data']) && ! isset($file['path'])) {
+                    continue;
+                }
+
+                $field = ($file['field'] ?? 'file-'.bin2hex(random_bytes(3)));
+                $options['multipart'][] = [
+                    'name'     => $field,
+                    'contents' => (isset($file['data']) ? $file['data'] : fopen($file['path'], 'r')),
+                    'filename' => (isset($file['name']) ? $file['name'] : (isset($file['path']) ? basename(
+                        $file['path']
+                    ) : $field.'.jpg')),
+                ];
+            }
+
+            if (! empty($this->options['data'])) {
+                $options['multipart'][] = [
+                    'name'     => 'payload_json',
+                    'contents' => json_encode($this->options['data'], self::$jsonOptions),
+                ];
+            }
+        } elseif (! empty($this->options['data'])) {
+            $options['json'] = $this->options['data'];
+        }
+
+        if (! empty($this->options['querystring'])) {
+            $options['query'] = http_build_query($this->options['querystring'], '', '&', PHP_QUERY_RFC3986);
+        }
+
+        if (! empty($this->options['auditLogReason'])) {
+            $options['headers']['X-Audit-Log-Reason'] = rawurlencode(trim($this->options['auditLogReason']));
+        }
+
+        $request = new Request($this->method, $url);
+        $request->requestOptions = $options;
+
+        return $request;
+    }
+
+    /**
+     * Returns whether this request is to a reaction endpoint.
+     *
+     * @return bool
+     */
+    function isReactionEndpoint()
+    {
+        return ! empty($this->options['reactionRatelimit']);
+    }
+
+    /**
      * Gets the response body from the response.
      *
      * @param  ResponseInterface  $response
      *
      * @return mixed
-     * @throws \RuntimeException
-     * @throws \JsonException
+     * @throws RuntimeException
+     * @throws JsonException
      */
     static function decodeBody(ResponseInterface $response)
     {
@@ -268,12 +266,12 @@ class APIRequest
 
         $type = $response->getHeader('Content-Type')[0];
         if (stripos($type, 'text/html') !== false) {
-            throw new \RuntimeException('Invalid API response: HTML response body received');
+            throw new RuntimeException('Invalid API response: HTML response body received');
         }
 
         $json = json_decode($body, true, 512, self::$jsonOptions);
-        if ($json === null && json_last_error() !== \JSON_ERROR_NONE) {
-            throw new \RuntimeException('Invalid API response: '.json_last_error_msg());
+        if ($json === null && json_last_error() !== JSON_ERROR_NONE) {
+            throw new RuntimeException('Invalid API response: '.json_last_error_msg());
         }
 
         return $json;
@@ -286,7 +284,7 @@ class APIRequest
      * @param  mixed  $body
      * @param  RatelimitBucketInterface|null  $ratelimit
      *
-     * @return DiscordAPIException|\RuntimeException|null
+     * @return DiscordAPIException|RuntimeException|null
      */
     protected function handleAPIError(
         ResponseInterface $response,
@@ -305,7 +303,7 @@ class APIRequest
                     'Giving up on item "'.$this->endpoint.'" after '.$maxRetries.' retries due to HTTP '.$status
                 );
 
-                return (new \RuntimeException('Maximum retry of '.$maxRetries.' reached - giving up'));
+                return (new RuntimeException('Maximum retry of '.$maxRetries.' reached - giving up'));
             }
 
             $this->api->client->emit('debug', 'Delaying unshifting item "'.$this->endpoint.'" due to HTTP '.$status);
@@ -342,7 +340,7 @@ class APIRequest
         if ($status >= 400 && $status < 500) {
             $error = new DiscordAPIException($this->endpoint, $body);
         } else {
-            $error = new \RuntimeException($response->getReasonPhrase());
+            $error = new RuntimeException($response->getReasonPhrase());
         }
 
         return $error;

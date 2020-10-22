@@ -12,10 +12,14 @@ namespace CharlotteDunois\Yasmin\HTTP;
 use CharlotteDunois\Yasmin\Client;
 use CharlotteDunois\Yasmin\Interfaces\RatelimitBucketInterface;
 use DateTime;
+use Exception;
 use Psr\Http\Message\ResponseInterface;
+use React\EventLoop\LoopInterface;
 use React\Promise\Deferred;
 use React\Promise\ExtendedPromiseInterface;
 use React\Promise\Promise;
+use RuntimeException;
+use Throwable;
 
 use function React\Promise\resolve;
 
@@ -39,7 +43,7 @@ class APIManager
     protected $endpoints;
 
     /**
-     * @var \React\EventLoop\LoopInterface
+     * @var LoopInterface
      */
     protected $loop;
 
@@ -67,7 +71,7 @@ class APIManager
      *
      * @var int
      */
-    protected $remaining = \INF;
+    protected $remaining = INF;
 
     /**
      * When can we send again?
@@ -123,17 +127,39 @@ class APIManager
     }
 
     /**
+     * Clears all buckets and the queue.
+     *
+     * @return void
+     */
+    function clear()
+    {
+        $this->limited = true;
+        $this->resetTime = INF;
+
+        while ($item = array_shift($this->queue)) {
+            unset($item);
+        }
+
+        while ($bucket = array_shift($this->ratelimits)) {
+            unset($bucket);
+        }
+
+        $this->limited = false;
+        $this->resetTime = 0;
+    }
+
+    /**
      * @param  string  $name
      *
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      * @internal
      */
     function __isset($name)
     {
         try {
             return $this->$name !== null;
-        } catch (\RuntimeException $e) {
+        } catch (RuntimeException $e) {
             if ($e->getTrace()[0]['function'] === '__get') {
                 return false;
             }
@@ -146,7 +172,7 @@ class APIManager
      * @param  string  $name
      *
      * @return mixed
-     * @throws \RuntimeException
+     * @throws RuntimeException
      * @internal
      */
     function __get($name)
@@ -160,29 +186,31 @@ class APIManager
                 break;
         }
 
-        throw new \RuntimeException('Unknown property '.\get_class($this).'::$'.$name);
+        throw new RuntimeException('Unknown property '.get_class($this).'::$'.$name);
     }
 
     /**
-     * Clears all buckets and the queue.
+     * Unshifts an item into the queue.
+     *
+     * @param  APIRequest|RatelimitBucket  $item
      *
      * @return void
      */
-    function clear()
+    function unshiftQueue($item)
     {
-        $this->limited = true;
-        $this->resetTime = \INF;
+        array_unshift($this->queue, $item);
+    }
 
-        while ($item = array_shift($this->queue)) {
-            unset($item);
-        }
-
-        while ($bucket = array_shift($this->ratelimits)) {
-            unset($bucket);
-        }
-
-        $this->limited = false;
-        $this->resetTime = 0;
+    /**
+     * Gets the Gateway from the Discord API.
+     *
+     * @param  bool  $bot  Should we use the bot endpoint? Requires token.
+     *
+     * @return ExtendedPromiseInterface
+     */
+    function getGateway(bool $bot = false)
+    {
+        return $this->makeRequest('GET', 'gateway'.($bot ? '/bot' : ''), []);
     }
 
     /**
@@ -233,27 +261,55 @@ class APIManager
     }
 
     /**
-     * Unshifts an item into the queue.
+     * Turns an endpoint path to the ratelimit path.
      *
-     * @param  APIRequest|RatelimitBucket  $item
+     * @param  APIRequest  $request
      *
-     * @return void
+     * @return string
      */
-    function unshiftQueue($item)
+    function getRatelimitEndpoint(APIRequest $request)
     {
-        array_unshift($this->queue, $item);
+        $endpoint = $request->getEndpoint();
+
+        if ($request->isReactionEndpoint()) {
+            preg_match('/channels\/(\d+)\/messages\/(\d+)\/reactions\/.*/', $endpoint, $matches);
+
+            return 'channels/'.$matches[1].'/messages/'.$matches[2].'/reactions';
+        }
+
+        $firstPart = substr($endpoint, 0, (strpos($endpoint, '/') ?: strlen($endpoint)));
+        $majorRoutes = ['channels', 'guilds', 'webhooks'];
+
+        if (! in_array($firstPart, $majorRoutes, true)) {
+            return $firstPart;
+        }
+
+        preg_match('/((?:.*?)\/(?:\d+))(?:\/messages\/((?:bulk(?:-|_)delete)|(?:\d+)){0,1})?/', $endpoint, $matches);
+
+        if (is_numeric(($matches[2] ?? null)) && $request->getMethod() === 'DELETE') {
+            return 'delete@'.$matches[0];
+        } elseif (stripos(($matches[2] ?? ''), 'bulk') !== false) {
+            return $matches[0];
+        }
+
+        return ($matches[1] ?? $endpoint);
     }
 
     /**
-     * Gets the Gateway from the Discord API.
+     * Gets the ratelimit bucket for the specific endpoint.
      *
-     * @param  bool  $bot  Should we use the bot endpoint? Requires token.
+     * @param  string  $endpoint
      *
-     * @return ExtendedPromiseInterface
+     * @return RatelimitBucketInterface
      */
-    function getGateway(bool $bot = false)
+    protected function getRatelimitBucket(string $endpoint)
     {
-        return $this->makeRequest('GET', 'gateway'.($bot ? '/bot' : ''), []);
+        if (empty($this->ratelimits[$endpoint])) {
+            $bucket = $this->bucketName;
+            $this->ratelimits[$endpoint] = new $bucket($this, $endpoint);
+        }
+
+        return $this->ratelimits[$endpoint];
     }
 
     /**
@@ -268,28 +324,6 @@ class APIManager
                 $this->process();
             }
         );
-    }
-
-    /**
-     * Processes the queue delayed, depends on rest time offset.
-     *
-     * @return void
-     */
-    protected function processDelayed()
-    {
-        $offset = (float) $this->client->getOption('http.restTimeOffset', 0.0);
-        if ($offset > 0.0) {
-            $this->client->addTimer(
-                $offset,
-                function () {
-                    $this->process();
-                }
-            );
-
-            return;
-        }
-
-        $this->process();
     }
 
     /**
@@ -312,7 +346,7 @@ class APIManager
             }
 
             $this->limited = false;
-            $this->remaining = ($this->limit ? $this->limit : \INF);
+            $this->remaining = ($this->limit ? $this->limit : INF);
         }
 
         if (count($this->queue) === 0) {
@@ -400,7 +434,7 @@ class APIManager
                         $this->queue[] = $item;
 
                         $this->client->addTimer(
-                            ($data['resetTime'] - \microtime(true)),
+                            ($data['resetTime'] - microtime(true)),
                             function () {
                                 $this->process();
                             }
@@ -425,7 +459,7 @@ class APIManager
                 $this->queue[] = $item;
 
                 $this->client->addTimer(
-                    ($meta['resetTime'] - \microtime(true)),
+                    ($meta['resetTime'] - microtime(true)),
                     function () {
                         $this->process();
                     }
@@ -467,7 +501,7 @@ class APIManager
                 $this->client->emit(
                     'debug',
                     'Request for item "'.$item->getEndpoint(
-                    ).'" failed with '.($error instanceof \Throwable ? 'exception '.\get_class(
+                    ).'" failed with '.($error instanceof Throwable ? 'exception '.get_class(
                             $error
                         ) : 'error '.$error)
                 );
@@ -500,76 +534,25 @@ class APIManager
     }
 
     /**
-     * Turns an endpoint path to the ratelimit path.
+     * Processes the queue delayed, depends on rest time offset.
      *
-     * @param  APIRequest  $request
-     *
-     * @return string
+     * @return void
      */
-    function getRatelimitEndpoint(APIRequest $request)
+    protected function processDelayed()
     {
-        $endpoint = $request->getEndpoint();
+        $offset = (float) $this->client->getOption('http.restTimeOffset', 0.0);
+        if ($offset > 0.0) {
+            $this->client->addTimer(
+                $offset,
+                function () {
+                    $this->process();
+                }
+            );
 
-        if ($request->isReactionEndpoint()) {
-            \preg_match('/channels\/(\d+)\/messages\/(\d+)\/reactions\/.*/', $endpoint, $matches);
-
-            return 'channels/'.$matches[1].'/messages/'.$matches[2].'/reactions';
+            return;
         }
 
-        $firstPart = \substr($endpoint, 0, (\strpos($endpoint, '/') ?: \strlen($endpoint)));
-        $majorRoutes = ['channels', 'guilds', 'webhooks'];
-
-        if (! \in_array($firstPart, $majorRoutes, true)) {
-            return $firstPart;
-        }
-
-        \preg_match('/((?:.*?)\/(?:\d+))(?:\/messages\/((?:bulk(?:-|_)delete)|(?:\d+)){0,1})?/', $endpoint, $matches);
-
-        if (\is_numeric(($matches[2] ?? null)) && $request->getMethod() === 'DELETE') {
-            return 'delete@'.$matches[0];
-        } elseif (\stripos(($matches[2] ?? ''), 'bulk') !== false) {
-            return $matches[0];
-        }
-
-        return ($matches[1] ?? $endpoint);
-    }
-
-    /**
-     * Gets the ratelimit bucket for the specific endpoint.
-     *
-     * @param  string  $endpoint
-     *
-     * @return RatelimitBucketInterface
-     */
-    protected function getRatelimitBucket(string $endpoint)
-    {
-        if (empty($this->ratelimits[$endpoint])) {
-            $bucket = $this->bucketName;
-            $this->ratelimits[$endpoint] = new $bucket($this, $endpoint);
-        }
-
-        return $this->ratelimits[$endpoint];
-    }
-
-    /**
-     * Extracts ratelimits from a response.
-     *
-     * @param  ResponseInterface  $response
-     *
-     * @return mixed[]
-     * @throws \Throwable
-     */
-    function extractRatelimit(ResponseInterface $response)
-    {
-        $limit = ($response->hasHeader('X-RateLimit-Limit') ? ((int) $response->getHeader(
-            'X-RateLimit-Limit'
-        )[0]) : null);
-        $remaining = ($response->hasHeader('X-RateLimit-Remaining') ? ((int) $response->getHeader(
-            'X-RateLimit-Remaining'
-        )[0]) : null);
-        $resetTime = $this->extractRatelimitResetTime($response);
-
-        return compact('limit', 'remaining', 'resetTime');
+        $this->process();
     }
 
     /**
@@ -580,7 +563,7 @@ class APIManager
      * @param  bool  $isReactionEndpoint
      *
      * @return void
-     * @throws \Throwable
+     * @throws Throwable
      */
     function handleRatelimit(
         ResponseInterface $response,
@@ -635,12 +618,33 @@ class APIManager
     }
 
     /**
+     * Extracts ratelimits from a response.
+     *
+     * @param  ResponseInterface  $response
+     *
+     * @return mixed[]
+     * @throws Throwable
+     */
+    function extractRatelimit(ResponseInterface $response)
+    {
+        $limit = ($response->hasHeader('X-RateLimit-Limit') ? ((int) $response->getHeader(
+            'X-RateLimit-Limit'
+        )[0]) : null);
+        $remaining = ($response->hasHeader('X-RateLimit-Remaining') ? ((int) $response->getHeader(
+            'X-RateLimit-Remaining'
+        )[0]) : null);
+        $resetTime = $this->extractRatelimitResetTime($response);
+
+        return compact('limit', 'remaining', 'resetTime');
+    }
+
+    /**
      * Returns the ratelimit reset time.
      *
      * @param  ResponseInterface  $response
      *
      * @return float|null
-     * @throws \Throwable
+     * @throws Throwable
      */
     protected function extractRatelimitResetTime(ResponseInterface $response): ?float
     {
