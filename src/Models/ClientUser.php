@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -14,12 +14,11 @@ use CharlotteDunois\Yasmin\Utils\DataHelpers;
 use CharlotteDunois\Yasmin\Utils\FileHelpers;
 use CharlotteDunois\Yasmin\WebSocket\WSManager;
 use InvalidArgumentException;
+use function React\Promise\all;
 use React\Promise\ExtendedPromiseInterface;
 use React\Promise\Promise;
-use RuntimeException;
-
-use function React\Promise\all;
 use function React\Promise\reject;
+use RuntimeException;
 
 /**
  * Represents the Client User.
@@ -40,7 +39,7 @@ class ClientUser extends User
      *
      * @internal
      */
-    function __construct(Client $client, $user)
+    public function __construct(Client $client, $user)
     {
         parent::__construct($client, $user);
 
@@ -59,7 +58,7 @@ class ClientUser extends User
      * @throws RuntimeException
      * @internal
      */
-    function __get($name)
+    public function __get($name)
     {
         if (property_exists($this, $name)) {
             return $this->$name;
@@ -72,7 +71,7 @@ class ClientUser extends User
      * @return mixed
      * @internal
      */
-    function __debugInfo()
+    public function __debugInfo()
     {
         $vars = parent::__debugInfo();
         unset($vars['clientPresence'], $vars['firstPresence'], $vars['firstPresencePromise'], $vars['firstPresenceCount'], $vars['firstPresenceTime']);
@@ -88,7 +87,7 @@ class ClientUser extends User
      * @return ExtendedPromiseInterface
      * @example ../../examples/docs-examples.php 15 4
      */
-    function setAvatar(?string $avatar)
+    public function setAvatar(?string $avatar)
     {
         if ($avatar === null) {
             return $this->client->apimanager()->endpoints->user->modifyCurrentUser(['avatar' => null])->then(
@@ -98,7 +97,7 @@ class ClientUser extends User
             );
         }
 
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($avatar) {
                 FileHelpers::resolveFileResolvable($avatar)->done(
                     function ($data) use ($resolve, $reject) {
@@ -114,7 +113,7 @@ class ClientUser extends User
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -125,7 +124,7 @@ class ClientUser extends User
      * @return ExtendedPromiseInterface
      * @example ../../examples/docs-examples.php 25 2
      */
-    function setStatus(string $status)
+    public function setStatus(string $status)
     {
         $presence = [
             'status' => $status,
@@ -143,7 +142,7 @@ class ClientUser extends User
      *
      * @return ExtendedPromiseInterface
      */
-    function setActivity($name, int $type = 0, ?int $shardID = null)
+    public function setActivity($name, int $type = 0, ?int $shardID = null)
     {
         if ($name === null) {
             return $this->setPresence(
@@ -182,7 +181,7 @@ class ClientUser extends User
      * @return ExtendedPromiseInterface
      * @example ../../examples/docs-examples.php 21 2
      */
-    function setGame(?string $name, string $url = '', ?int $shardID = null)
+    public function setGame(?string $name, string $url = '', ?int $shardID = null)
     {
         if ($name === null) {
             return $this->setPresence(
@@ -233,7 +232,7 @@ class ClientUser extends User
      * @return ExtendedPromiseInterface
      * @example ../../examples/docs-examples.php 29 10
      */
-    function setPresence(array $presence, ?int $shardID = null)
+    public function setPresence(array $presence, ?int $shardID = null)
     {
         if (empty($presence)) {
             return reject(new InvalidArgumentException('Presence argument can not be empty'));
@@ -293,9 +292,9 @@ class ClientUser extends User
      * @return ExtendedPromiseInterface
      * @example ../../examples/docs-examples.php 41 2
      */
-    function setUsername(string $username)
+    public function setUsername(string $username)
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($username) {
                 $this->client->apimanager()->endpoints->user->modifyCurrentUser(['username' => $username])->done(
                     function () use ($resolve) {
@@ -304,11 +303,11 @@ class ClientUser extends User
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
-     * Creates a new Group DM with the owner of the access tokens. Resolves with an instance of GroupDMChannel. The structure of the array is as following:
+     * Creates a new Group DM with the owner of the access tokens. Resolves with an instance of GroupDMChannel. The structure of the array is as following:.
      *
      * ```
      * array(
@@ -324,9 +323,9 @@ class ClientUser extends User
      * @return ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Models\GroupDMChannel
      */
-    function createGroupDM(array $userWithAccessTokens, array $nicks = [])
+    public function createGroupDM(array $userWithAccessTokens, array $nicks = [])
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($nicks, $userWithAccessTokens) {
                 $tokens = [];
                 $users = [];
@@ -346,7 +345,7 @@ class ClientUser extends User
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -358,7 +357,7 @@ class ClientUser extends User
      * @throws RuntimeException
      * @internal
      */
-    function createDM()
+    public function createDM()
     {
         throw new RuntimeException('Can not use this method in ClientUser');
     }
@@ -368,7 +367,7 @@ class ClientUser extends User
      * @throws RuntimeException
      * @internal
      */
-    function deleteDM()
+    public function deleteDM()
     {
         throw new RuntimeException('Can not use this method in ClientUser');
     }
@@ -378,7 +377,7 @@ class ClientUser extends User
      * @throws RuntimeException
      * @internal
      */
-    function fetchUserConnections(string $accessToken)
+    public function fetchUserConnections(string $accessToken)
     {
         throw new RuntimeException('Can not use this method in ClientUser');
     }

@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -9,6 +9,8 @@
 
 namespace CharlotteDunois\Yasmin\WebSocket\Handlers;
 
+use function array_diff_key;
+use function array_flip;
 use CharlotteDunois\Yasmin\Interfaces\WSEventInterface;
 use CharlotteDunois\Yasmin\Interfaces\WSHandlerInterface;
 use CharlotteDunois\Yasmin\WebSocket\Events\ChannelCreate;
@@ -45,25 +47,22 @@ use CharlotteDunois\Yasmin\WebSocket\Events\VoiceServerUpdate;
 use CharlotteDunois\Yasmin\WebSocket\Events\VoiceStateUpdate;
 use CharlotteDunois\Yasmin\WebSocket\WSConnection;
 use CharlotteDunois\Yasmin\WebSocket\WSHandler;
+use function class_implements;
 use Exception;
+use function in_array;
 use RuntimeException;
 
-use function array_diff_key;
-use function array_flip;
-use function class_implements;
-use function in_array;
-
 /**
- * WS Event handler
+ * WS Event handler.
  *
  * @internal
  */
 class Dispatch implements WSHandlerInterface
 {
-    private   $wsevents = [];
+    private $wsevents = [];
     protected $wshandler;
 
-    function __construct(WSHandler $wshandler)
+    public function __construct(WSHandler $wshandler)
     {
         $this->wshandler = $wshandler;
 
@@ -118,7 +117,7 @@ class Dispatch implements WSHandlerInterface
      *
      * @return WSEventInterface
      */
-    function getEvent(string $name)
+    public function getEvent(string $name)
     {
         if (isset($this->wsevents[$name])) {
             return $this->wsevents[$name];
@@ -127,7 +126,7 @@ class Dispatch implements WSHandlerInterface
         throw new Exception('Unable to find WS event');
     }
 
-    function handle(WSConnection $ws, $packet): void
+    public function handle(WSConnection $ws, $packet): void
     {
         if (isset($this->wsevents[$packet['t']])) {
             $this->wshandler->wsmanager->emit('debug', 'Shard '.$ws->shardID.' handling WS event '.$packet['t']);
@@ -143,7 +142,7 @@ class Dispatch implements WSHandlerInterface
      * @return void
      * @throws RuntimeException
      */
-    function register(string $name, string $class)
+    public function register(string $name, string $class)
     {
         if (! in_array('CharlotteDunois\Yasmin\Interfaces\WSEventInterface', class_implements($class))) {
             throw new RuntimeException('Specified event class does not implement interface');

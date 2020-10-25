@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -11,7 +11,6 @@ namespace CharlotteDunois\Yasmin\Models;
 
 use CharlotteDunois\Yasmin\Client;
 use CharlotteDunois\Yasmin\Utils\DataHelpers;
-
 use RuntimeException;
 
 /**
@@ -153,7 +152,7 @@ class Activity extends ClientBase
      * @param  Client  $client  The client this instance is for.
      * @param  array  $activity  An array containing name, type (as int) and url (nullable).
      */
-    function __construct(Client $client, array $activity)
+    public function __construct(Client $client, array $activity)
     {
         parent::__construct($client);
 
@@ -199,7 +198,7 @@ class Activity extends ClientBase
      * @throws RuntimeException
      * @internal
      */
-    function __get($name)
+    public function __get($name)
     {
         if (property_exists($this, $name)) {
             return $this->$name;
@@ -207,7 +206,7 @@ class Activity extends ClientBase
 
         switch ($name) {
             case 'streaming':
-                return ($this->type === 1);
+                return $this->type === 1;
                 break;
         }
 
@@ -219,16 +218,16 @@ class Activity extends ClientBase
      *
      * @return bool
      */
-    function isRichPresence()
+    public function isRichPresence()
     {
-        return ($this->applicationID !== null || $this->party !== null || $this->sessionID !== null || $this->syncID !== null);
+        return $this->applicationID !== null || $this->party !== null || $this->sessionID !== null || $this->syncID !== null;
     }
 
     /**
      * @return mixed
      * @internal
      */
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         return [
             'name' => $this->name,

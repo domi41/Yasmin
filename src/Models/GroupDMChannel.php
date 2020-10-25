@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -36,7 +36,7 @@ class GroupDMChannel extends DMChannel implements GroupDMChannelInterface
      *
      * @internal
      */
-    function __construct(Client $client, array $channel)
+    public function __construct(Client $client, array $channel)
     {
         parent::__construct($client, $channel);
 
@@ -54,13 +54,13 @@ class GroupDMChannel extends DMChannel implements GroupDMChannelInterface
      * @return \React\Promise\ExtendedPromiseInterface
      * @throws \InvalidArgumentException
      */
-    function addRecipient($user, string $accessToken, string $nick = '')
+    public function addRecipient($user, string $accessToken, string $nick = '')
     {
         if ($user instanceof User) {
             $user = $user->id;
         }
 
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($user, $accessToken, $nick) {
                 $this->client->apimanager()->endpoints->channel->groupDMAddRecipient(
                     $this->id,
@@ -74,7 +74,7 @@ class GroupDMChannel extends DMChannel implements GroupDMChannelInterface
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -85,7 +85,7 @@ class GroupDMChannel extends DMChannel implements GroupDMChannelInterface
      *
      * @return string|null
      */
-    function getIconURL(?int $size = null, string $format = 'png')
+    public function getIconURL(?int $size = null, string $format = 'png')
     {
         if ($this->icon !== null) {
             return APIEndpoints::CDN['url'].APIEndpoints::format(
@@ -107,13 +107,13 @@ class GroupDMChannel extends DMChannel implements GroupDMChannelInterface
      * @return \React\Promise\ExtendedPromiseInterface
      * @throws \InvalidArgumentException
      */
-    function removeRecipient($user)
+    public function removeRecipient($user)
     {
         if ($user instanceof User) {
             $user = $user->id;
         }
 
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($user) {
                 $this->client->apimanager()->endpoints->channel->groupDMRemoveRecipient($this->id, $user)->done(
                     function () use ($resolve) {
@@ -122,7 +122,7 @@ class GroupDMChannel extends DMChannel implements GroupDMChannelInterface
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -131,7 +131,7 @@ class GroupDMChannel extends DMChannel implements GroupDMChannelInterface
      * @throws \RuntimeException
      * @internal
      */
-    function __get($name)
+    public function __get($name)
     {
         if (\property_exists($this, $name)) {
             return $this->$name;
@@ -144,7 +144,7 @@ class GroupDMChannel extends DMChannel implements GroupDMChannelInterface
      * @return void
      * @internal
      */
-    function _patch(array $channel)
+    public function _patch(array $channel)
     {
         $this->applicationID = DataHelpers::typecastVariable(
             ($channel['application_id'] ?? $this->applicationID ?? null),

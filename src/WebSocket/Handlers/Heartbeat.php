@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -14,21 +14,21 @@ use CharlotteDunois\Yasmin\WebSocket\WSConnection;
 use CharlotteDunois\Yasmin\WebSocket\WSHandler;
 
 /**
- * WS Event handler
+ * WS Event handler.
  *
  * @internal
  */
 class Heartbeat implements WSHandlerInterface
 {
-    public    $heartbeat;
+    public $heartbeat;
     protected $wshandler;
 
-    function __construct(WSHandler $wshandler)
+    public function __construct(WSHandler $wshandler)
     {
         $this->wshandler = $wshandler;
     }
 
-    function handle(WSConnection $ws, $packet): void
+    public function handle(WSConnection $ws, $packet): void
     {
         $ws->heartbeat();
     }

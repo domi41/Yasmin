@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -48,68 +48,68 @@ class User
      *
      * @param  APIManager  $api
      */
-    function __construct(APIManager $api)
+    public function __construct(APIManager $api)
     {
         $this->api = $api;
     }
 
-    function getCurrentUser()
+    public function getCurrentUser()
     {
         $url = APIEndpoints::format(self::ENDPOINTS['current']['get']);
 
         return $this->api->makeRequest('GET', $url, []);
     }
 
-    function getUser(string $userid)
+    public function getUser(string $userid)
     {
         $url = APIEndpoints::format(self::ENDPOINTS['get'], $userid);
 
         return $this->api->makeRequest('GET', $url, []);
     }
 
-    function modifyCurrentUser(array $options)
+    public function modifyCurrentUser(array $options)
     {
         $url = APIEndpoints::format(self::ENDPOINTS['current']['modify']);
 
         return $this->api->makeRequest('PATCH', $url, ['data' => $options]);
     }
 
-    function getCurrentUserGuilds()
+    public function getCurrentUserGuilds()
     {
         $url = APIEndpoints::format(self::ENDPOINTS['current']['guilds']);
 
         return $this->api->makeRequest('GET', $url, []);
     }
 
-    function leaveUserGuild(string $guildid)
+    public function leaveUserGuild(string $guildid)
     {
         $url = APIEndpoints::format(self::ENDPOINTS['current']['leaveGuild'], $guildid);
 
         return $this->api->makeRequest('DELETE', $url, []);
     }
 
-    function getUserDMs()
+    public function getUserDMs()
     {
         $url = APIEndpoints::format(self::ENDPOINTS['current']['dms']);
 
         return $this->api->makeRequest('GET', $url, []);
     }
 
-    function createUserDM(string $recipientid)
+    public function createUserDM(string $recipientid)
     {
         $url = APIEndpoints::format(self::ENDPOINTS['current']['createDM']);
 
         return $this->api->makeRequest('POST', $url, ['data' => ['recipient_id' => $recipientid]]);
     }
 
-    function createGroupDM(array $accessTokens, array $nicks)
+    public function createGroupDM(array $accessTokens, array $nicks)
     {
         $url = APIEndpoints::format(self::ENDPOINTS['current']['createGroupDM']);
 
         return $this->api->makeRequest('POST', $url, ['data' => ['access_tokens' => $accessTokens, 'nicks' => $nicks]]);
     }
 
-    function getUserConnections(string $accessToken)
+    public function getUserConnections(string $accessToken)
     {
         $url = APIEndpoints::format(self::ENDPOINTS['current']['connections']);
 

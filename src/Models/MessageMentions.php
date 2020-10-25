@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -101,7 +101,7 @@ class MessageMentions extends ClientBase
     /**
      * @internal
      */
-    function __construct(
+    public function __construct(
         Client $client,
         Message $message,
         array $msg
@@ -159,7 +159,7 @@ class MessageMentions extends ClientBase
      * @throws \RuntimeException
      * @internal
      */
-    function __get($name)
+    public function __get($name)
     {
         if (\property_exists($this, $name)) {
             return $this->$name;

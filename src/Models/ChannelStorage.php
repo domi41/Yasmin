@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -56,7 +56,7 @@ class ChannelStorage extends Storage implements ChannelStorageInterface
      * @return ChannelInterface
      * @throws \InvalidArgumentException
      */
-    function resolve($channel)
+    public function resolve($channel)
     {
         if ($channel instanceof ChannelInterface) {
             return $channel;
@@ -79,7 +79,7 @@ class ChannelStorage extends Storage implements ChannelStorageInterface
      *
      * @return bool
      */
-    function has($key)
+    public function has($key)
     {
         return parent::has($key);
     }
@@ -90,7 +90,7 @@ class ChannelStorage extends Storage implements ChannelStorageInterface
      *
      * @return ChannelInterface|null
      */
-    function get($key)
+    public function get($key)
     {
         return parent::get($key);
     }
@@ -102,7 +102,7 @@ class ChannelStorage extends Storage implements ChannelStorageInterface
      *
      * @return $this
      */
-    function set($key, $value)
+    public function set($key, $value)
     {
         parent::set($key, $value);
         if ($this !== $this->client->channels) {
@@ -118,7 +118,7 @@ class ChannelStorage extends Storage implements ChannelStorageInterface
      *
      * @return $this
      */
-    function delete($key)
+    public function delete($key)
     {
         parent::delete($key);
         if ($this !== $this->client->channels) {
@@ -132,7 +132,7 @@ class ChannelStorage extends Storage implements ChannelStorageInterface
      * {@inheritdoc}
      * @return $this
      */
-    function clear()
+    public function clear()
     {
         if ($this !== $this->client->channels) {
             foreach ($this->data as $key => $val) {
@@ -156,7 +156,7 @@ class ChannelStorage extends Storage implements ChannelStorageInterface
      * @throws DiscordException
      * @internal
      */
-    function factory(array $data, ?Guild $guild = null)
+    public function factory(array $data, ?Guild $guild = null)
     {
         if ($guild === null) {
             $guild = (! empty($data['guild_id']) ? $this->client->guilds->get($data['guild_id']) : null);
@@ -225,7 +225,7 @@ class ChannelStorage extends Storage implements ChannelStorageInterface
      *
      * @return int
      */
-    static function getTypeForChannel(ChannelInterface $channel)
+    public static function getTypeForChannel(ChannelInterface $channel)
     {
         if ($channel instanceof GroupDMChannelInterface) {
             return self::CHANNEL_TYPES['group'];

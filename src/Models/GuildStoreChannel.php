@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -105,7 +105,7 @@ class GuildStoreChannel extends ClientBase implements GuildStoreChannelInterface
      *
      * @internal
      */
-    function __construct(
+    public function __construct(
         Client $client,
         Guild $guild,
         array $channel
@@ -127,7 +127,7 @@ class GuildStoreChannel extends ClientBase implements GuildStoreChannelInterface
      * @throws \RuntimeException
      * @internal
      */
-    function __get($name)
+    public function __get($name)
     {
         if (\property_exists($this, $name)) {
             return $this->$name;
@@ -150,7 +150,7 @@ class GuildStoreChannel extends ClientBase implements GuildStoreChannelInterface
      *
      * @return string
      */
-    function __toString()
+    public function __toString()
     {
         return '<#'.$this->id.'>';
     }
@@ -161,7 +161,7 @@ class GuildStoreChannel extends ClientBase implements GuildStoreChannelInterface
      * @return void
      * @internal
      */
-    function _patch(array $channel)
+    public function _patch(array $channel)
     {
         $this->name = (string) ($channel['name'] ?? $this->name ?? '');
         $this->nsfw = (bool) ($channel['nsfw'] ?? $this->nsfw ?? false);

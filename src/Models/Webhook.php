@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -19,9 +19,8 @@ use CharlotteDunois\Yasmin\Utils\MessageHelpers;
 use InvalidArgumentException;
 use React\Promise\ExtendedPromiseInterface;
 use React\Promise\Promise;
-use RuntimeException;
-
 use function React\Promise\resolve;
+use RuntimeException;
 
 /**
  * Represents a webhook.
@@ -91,7 +90,7 @@ class Webhook extends ClientBase
      *
      * @internal
      */
-    function __construct(Client $client, array $webhook)
+    public function __construct(Client $client, array $webhook)
     {
         parent::__construct($client);
 
@@ -105,7 +104,7 @@ class Webhook extends ClientBase
      * @throws RuntimeException
      * @internal
      */
-    function __get($name)
+    public function __get($name)
     {
         if (property_exists($this, $name)) {
             return $this->$name;
@@ -133,7 +132,7 @@ class Webhook extends ClientBase
      * @return ExtendedPromiseInterface
      * @throws InvalidArgumentException
      */
-    function edit(array $options, string $reason = '')
+    public function edit(array $options, string $reason = '')
     {
         $data = [];
 
@@ -145,7 +144,7 @@ class Webhook extends ClientBase
             $data['channel'] = $this->client->channels->resolve($options['channel'])->getId();
         }
 
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($data, $options, $reason) {
                 FileHelpers::resolveFileResolvable(($options['avatar'] ?? ''))->done(
                     function ($avatar = null) use ($data, $reason, $resolve, $reject) {
@@ -172,7 +171,7 @@ class Webhook extends ClientBase
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -182,9 +181,9 @@ class Webhook extends ClientBase
      *
      * @return ExtendedPromiseInterface
      */
-    function delete(string $reason = '')
+    public function delete(string $reason = '')
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($reason) {
                 $method = 'deleteWebhook';
                 $args = [$this->id, $reason];
@@ -201,7 +200,7 @@ class Webhook extends ClientBase
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -237,13 +236,13 @@ class Webhook extends ClientBase
      * @see \CharlotteDunois\Yasmin\Models\Message
      * @see https://discordapp.com/developers/docs/resources/channel#message-object
      */
-    function send(string $content, array $options = [])
+    public function send(string $content, array $options = [])
     {
         if (empty($this->token)) {
             throw new BadMethodCallException('Can not use webhook without token to send message');
         }
 
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($content, $options) {
                 MessageHelpers::resolveMessageOptionsFiles($options)->done(
                     function ($files) use ($content, $options, $resolve, $reject) {
@@ -347,7 +346,7 @@ class Webhook extends ClientBase
                     }
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -385,7 +384,7 @@ class Webhook extends ClientBase
      * @return void
      * @internal
      */
-    function _patch(array $webhook)
+    public function _patch(array $webhook)
     {
         $this->name = $webhook['name'] ?? null;
         $this->avatar = $webhook['avatar'] ?? null;

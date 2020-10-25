@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -19,42 +19,42 @@ interface RoleStorageInterface extends StorageInterface
      *
      * @return \CharlotteDunois\Yasmin\Models\Role
      */
-    function current();
+    public function current();
 
     /**
      * Fetch the key from the current element. From Iterator interface.
      *
      * @return string
      */
-    function key();
+    public function key();
 
     /**
      * Advances the internal pointer. From Iterator interface.
      *
      * @return \CharlotteDunois\Yasmin\Models\Role|false
      */
-    function next();
+    public function next();
 
     /**
      * Resets the internal pointer. From Iterator interface.
      *
      * @return \CharlotteDunois\Yasmin\Models\Role|false
      */
-    function rewind();
+    public function rewind();
 
     /**
      * Checks if current position is valid. From Iterator interface.
      *
      * @return bool
      */
-    function valid();
+    public function valid();
 
     /**
      * Returns all items.
      *
      * @return \CharlotteDunois\Yasmin\Models\Role[]
      */
-    function all();
+    public function all();
 
     /**
      * Resolves given data to a Role.
@@ -64,7 +64,7 @@ interface RoleStorageInterface extends StorageInterface
      * @return \CharlotteDunois\Yasmin\Models\Role
      * @throws \InvalidArgumentException
      */
-    function resolve($role);
+    public function resolve($role);
 
     /**
      * Returns the item at a given key. If the key does not exist, null is returned.
@@ -74,7 +74,7 @@ interface RoleStorageInterface extends StorageInterface
      * @return \CharlotteDunois\Yasmin\Models\Role|null
      * @throws \InvalidArgumentException
      */
-    function get($key);
+    public function get($key);
 
     /**
      * Sets a key-value pair.
@@ -85,7 +85,7 @@ interface RoleStorageInterface extends StorageInterface
      * @return $this
      * @throws \InvalidArgumentException
      */
-    function set($key, $value);
+    public function set($key, $value);
 
     /**
      * Factory to create (or retrieve existing) roles.
@@ -95,5 +95,5 @@ interface RoleStorageInterface extends StorageInterface
      * @return \CharlotteDunois\Yasmin\Models\Role
      * @internal
      */
-    function factory(array $data);
+    public function factory(array $data);
 }

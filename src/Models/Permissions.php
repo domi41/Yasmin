@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -11,7 +11,6 @@ namespace CharlotteDunois\Yasmin\Models;
 
 use InvalidArgumentException;
 use RuntimeException;
-
 
 /**
  * Permissions. Something fabulous.
@@ -88,7 +87,7 @@ class Permissions extends Base
      *
      * @param  int  $permission
      */
-    function __construct(int $permission = 0)
+    public function __construct(int $permission = 0)
     {
         parent::__construct();
 
@@ -101,7 +100,7 @@ class Permissions extends Base
      * @throws RuntimeException
      * @internal
      */
-    function __get($name)
+    public function __get($name)
     {
         if (property_exists($this, $name)) {
             return $this->$name;
@@ -114,7 +113,7 @@ class Permissions extends Base
      * @return mixed
      * @internal
      */
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         return $this->bitfield;
     }
@@ -128,7 +127,7 @@ class Permissions extends Base
      * @return bool
      * @throws InvalidArgumentException
      */
-    function has($permissions, bool $checkAdmin = true)
+    public function has($permissions, bool $checkAdmin = true)
     {
         if (! is_array($permissions)) {
             $permissions = [$permissions];
@@ -157,7 +156,7 @@ class Permissions extends Base
      * @return bool
      * @throws InvalidArgumentException
      */
-    function missing($permissions, bool $checkAdmin = true)
+    public function missing($permissions, bool $checkAdmin = true)
     {
         return ! $this->has($permissions, $checkAdmin);
     }
@@ -170,7 +169,7 @@ class Permissions extends Base
      * @return $this
      * @throws InvalidArgumentException
      */
-    function add(...$permissions)
+    public function add(...$permissions)
     {
         $total = 0;
         foreach ($permissions as $perm) {
@@ -191,7 +190,7 @@ class Permissions extends Base
      * @return $this
      * @throws InvalidArgumentException
      */
-    function remove(...$permissions)
+    public function remove(...$permissions)
     {
         $total = 0;
         foreach ($permissions as $perm) {
@@ -212,7 +211,7 @@ class Permissions extends Base
      * @return int
      * @throws InvalidArgumentException
      */
-    static function resolve($permission)
+    public static function resolve($permission)
     {
         if (is_int($permission)) {
             return $permission;
@@ -231,7 +230,7 @@ class Permissions extends Base
      * @return string
      * @throws InvalidArgumentException
      */
-    static function resolveToName($permission)
+    public static function resolveToName($permission)
     {
         if (is_int($permission)) {
             $index = array_search($permission, self::PERMISSIONS, true);

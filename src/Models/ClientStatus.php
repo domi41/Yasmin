@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -78,7 +78,7 @@ class ClientStatus extends Base
      *
      * @internal
      */
-    function __construct(array $clientStatus)
+    public function __construct(array $clientStatus)
     {
         parent::__construct();
 
@@ -93,7 +93,7 @@ class ClientStatus extends Base
      * @throws \RuntimeException
      * @internal
      */
-    function __get($name)
+    public function __get($name)
     {
         if (property_exists($this, $name)) {
             return $this->$name;
@@ -106,7 +106,7 @@ class ClientStatus extends Base
      * @return mixed
      * @internal
      */
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         return [
             'desktop' => $this->desktop,

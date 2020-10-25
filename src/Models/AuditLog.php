@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -57,7 +57,7 @@ class AuditLog extends ClientBase
      *
      * @internal
      */
-    function __construct(Client $client, Guild $guild, array $audit)
+    public function __construct(Client $client, Guild $guild, array $audit)
     {
         parent::__construct($client);
         $this->guild = $guild;
@@ -87,7 +87,7 @@ class AuditLog extends ClientBase
      * @return mixed
      * @internal
      */
-    function __get($name)
+    public function __get($name)
     {
         if (property_exists($this, $name)) {
             return $this->$name;

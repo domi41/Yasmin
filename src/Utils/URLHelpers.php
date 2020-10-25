@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -14,12 +14,11 @@ use Psr\Http\Message\RequestInterface;
 use React\EventLoop\LoopInterface;
 use React\Http\Browser;
 use React\Promise\PromiseInterface;
+use function React\Promise\reject;
 use RingCentral\Psr7\MultipartStream;
 use RingCentral\Psr7\Request;
 use RingCentral\Psr7\Stream;
 use RuntimeException;
-
-use function React\Promise\reject;
 
 /**
  * URL Helper methods.
@@ -52,7 +51,7 @@ class URLHelpers
      * @return void
      * @internal
      */
-    static function setLoop(LoopInterface $loop)
+    public static function setLoop(LoopInterface $loop)
     {
         static::$loop = $loop;
 
@@ -73,7 +72,7 @@ class URLHelpers
      * @return void
      * @throws LogicException
      */
-    static function setHTTPClient(Browser $client)
+    public static function setHTTPClient(Browser $client)
     {
         if (static::$http !== null) {
             throw new LogicException('Client has already been set');
@@ -97,7 +96,7 @@ class URLHelpers
      *
      * @return Browser
      */
-    static function getHTTPClient()
+    public static function getHTTPClient()
     {
         if (! static::$http) {
             static::internalSetClient();
@@ -127,7 +126,7 @@ class URLHelpers
      * @return PromiseInterface
      * @see \Psr\Http\Message\ResponseInterface
      */
-    static function makeRequest(RequestInterface $request, ?array $requestOptions = null)
+    public static function makeRequest(RequestInterface $request, ?array $requestOptions = null)
     {
         $client = static::getHTTPClient();
 
@@ -163,7 +162,7 @@ class URLHelpers
      *
      * @return PromiseInterface
      */
-    static function resolveURLToData(string $url, ?array $requestHeaders = null)
+    public static function resolveURLToData(string $url, ?array $requestHeaders = null)
     {
         if ($requestHeaders === null) {
             $requestHeaders = [];
@@ -207,7 +206,7 @@ class URLHelpers
      * @return RequestInterface
      * @throws RuntimeException
      */
-    static function applyRequestOptions(RequestInterface $request, array $requestOptions)
+    public static function applyRequestOptions(RequestInterface $request, array $requestOptions)
     {
         if (isset($requestOptions['multipart'])) {
             $multipart = new MultipartStream($requestOptions['multipart']);

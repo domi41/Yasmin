@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -42,7 +42,7 @@ class Shard extends ClientBase implements Serializable
      *
      * @internal
      */
-    function __construct(Client $client, int $shardID, WSConnection $connection)
+    public function __construct(Client $client, int $shardID, WSConnection $connection)
     {
         parent::__construct($client);
 
@@ -56,7 +56,7 @@ class Shard extends ClientBase implements Serializable
      * @throws RuntimeException
      * @internal
      */
-    function __get($name)
+    public function __get($name)
     {
         if (property_exists($this, $name)) {
             return $this->$name;
@@ -69,7 +69,7 @@ class Shard extends ClientBase implements Serializable
      * @return string
      * @internal
      */
-    function serialize()
+    public function serialize()
     {
         $vars = get_object_vars($this);
         unset($vars['client'], $vars['ws']);
@@ -81,8 +81,8 @@ class Shard extends ClientBase implements Serializable
      * @return string
      * @internal
      */
-    function __toString()
+    public function __toString()
     {
-        return ((string) $this->id);
+        return (string) $this->id;
     }
 }

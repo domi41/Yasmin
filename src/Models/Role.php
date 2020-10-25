@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -141,7 +141,7 @@ class Role extends ClientBase
     /**
      * @internal
      */
-    function __construct(Client $client, Guild $guild, array $role)
+    public function __construct(Client $client, Guild $guild, array $role)
     {
         parent::__construct($client);
         $this->guild = $guild;
@@ -158,7 +158,7 @@ class Role extends ClientBase
      * @throws RuntimeException
      * @internal
      */
-    function __get($name)
+    public function __get($name)
     {
         if (property_exists($this, $name)) {
             return $this->$name;
@@ -194,7 +194,7 @@ class Role extends ClientBase
      *
      * @return int
      */
-    function comparePositionTo(Role $role)
+    public function comparePositionTo(Role $role)
     {
         if ($this->position === $role->position) {
             return $role->id <=> $this->id;
@@ -226,7 +226,7 @@ class Role extends ClientBase
      * @throws InvalidArgumentException
      * @see \CharlotteDunois\Yasmin\Utils\DataHelpers::resolveColor()
      */
-    function edit(array $options, string $reason = '')
+    public function edit(array $options, string $reason = '')
     {
         if (empty($options)) {
             throw new InvalidArgumentException('Unable to edit role with zero information');
@@ -244,7 +244,7 @@ class Role extends ClientBase
             ]
         );
 
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($data, $reason) {
                 $this->client->apimanager()->endpoints->guild->modifyGuildRole(
                     $this->guild->id,
@@ -258,7 +258,7 @@ class Role extends ClientBase
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -268,9 +268,9 @@ class Role extends ClientBase
      *
      * @return ExtendedPromiseInterface
      */
-    function delete(string $reason = '')
+    public function delete(string $reason = '')
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($reason) {
                 $this->client->apimanager()->endpoints->guild->deleteGuildRole(
                     $this->guild->id,
@@ -283,7 +283,7 @@ class Role extends ClientBase
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -291,7 +291,7 @@ class Role extends ClientBase
      *
      * @return int
      */
-    function getCalculatedPosition()
+    public function getCalculatedPosition()
     {
         $sorted = $this->guild->roles->sortCustom(
             function (Role $a, Role $b) {
@@ -307,7 +307,7 @@ class Role extends ClientBase
      *
      * @return bool
      */
-    function isEditable()
+    public function isEditable()
     {
         if ($this->managed) {
             return false;
@@ -318,7 +318,7 @@ class Role extends ClientBase
             return false;
         }
 
-        return ($member->getHighestRole()->comparePositionTo($this) > 0);
+        return $member->getHighestRole()->comparePositionTo($this) > 0;
     }
 
     /**
@@ -331,7 +331,7 @@ class Role extends ClientBase
      * @throws InvalidArgumentException
      * @see \CharlotteDunois\Yasmin\Utils\DataHelpers::resolveColor()
      */
-    function setColor($color, string $reason = '')
+    public function setColor($color, string $reason = '')
     {
         return $this->edit(['color' => $color], $reason);
     }
@@ -345,7 +345,7 @@ class Role extends ClientBase
      * @return ExtendedPromiseInterface
      * @throws InvalidArgumentException
      */
-    function setHoist(bool $hoist, string $reason = '')
+    public function setHoist(bool $hoist, string $reason = '')
     {
         return $this->edit(['hoist' => $hoist], $reason);
     }
@@ -359,7 +359,7 @@ class Role extends ClientBase
      * @return ExtendedPromiseInterface
      * @throws InvalidArgumentException
      */
-    function setMentionable(bool $mentionable, string $reason = '')
+    public function setMentionable(bool $mentionable, string $reason = '')
     {
         return $this->edit(['mentionable' => $mentionable], $reason);
     }
@@ -373,7 +373,7 @@ class Role extends ClientBase
      * @return ExtendedPromiseInterface
      * @throws InvalidArgumentException
      */
-    function setName(string $name, string $reason = '')
+    public function setName(string $name, string $reason = '')
     {
         return $this->edit(['name' => $name], $reason);
     }
@@ -387,7 +387,7 @@ class Role extends ClientBase
      * @return ExtendedPromiseInterface
      * @throws InvalidArgumentException
      */
-    function setPermissions($permissions, string $reason = '')
+    public function setPermissions($permissions, string $reason = '')
     {
         return $this->edit(['permissions' => $permissions], $reason);
     }
@@ -401,7 +401,7 @@ class Role extends ClientBase
      * @return ExtendedPromiseInterface
      * @throws InvalidArgumentException
      */
-    function setPosition(int $position, string $reason = '')
+    public function setPosition(int $position, string $reason = '')
     {
         return $this->edit(['position' => $position], $reason);
     }
@@ -411,7 +411,7 @@ class Role extends ClientBase
      *
      * @return string
      */
-    function __toString()
+    public function __toString()
     {
         return '<@&'.$this->id.'>';
     }
@@ -420,7 +420,7 @@ class Role extends ClientBase
      * @return void
      * @internal
      */
-    function _patch(array $role)
+    public function _patch(array $role)
     {
         $this->name = (string) $role['name'];
         $this->color = (int) $role['color'];

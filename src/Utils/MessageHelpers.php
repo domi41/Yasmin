@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -17,10 +17,9 @@ use CharlotteDunois\Yasmin\Models\MessageAttachment;
 use CharlotteDunois\Yasmin\Models\Role;
 use CharlotteDunois\Yasmin\Models\User;
 use InvalidArgumentException;
+use function React\Promise\all;
 use React\Promise\ExtendedPromiseInterface;
 use React\Promise\Promise;
-
-use function React\Promise\all;
 use function React\Promise\resolve;
 
 /**
@@ -36,7 +35,7 @@ class MessageHelpers
      *
      * @return string
      */
-    static function cleanContent(Message $message, string $text)
+    public static function cleanContent(Message $message, string $text)
     {
         /** @var ChannelInterface $channel */
         foreach ($message->mentions->channels as $channel) {
@@ -71,10 +70,10 @@ class MessageHelpers
      *
      * @return string
      */
-    static function escapeMarkdown(string $text, bool $onlyCodeBlock = false, bool $onlyInlineCode = false)
+    public static function escapeMarkdown(string $text, bool $onlyCodeBlock = false, bool $onlyInlineCode = false)
     {
         if ($onlyCodeBlock) {
-            return preg_replace('/(```)/miu', "\\`\\`\\`", $text);
+            return preg_replace('/(```)/miu', '\\`\\`\\`', $text);
         }
 
         if ($onlyInlineCode) {
@@ -94,9 +93,9 @@ class MessageHelpers
      *
      * @return ExtendedPromiseInterface
      */
-    static function parseMentions(?Client $client, string $content)
+    public static function parseMentions(?Client $client, string $content)
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve) use ($client, $content) {
                 $bucket = [];
                 $promises = [];
@@ -179,7 +178,7 @@ class MessageHelpers
                     }
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -190,7 +189,7 @@ class MessageHelpers
      * @return ExtendedPromiseInterface
      * @throws InvalidArgumentException
      */
-    static function resolveMessageOptionsFiles(array $options)
+    public static function resolveMessageOptionsFiles(array $options)
     {
         if (empty($options['files'])) {
             return resolve([]);
@@ -290,7 +289,7 @@ class MessageHelpers
      * @return string[]
      * @see \CharlotteDunois\Yasmin\Models\Message
      */
-    static function splitMessage(string $text, array $options = [])
+    public static function splitMessage(string $text, array $options = [])
     {
         $options = array_merge(Message::DEFAULT_SPLIT_OPTIONS, $options);
 

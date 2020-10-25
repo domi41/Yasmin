@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -88,7 +88,7 @@ class CategoryChannel extends ClientBase implements CategoryChannelInterface
      *
      * @internal
      */
-    function __construct(
+    public function __construct(
         Client $client,
         Guild $guild,
         array $channel
@@ -109,7 +109,7 @@ class CategoryChannel extends ClientBase implements CategoryChannelInterface
      * @throws \RuntimeException
      * @internal
      */
-    function __get($name)
+    public function __get($name)
     {
         if (property_exists($this, $name)) {
             return $this->$name;
@@ -129,11 +129,11 @@ class CategoryChannel extends ClientBase implements CategoryChannelInterface
      *
      * @return \CharlotteDunois\Yasmin\Interfaces\StorageInterface
      */
-    function getChildren()
+    public function getChildren()
     {
         return $this->guild->channels->filter(
             function ($channel) {
-                return ($channel->parentID === $this->id);
+                return $channel->parentID === $this->id;
             }
         );
     }
@@ -142,7 +142,7 @@ class CategoryChannel extends ClientBase implements CategoryChannelInterface
      * @return void
      * @internal
      */
-    function _patch(array $channel)
+    public function _patch(array $channel)
     {
         $this->name = (string) ($channel['name'] ?? $this->name ?? '');
         $this->position = (int) ($channel['position'] ?? $this->position ?? 0);

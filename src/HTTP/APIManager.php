@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -18,10 +18,9 @@ use React\EventLoop\LoopInterface;
 use React\Promise\Deferred;
 use React\Promise\ExtendedPromiseInterface;
 use React\Promise\Promise;
+use function React\Promise\resolve;
 use RuntimeException;
 use Throwable;
-
-use function React\Promise\resolve;
 
 /**
  * Handles the API.
@@ -106,7 +105,7 @@ class APIManager
      *
      * @param  Client  $client
      */
-    function __construct(Client $client)
+    public function __construct(Client $client)
     {
         $this->client = $client;
         $this->endpoints = new APIEndpoints($this);
@@ -121,7 +120,7 @@ class APIManager
      *
      * @internal
      */
-    function __destruct()
+    public function __destruct()
     {
         $this->clear();
     }
@@ -131,7 +130,7 @@ class APIManager
      *
      * @return void
      */
-    function clear()
+    public function clear()
     {
         $this->limited = true;
         $this->resetTime = INF;
@@ -155,7 +154,7 @@ class APIManager
      * @throws Exception
      * @internal
      */
-    function __isset($name)
+    public function __isset($name)
     {
         try {
             return $this->$name !== null;
@@ -175,7 +174,7 @@ class APIManager
      * @throws RuntimeException
      * @internal
      */
-    function __get($name)
+    public function __get($name)
     {
         switch ($name) {
             case 'client':
@@ -196,7 +195,7 @@ class APIManager
      *
      * @return void
      */
-    function unshiftQueue($item)
+    public function unshiftQueue($item)
     {
         array_unshift($this->queue, $item);
     }
@@ -208,7 +207,7 @@ class APIManager
      *
      * @return ExtendedPromiseInterface
      */
-    function getGateway(bool $bot = false)
+    public function getGateway(bool $bot = false)
     {
         return $this->makeRequest('GET', 'gateway'.($bot ? '/bot' : ''), []);
     }
@@ -222,7 +221,7 @@ class APIManager
      *
      * @return ExtendedPromiseInterface
      */
-    function makeRequest(string $method, string $endpoint, array $options)
+    public function makeRequest(string $method, string $endpoint, array $options)
     {
         $request = new APIRequest($this, $method, $endpoint, $options);
 
@@ -236,9 +235,9 @@ class APIManager
      *
      * @return ExtendedPromiseInterface
      */
-    function add(APIRequest $apirequest)
+    public function add(APIRequest $apirequest)
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($apirequest) {
                 $apirequest->deferred = new Deferred();
                 $apirequest->deferred->promise()->done($resolve, $reject);
@@ -257,7 +256,7 @@ class APIManager
 
                 $this->processFuture();
             }
-        ));
+        );
     }
 
     /**
@@ -267,7 +266,7 @@ class APIManager
      *
      * @return string
      */
-    function getRatelimitEndpoint(APIRequest $request)
+    public function getRatelimitEndpoint(APIRequest $request)
     {
         $endpoint = $request->getEndpoint();
 
@@ -292,7 +291,7 @@ class APIManager
             return $matches[0];
         }
 
-        return ($matches[1] ?? $endpoint);
+        return $matches[1] ?? $endpoint;
     }
 
     /**
@@ -565,7 +564,7 @@ class APIManager
      * @return void
      * @throws Throwable
      */
-    function handleRatelimit(
+    public function handleRatelimit(
         ResponseInterface $response,
         ?RatelimitBucketInterface $ratelimit = null,
         bool $isReactionEndpoint = false
@@ -625,7 +624,7 @@ class APIManager
      * @return mixed[]
      * @throws Throwable
      */
-    function extractRatelimit(ResponseInterface $response)
+    public function extractRatelimit(ResponseInterface $response)
     {
         $limit = ($response->hasHeader('X-RateLimit-Limit') ? ((int) $response->getHeader(
             'X-RateLimit-Limit'
@@ -652,14 +651,14 @@ class APIManager
             $retry = (int) $response->getHeader('Retry-After')[0];
             $retryTime = bcdiv($retry, 1000, 3);
 
-            return ((float) bcadd(microtime(true), $retryTime, 3));
+            return (float) bcadd(microtime(true), $retryTime, 3);
         } elseif ($response->hasHeader('X-RateLimit-Reset')) {
             $date = (new DateTime(($response->getHeader('Date')[0] ?? 'now')))->getTimestamp();
             $reset = $response->getHeader('X-RateLimit-Reset')[0];
 
             $resetTime = bcsub($reset, $date, 3);
 
-            return ((float) bcadd(microtime(true), $resetTime, 3));
+            return (float) bcadd(microtime(true), $resetTime, 3);
         }
 
         return null;

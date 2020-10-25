@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -69,7 +69,7 @@ class PermissionOverwrite extends ClientBase
      *
      * @internal
      */
-    function __construct(Client $client, GuildChannelInterface $channel, array $permission)
+    public function __construct(Client $client, GuildChannelInterface $channel, array $permission)
     {
         parent::__construct($client);
         $this->channel = $channel;
@@ -86,7 +86,7 @@ class PermissionOverwrite extends ClientBase
      * @throws \RuntimeException
      * @internal
      */
-    function __get($name)
+    public function __get($name)
     {
         if (\property_exists($this, $name)) {
             return $this->$name;
@@ -97,9 +97,9 @@ class PermissionOverwrite extends ClientBase
                 return $this->channel->getGuild();
                 break;
             case 'target':
-                return ($this->type === 'role' ? $this->channel->getGuild()->roles->get(
+                return $this->type === 'role' ? $this->channel->getGuild()->roles->get(
                     $this->id
-                ) : $this->channel->getGuild()->members->get($this->id));
+                ) : $this->channel->getGuild()->members->get($this->id);
                 break;
         }
 
@@ -116,7 +116,7 @@ class PermissionOverwrite extends ClientBase
      * @return \React\Promise\ExtendedPromiseInterface
      * @throws \InvalidArgumentException
      */
-    function edit($allow, $deny = null, string $reason = '')
+    public function edit($allow, $deny = null, string $reason = '')
     {
         $options = [
             'type' => $this->type,
@@ -144,7 +144,7 @@ class PermissionOverwrite extends ClientBase
         $options['allow'] = $allow;
         $options['deny'] = $deny;
 
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($options, $reason) {
                 $this->client->apimanager()->endpoints->channel->editChannelPermissions(
                     $this->channel->getId(),
@@ -160,7 +160,7 @@ class PermissionOverwrite extends ClientBase
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -170,9 +170,9 @@ class PermissionOverwrite extends ClientBase
      *
      * @return \React\Promise\ExtendedPromiseInterface
      */
-    function delete(string $reason = '')
+    public function delete(string $reason = '')
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($reason) {
                 $this->client->apimanager()->endpoints->channel->deleteChannelPermission(
                     $this->channel->getId(),
@@ -185,14 +185,14 @@ class PermissionOverwrite extends ClientBase
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
      * @return mixed
      * @internal
      */
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         return [
             'type' => $this->type,

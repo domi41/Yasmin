@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -175,7 +175,7 @@ class WSConnection implements EventEmitterInterface
     ];
 
     /**
-     * The WS connection status
+     * The WS connection status.
      *
      * @var int
      */
@@ -195,7 +195,7 @@ class WSConnection implements EventEmitterInterface
      * @param  int  $shardID
      * @param  string  $compression
      */
-    function __construct(WSManager $wsmanager, int $shardID, string $compression)
+    public function __construct(WSManager $wsmanager, int $shardID, string $compression)
     {
         $this->wsmanager = $wsmanager;
         $this->shardID = $shardID;
@@ -216,7 +216,7 @@ class WSConnection implements EventEmitterInterface
      * @throws \Exception
      * @internal
      */
-    function __isset($name)
+    public function __isset($name)
     {
         try {
             return $this->$name !== null;
@@ -235,7 +235,7 @@ class WSConnection implements EventEmitterInterface
      * @return mixed
      * @throws \RuntimeException
      */
-    function __get($name)
+    public function __get($name)
     {
         if (\property_exists($this, $name)) {
             return $this->$name;
@@ -249,7 +249,7 @@ class WSConnection implements EventEmitterInterface
      *
      * @return void
      */
-    function destroy()
+    public function destroy()
     {
         $this->disconnect();
     }
@@ -260,7 +260,7 @@ class WSConnection implements EventEmitterInterface
      * @return \React\Promise\ExtendedPromiseInterface
      * @throws \RuntimeException
      */
-    function connect(bool $reconnect = false)
+    public function connect(bool $reconnect = false)
     {
         if ($this->ws) {
             return \React\Promise\resolve();
@@ -271,7 +271,7 @@ class WSConnection implements EventEmitterInterface
         }
 
         if (($this->wsmanager->lastIdentify ?? 0) > (\time() - 5)) {
-            return (new Promise(
+            return new Promise(
                 function (callable $resolve, callable $reject) {
                     $this->wsmanager->client->addTimer(
                         (5 - (\time() - $this->wsmanager->lastIdentify)),
@@ -280,7 +280,7 @@ class WSConnection implements EventEmitterInterface
                         }
                     );
                 }
-            ));
+            );
         }
 
         $compress = \explode('\\', \get_class($this->compressContext));
@@ -335,7 +335,7 @@ class WSConnection implements EventEmitterInterface
      *
      * @return void
      */
-    function disconnect(int $code = 1000, string $reason = '')
+    public function disconnect(int $code = 1000, string $reason = '')
     {
         if (! $this->ws) {
             return;
@@ -354,7 +354,7 @@ class WSConnection implements EventEmitterInterface
      *
      * @return void
      */
-    function reconnect(bool $resumable = true)
+    public function reconnect(bool $resumable = true)
     {
         if (! $this->ws) {
             return;
@@ -404,7 +404,7 @@ class WSConnection implements EventEmitterInterface
                     'Shard '.$this->shardID.' errored ('.$error.') on making new login after failed connection attempt... retrying in 30 seconds'
                 );
 
-                return (new Promise(
+                return new Promise(
                     function (callable $resolve, callable $reject) use ($forceNewGateway) {
                         $this->wsmanager->client->addTimer(
                             30,
@@ -413,7 +413,7 @@ class WSConnection implements EventEmitterInterface
                             }
                         );
                     }
-                ));
+                );
             }
         );
     }
@@ -424,9 +424,9 @@ class WSConnection implements EventEmitterInterface
      * @return \React\Promise\ExtendedPromiseInterface
      * @throws \RuntimeException
      */
-    function send(array $packet)
+    public function send(array $packet)
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($packet) {
                 if ($this->status !== Client::WS_STATUS_NEARLY && $this->status !== Client::WS_STATUS_CONNECTED) {
                     return $reject(
@@ -440,7 +440,7 @@ class WSConnection implements EventEmitterInterface
                     $this->processQueue();
                 }
             }
-        ));
+        );
     }
 
     /**
@@ -448,7 +448,7 @@ class WSConnection implements EventEmitterInterface
      *
      * @return void
      */
-    function processQueue()
+    public function processQueue()
     {
         if ($this->running) {
             return;
@@ -481,7 +481,7 @@ class WSConnection implements EventEmitterInterface
      *
      * @return void
      */
-    function setAuthenticated(bool $state)
+    public function setAuthenticated(bool $state)
     {
         $this->authenticated = $state;
     }
@@ -491,7 +491,7 @@ class WSConnection implements EventEmitterInterface
      *
      * @return string|null
      */
-    function getSessionID()
+    public function getSessionID()
     {
         return $this->wsSessionID;
     }
@@ -501,7 +501,7 @@ class WSConnection implements EventEmitterInterface
      *
      * @return void
      */
-    function setSessionID(?string $id)
+    public function setSessionID(?string $id)
     {
         $this->wsSessionID = $id;
     }
@@ -511,7 +511,7 @@ class WSConnection implements EventEmitterInterface
      *
      * @return void
      */
-    function setSequence($sequence)
+    public function setSequence($sequence)
     {
         $this->previousSequence = $this->sequence;
         $this->sequence = $sequence;
@@ -522,7 +522,7 @@ class WSConnection implements EventEmitterInterface
      *
      * @return void
      */
-    function sendIdentify()
+    public function sendIdentify()
     {
         $this->authenticated = false;
 
@@ -570,7 +570,7 @@ class WSConnection implements EventEmitterInterface
      *
      * @return void
      */
-    function heartbeat()
+    public function heartbeat()
     {
         if (! $this->wsHeartbeat['ack']) {
             return $this->heartFailure();
@@ -601,7 +601,7 @@ class WSConnection implements EventEmitterInterface
      *
      * @return void
      */
-    function heartFailure()
+    public function heartFailure()
     {
         $this->wsmanager->client->emit('debug', 'Shard '.$this->shardID.' has WS heart failure');
         $this->disconnect(1006, 'No heartbeat ack');
@@ -612,7 +612,7 @@ class WSConnection implements EventEmitterInterface
      *
      * @return void
      */
-    function _pong($end)
+    public function _pong($end)
     {
         $time = \ceil(($end - $this->wsHeartbeat['dateline']) * 1000);
         $this->pings[] = (int) $time;
@@ -633,7 +633,7 @@ class WSConnection implements EventEmitterInterface
      *
      * @return void
      */
-    function _send(array $packet)
+    public function _send(array $packet)
     {
         if (! $this->ws) {
             $this->wsmanager->client->emit(
@@ -702,7 +702,7 @@ class WSConnection implements EventEmitterInterface
      */
     protected function initWSSelfReady(bool &$ready, bool $reconnect, Deferred &$deferred)
     {
-        return (function () use (&$ready, $reconnect, $deferred) {
+        return function () use (&$ready, $reconnect, $deferred) {
             $this->status = Client::WS_STATUS_CONNECTED;
 
             if ($reconnect && $this->wsmanager->client->user !== null) {
@@ -713,7 +713,7 @@ class WSConnection implements EventEmitterInterface
             $this->ready = true;
 
             $deferred->resolve($this);
-        });
+        };
     }
 
     /**
@@ -726,12 +726,12 @@ class WSConnection implements EventEmitterInterface
      */
     protected function initWSSelfError(bool &$ready, Deferred &$deferred)
     {
-        return (function ($error) use (&$ready, $deferred) {
+        return function ($error) use (&$ready, $deferred) {
             if (! $ready) {
                 $this->disconnect();
                 $deferred->reject(new \Exception($error));
             }
-        });
+        };
     }
 
     /**
@@ -744,7 +744,7 @@ class WSConnection implements EventEmitterInterface
      */
     protected function initWSMessage(bool &$ready, Deferred &$deferred)
     {
-        return (function (Message $message) use (&$ready, $deferred) {
+        return function (Message $message) use (&$ready, $deferred) {
             $message = $message->getPayload();
             if (! $message) {
                 return;
@@ -776,7 +776,7 @@ class WSConnection implements EventEmitterInterface
             } catch (DiscordException $e) {
                 $this->wsmanager->client->emit('error', $e);
             }
-        });
+        };
     }
 
     /**
@@ -789,13 +789,13 @@ class WSConnection implements EventEmitterInterface
      */
     protected function initWSError(bool &$ready, Deferred &$deferred)
     {
-        return (function (\Throwable $error) use (&$ready, $deferred) {
+        return function (\Throwable $error) use (&$ready, $deferred) {
             if (! $ready) {
                 return $deferred->reject($error);
             }
 
             $this->wsmanager->client->emit('error', $error);
-        });
+        };
     }
 
     /**
@@ -807,7 +807,7 @@ class WSConnection implements EventEmitterInterface
      */
     protected function initWSClose(Deferred &$deferred)
     {
-        return (function (int $code, string $reason) use ($deferred) {
+        return function (int $code, string $reason) use ($deferred) {
             if ($this->ws !== null) {
                 $this->ws->removeAllListeners();
             }
@@ -856,6 +856,6 @@ class WSConnection implements EventEmitterInterface
             }
 
             $this->renewConnection(false);
-        });
+        };
     }
 }

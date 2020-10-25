@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -67,7 +67,7 @@ class RichPresenceAssets extends ClientBase
      *
      * @internal
      */
-    function __construct(Client $client, Activity $activity, array $assets)
+    public function __construct(Client $client, Activity $activity, array $assets)
     {
         parent::__construct($client);
         $this->activity = $activity;
@@ -84,7 +84,7 @@ class RichPresenceAssets extends ClientBase
      * @throws \RuntimeException
      * @internal
      */
-    function __get($name)
+    public function __get($name)
     {
         if (\property_exists($this, $name)) {
             return $this->$name;
@@ -100,7 +100,7 @@ class RichPresenceAssets extends ClientBase
      *
      * @return string|null
      */
-    function getLargeImageURL(?int $size = null)
+    public function getLargeImageURL(?int $size = null)
     {
         if ($this->largeImage !== null) {
             if ($size & ($size - 1)) {
@@ -128,7 +128,7 @@ class RichPresenceAssets extends ClientBase
      *
      * @return string|null
      */
-    function getSmallImageURL(?int $size = null)
+    public function getSmallImageURL(?int $size = null)
     {
         if ($this->smallImage !== null) {
             if ($size & ($size - 1)) {
@@ -153,7 +153,7 @@ class RichPresenceAssets extends ClientBase
      * @return mixed
      * @internal
      */
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         return [
             'large_image' => $this->largeImage,

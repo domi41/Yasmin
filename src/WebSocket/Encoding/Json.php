@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -26,7 +26,7 @@ class Json implements WSEncodingInterface
      *
      * @return string
      */
-    function getName(): string
+    public function getName(): string
     {
         return 'json';
     }
@@ -37,7 +37,7 @@ class Json implements WSEncodingInterface
      * @return void
      * @throws \RuntimeException
      */
-    static function supported(): void
+    public static function supported(): void
     {
         // Nothing to check
     }
@@ -50,7 +50,7 @@ class Json implements WSEncodingInterface
      * @return mixed
      * @throws DiscordGatewayException
      */
-    function decode(string $data)
+    public function decode(string $data)
     {
         $msg = \json_decode($data, true);
         if ($msg === null && \json_last_error() !== \JSON_ERROR_NONE) {
@@ -70,7 +70,7 @@ class Json implements WSEncodingInterface
      * @return string
      * @throws DiscordGatewayException
      */
-    function encode($data): string
+    public function encode($data): string
     {
         $msg = \json_encode($data);
         if ($msg === false && \json_last_error() !== \JSON_ERROR_NONE) {
@@ -89,7 +89,7 @@ class Json implements WSEncodingInterface
      *
      * @return Message
      */
-    function prepareMessage(string $data): Message
+    public function prepareMessage(string $data): Message
     {
         $frame = new Frame($data, true, Frame::OP_TEXT);
 

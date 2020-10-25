@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -46,7 +46,7 @@ class MessageStorage extends Storage implements MessageStorageInterface
      *
      * @internal
      */
-    function __construct(Client $client, TextChannelInterface $channel, ?array $data = null)
+    public function __construct(Client $client, TextChannelInterface $channel, ?array $data = null)
     {
         parent::__construct($client, $data);
         $this->channel = $channel;
@@ -72,7 +72,7 @@ class MessageStorage extends Storage implements MessageStorageInterface
     /**
      * @internal
      */
-    function __destruct()
+    public function __destruct()
     {
         if ($this->timer) {
             $this->client->cancelTimer($this->timer);
@@ -85,7 +85,7 @@ class MessageStorage extends Storage implements MessageStorageInterface
      *
      * @return bool
      */
-    function has($key)
+    public function has($key)
     {
         return parent::has($key);
     }
@@ -96,7 +96,7 @@ class MessageStorage extends Storage implements MessageStorageInterface
      *
      * @return \CharlotteDunois\Yasmin\Models\Message|null
      */
-    function get($key)
+    public function get($key)
     {
         return parent::get($key);
     }
@@ -108,7 +108,7 @@ class MessageStorage extends Storage implements MessageStorageInterface
      *
      * @return $this
      */
-    function set($key, $value)
+    public function set($key, $value)
     {
         if (! $this->enabled) {
             return $this;
@@ -125,7 +125,7 @@ class MessageStorage extends Storage implements MessageStorageInterface
      *
      * @return $this
      */
-    function delete($key)
+    public function delete($key)
     {
         parent::delete($key);
 
@@ -139,7 +139,7 @@ class MessageStorage extends Storage implements MessageStorageInterface
      *
      * @return int
      */
-    function sweep(int $time)
+    public function sweep(int $time)
     {
         if ($time <= 0) {
             $this->clear();

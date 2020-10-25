@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -97,7 +97,7 @@ class Collector
      * @param  callable|null  $filter
      * @param  array  $options
      */
-    function __construct($emitter, string $event, callable $handler, ?callable $filter = null, array $options = [])
+    public function __construct($emitter, string $event, callable $handler, ?callable $filter = null, array $options = [])
     {
         $this->emitter = $emitter;
         $this->event = $event;
@@ -115,7 +115,7 @@ class Collector
      * @return void
      * @internal
      */
-    static function setLoop(LoopInterface $loop)
+    public static function setLoop(LoopInterface $loop)
     {
         self::$loop = $loop;
     }
@@ -127,9 +127,9 @@ class Collector
      * @throws RangeException          The exception the promise gets rejected with, if collecting times out.
      * @throws OutOfBoundsException    The exception the promise gets rejected with, if the promise gets cancelled.
      */
-    function collect()
+    public function collect()
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) {
                 $this->resolve = $resolve;
                 $this->reject = $reject;
@@ -159,15 +159,15 @@ class Collector
 
                 $this->emitter->on($this->event, $this->listener);
             }, function (callable $resolve, callable $reject) {
-            if ($this->timer) {
-                self::$loop->cancelTimer($this->timer);
-                $this->timer = null;
-            }
+                if ($this->timer) {
+                    self::$loop->cancelTimer($this->timer);
+                    $this->timer = null;
+                }
 
-            $this->emitter->removeListener($this->event, $this->listener);
-            $reject(new OutOfBoundsException('Operation cancelled'));
-        }
-        ));
+                $this->emitter->removeListener($this->event, $this->listener);
+                $reject(new OutOfBoundsException('Operation cancelled'));
+            }
+        );
     }
 
     /**
@@ -175,7 +175,7 @@ class Collector
      *
      * @return void
      */
-    function stop()
+    public function stop()
     {
         if ($this->timer) {
             self::$loop->cancelTimer($this->timer);

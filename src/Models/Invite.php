@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -123,7 +123,7 @@ class Invite extends ClientBase
      * @throws Exception
      * @internal
      */
-    function __construct(Client $client, array $invite)
+    public function __construct(Client $client, array $invite)
     {
         parent::__construct($client);
 
@@ -154,7 +154,7 @@ class Invite extends ClientBase
      * @throws RuntimeException
      * @internal
      */
-    function __get($name)
+    public function __get($name)
     {
         if (property_exists($this, $name)) {
             return $this->$name;
@@ -183,9 +183,9 @@ class Invite extends ClientBase
      *
      * @return ExtendedPromiseInterface
      */
-    function delete(string $reason = '')
+    public function delete(string $reason = '')
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($reason) {
                 $this->client->apimanager()->endpoints->invite->deleteInvite($this->code, $reason)->done(
                     function () use ($resolve) {
@@ -194,6 +194,6 @@ class Invite extends ClientBase
                     $reject
                 );
             }
-        ));
+        );
     }
 }

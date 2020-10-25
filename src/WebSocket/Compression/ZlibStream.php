@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -30,7 +30,7 @@ class ZlibStream implements WSCompressionInterface
      * @return void
      * @throws \Exception
      */
-    static function supported(): void
+    public static function supported(): void
     {
         if (! \function_exists('\inflate_init')) {
             throw new \RuntimeException('Zlib is not supported by this PHP installation');
@@ -42,7 +42,7 @@ class ZlibStream implements WSCompressionInterface
      *
      * @return string
      */
-    static function getName(): string
+    public static function getName(): string
     {
         return 'zlib-stream';
     }
@@ -52,7 +52,7 @@ class ZlibStream implements WSCompressionInterface
      *
      * @return bool
      */
-    static function isPayloadCompression(): bool
+    public static function isPayloadCompression(): bool
     {
         return false;
     }
@@ -63,7 +63,7 @@ class ZlibStream implements WSCompressionInterface
      * @return void
      * @throws \RuntimeException
      */
-    function init(): void
+    public function init(): void
     {
         $this->context = \inflate_init(\ZLIB_ENCODING_DEFLATE);
         if (! $this->context) {
@@ -76,7 +76,7 @@ class ZlibStream implements WSCompressionInterface
      *
      * @return void
      */
-    function destroy(): void
+    public function destroy(): void
     {
         $this->context = null;
     }
@@ -89,7 +89,7 @@ class ZlibStream implements WSCompressionInterface
      * @return string
      * @throws DiscordGatewayException
      */
-    function decompress(string $data): string
+    public function decompress(string $data): string
     {
         if (! $this->context) {
             throw new DiscordGatewayException('No inflate context initialized');

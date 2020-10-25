@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -23,7 +23,7 @@ interface WSEncodingInterface
      *
      * @return string
      */
-    function getName(): string;
+    public function getName(): string;
 
     /**
      * Checks if the system supports it.
@@ -31,7 +31,7 @@ interface WSEncodingInterface
      * @return void
      * @throws RuntimeException
      */
-    static function supported(): void;
+    public static function supported(): void;
 
     /**
      * Decodes data.
@@ -41,7 +41,7 @@ interface WSEncodingInterface
      * @return mixed
      * @throws DiscordGatewayException
      */
-    function decode(string $data);
+    public function decode(string $data);
 
     /**
      * Encodes data.
@@ -51,7 +51,7 @@ interface WSEncodingInterface
      * @return string
      * @throws DiscordGatewayException
      */
-    function encode($data): string;
+    public function encode($data): string;
 
     /**
      * Prepares the data to be sent.
@@ -60,5 +60,5 @@ interface WSEncodingInterface
      *
      * @return Message
      */
-    function prepareMessage(string $data): Message;
+    public function prepareMessage(string $data): Message;
 }

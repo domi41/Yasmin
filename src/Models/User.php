@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -127,7 +127,7 @@ class User extends ClientBase
      *
      * @internal
      */
-    function __construct(Client $client, array $user, bool $isWebhook = false, bool $userFetched = false)
+    public function __construct(Client $client, array $user, bool $isWebhook = false, bool $userFetched = false)
     {
         parent::__construct($client);
 
@@ -145,7 +145,7 @@ class User extends ClientBase
      * @throws RuntimeException
      * @internal
      */
-    function __get($name)
+    public function __get($name)
     {
         if (property_exists($this, $name)) {
             return $this->$name;
@@ -167,7 +167,7 @@ class User extends ClientBase
      * @return mixed
      * @internal
      */
-    function __debugInfo()
+    public function __debugInfo()
     {
         $vars = parent::__debugInfo();
         unset($vars['userFetched']);
@@ -181,17 +181,16 @@ class User extends ClientBase
      * @return ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Models\DMChannel
      */
-    function createDM()
+    public function createDM()
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) {
                 $channel = $this->client->channels->first(
                     function ($channel) {
-                        return (
+                        return
                             $channel instanceof DMChannelInterface &&
                             ! ($channel instanceof GroupDMChannelInterface) &&
-                            $channel->isRecipient($this)
-                        );
+                            $channel->isRecipient($this);
                     }
                 );
 
@@ -207,7 +206,7 @@ class User extends ClientBase
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -215,13 +214,13 @@ class User extends ClientBase
      *
      * @return ExtendedPromiseInterface
      */
-    function deleteDM()
+    public function deleteDM()
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) {
                 $channel = $this->client->channels->first(
                     function ($channel) {
-                        return ($channel instanceof DMChannelInterface && $channel->isRecipient($this));
+                        return $channel instanceof DMChannelInterface && $channel->isRecipient($this);
                     }
                 );
 
@@ -237,7 +236,7 @@ class User extends ClientBase
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -248,7 +247,7 @@ class User extends ClientBase
      * @return string
      * @throws InvalidArgumentException Thrown if $size is not a power of 2
      */
-    function getDefaultAvatarURL(?int $size = 1024)
+    public function getDefaultAvatarURL(?int $size = 1024)
     {
         if (! ImageHelpers::isPowerOfTwo($size)) {
             throw new InvalidArgumentException('Invalid size "'.$size.'", expected any powers of 2');
@@ -270,7 +269,7 @@ class User extends ClientBase
      * @return string|null
      * @throws InvalidArgumentException Thrown if $size is not a power of 2
      */
-    function getAvatarURL(?int $size = 1024, string $format = '')
+    public function getAvatarURL(?int $size = 1024, string $format = '')
     {
         if (! ImageHelpers::isPowerOfTwo($size)) {
             throw new InvalidArgumentException('Invalid size "'.$size.'", expected any powers of 2');
@@ -301,9 +300,9 @@ class User extends ClientBase
      * @return string
      * @throws InvalidArgumentException Thrown if $size is not a power of 2
      */
-    function getDisplayAvatarURL(?int $size = 1024, string $format = '')
+    public function getDisplayAvatarURL(?int $size = 1024, string $format = '')
     {
-        return ($this->avatar ? $this->getAvatarURL($size, $format) : $this->getDefaultAvatarURL($size));
+        return $this->avatar ? $this->getAvatarURL($size, $format) : $this->getDefaultAvatarURL($size);
     }
 
     /**
@@ -311,7 +310,7 @@ class User extends ClientBase
      *
      * @return Presence|null
      */
-    function getPresence()
+    public function getPresence()
     {
         if ($this->client->presences->has($this->id)) {
             return $this->client->presences->get($this->id);
@@ -337,9 +336,9 @@ class User extends ClientBase
      * @return ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Models\UserConnection
      */
-    function fetchUserConnections(string $accessToken)
+    public function fetchUserConnections(string $accessToken)
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($accessToken) {
                 $this->client->apimanager()->endpoints->user->getUserConnections($accessToken)->done(
                     function ($data) use ($resolve) {
@@ -354,7 +353,7 @@ class User extends ClientBase
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -362,7 +361,7 @@ class User extends ClientBase
      *
      * @return string
      */
-    function __toString()
+    public function __toString()
     {
         return '<@'.$this->id.'>';
     }
@@ -373,7 +372,7 @@ class User extends ClientBase
      * @return void
      * @internal
      */
-    function _patch(array $user)
+    public function _patch(array $user)
     {
         $this->username = (string) $user['username'];
         $this->discriminator = (string) ($user['discriminator'] ?? '0000');

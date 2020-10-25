@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -40,12 +40,12 @@ class Invite
      *
      * @param  APIManager  $api
      */
-    function __construct(APIManager $api)
+    public function __construct(APIManager $api)
     {
         $this->api = $api;
     }
 
-    function getInvite(string $code, bool $withCounts = false)
+    public function getInvite(string $code, bool $withCounts = false)
     {
         $url = APIEndpoints::format(self::ENDPOINTS['get'], $code);
 
@@ -57,14 +57,14 @@ class Invite
         return $this->api->makeRequest('GET', $url, $opts);
     }
 
-    function deleteInvite(string $code, string $reason = '')
+    public function deleteInvite(string $code, string $reason = '')
     {
         $url = APIEndpoints::format(self::ENDPOINTS['delete'], $code);
 
         return $this->api->makeRequest('DELETE', $url, ['auditLogReason' => $reason]);
     }
 
-    function acceptInvite(string $code)
+    public function acceptInvite(string $code)
     {
         $url = APIEndpoints::format(self::ENDPOINTS['accept'], $code);
 

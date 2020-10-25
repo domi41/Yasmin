@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -31,7 +31,7 @@ class EmojiStorage extends Storage implements EmojiStorageInterface
      *
      * @internal
      */
-    function __construct(Client $client, ?Guild $guild = null, ?array $data = null)
+    public function __construct(Client $client, ?Guild $guild = null, ?array $data = null)
     {
         parent::__construct($client, $data);
         $this->guild = $guild;
@@ -47,7 +47,7 @@ class EmojiStorage extends Storage implements EmojiStorageInterface
      * @return Emoji
      * @throws \InvalidArgumentException
      */
-    function resolve($emoji)
+    public function resolve($emoji)
     {
         if ($emoji instanceof Emoji) {
             return $emoji;
@@ -74,7 +74,7 @@ class EmojiStorage extends Storage implements EmojiStorageInterface
      *
      * @return bool
      */
-    function has($key)
+    public function has($key)
     {
         return parent::has($key);
     }
@@ -85,7 +85,7 @@ class EmojiStorage extends Storage implements EmojiStorageInterface
      *
      * @return Emoji|null
      */
-    function get($key)
+    public function get($key)
     {
         return parent::get($key);
     }
@@ -97,7 +97,7 @@ class EmojiStorage extends Storage implements EmojiStorageInterface
      *
      * @return $this
      */
-    function set($key, $value)
+    public function set($key, $value)
     {
         parent::set($key, $value);
         if ($this !== $this->client->emojis) {
@@ -113,7 +113,7 @@ class EmojiStorage extends Storage implements EmojiStorageInterface
      *
      * @return $this
      */
-    function delete($key)
+    public function delete($key)
     {
         parent::delete($key);
         if ($this !== $this->client->emojis) {
@@ -131,7 +131,7 @@ class EmojiStorage extends Storage implements EmojiStorageInterface
      * @return Emoji
      * @internal
      */
-    function factory(array $data)
+    public function factory(array $data)
     {
         if (parent::has($data['id'])) {
             $emoji = parent::get($data['id']);

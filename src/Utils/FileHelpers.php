@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -13,11 +13,9 @@ use React\EventLoop\LoopInterface;
 use React\Filesystem\Filesystem;
 use React\Filesystem\FilesystemInterface;
 use React\Promise\PromiseInterface;
-
-use RuntimeException;
-
 use function React\Promise\reject;
 use function React\Promise\resolve;
+use RuntimeException;
 
 /**
  * File Helper methods.
@@ -42,7 +40,7 @@ class FileHelpers
      * @return void
      * @internal
      */
-    static function setLoop(LoopInterface $loop)
+    public static function setLoop(LoopInterface $loop)
     {
         self::$loop = $loop;
 
@@ -59,7 +57,7 @@ class FileHelpers
      *
      * @return FilesystemInterface|false|null
      */
-    static function getFilesystem()
+    public static function getFilesystem()
     {
         return self::$filesystem;
     }
@@ -71,7 +69,7 @@ class FileHelpers
      *
      * @return void
      */
-    static function setFilesystem(?FilesystemInterface $filesystem)
+    public static function setFilesystem(?FilesystemInterface $filesystem)
     {
         if ($filesystem === null) {
             $filesystem = false;
@@ -87,7 +85,7 @@ class FileHelpers
      *
      * @return PromiseInterface
      */
-    static function resolveFileResolvable(string $file)
+    public static function resolveFileResolvable(string $file)
     {
         $rfile = @realpath($file);
         if ($rfile) {

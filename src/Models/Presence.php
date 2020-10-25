@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -68,7 +68,7 @@ class Presence extends ClientBase
      *
      * @throws RuntimeException
      */
-    function __construct(Client $client, array $presence)
+    public function __construct(Client $client, array $presence)
     {
         parent::__construct($client);
         $this->userID = $this->client->users->patch($presence['user'])->id;
@@ -82,7 +82,7 @@ class Presence extends ClientBase
      * @throws RuntimeException
      * @internal
      */
-    function __get($name)
+    public function __get($name)
     {
         if (property_exists($this, $name)) {
             return $this->$name;
@@ -101,7 +101,7 @@ class Presence extends ClientBase
      * @return mixed
      * @internal
      */
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         return [
             'status'       => $this->status,
@@ -114,7 +114,7 @@ class Presence extends ClientBase
      * @return void
      * @internal
      */
-    function _patch(array $presence)
+    public function _patch(array $presence)
     {
         $this->activity = (! empty($presence['game']) ? (new Activity($this->client, $presence['game'])) : null);
         $this->status = $presence['status'];
@@ -123,7 +123,7 @@ class Presence extends ClientBase
         )) : null);
         $this->activities = (! empty($presence['activities']) ? array_map(
             function (array $activitiy) {
-                return (new Activity($this->client, $activitiy));
+                return new Activity($this->client, $activitiy);
             },
             $presence['activities']
         ) : []);
