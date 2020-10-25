@@ -9,8 +9,6 @@
 
 namespace CharlotteDunois\Yasmin\WebSocket\Handlers;
 
-use function array_diff_key;
-use function array_flip;
 use CharlotteDunois\Yasmin\Interfaces\WSEventInterface;
 use CharlotteDunois\Yasmin\Interfaces\WSHandlerInterface;
 use CharlotteDunois\Yasmin\WebSocket\Events\ChannelCreate;
@@ -47,9 +45,7 @@ use CharlotteDunois\Yasmin\WebSocket\Events\VoiceServerUpdate;
 use CharlotteDunois\Yasmin\WebSocket\Events\VoiceStateUpdate;
 use CharlotteDunois\Yasmin\WebSocket\WSConnection;
 use CharlotteDunois\Yasmin\WebSocket\WSHandler;
-use function class_implements;
 use Exception;
-use function in_array;
 use RuntimeException;
 
 /**

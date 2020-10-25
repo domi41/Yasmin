@@ -17,6 +17,7 @@ use Ratchet\Client\WebSocket;
 use Ratchet\RFC6455\Messaging\Message;
 use React\Promise\Deferred;
 use React\Promise\Promise;
+use function React\Promise\resolve;
 
 /**
  * Handles the WS connection.
@@ -237,7 +238,7 @@ class WSConnection implements EventEmitterInterface
      */
     public function __get($name)
     {
-        if (\property_exists($this, $name)) {
+        if (property_exists($this, $name)) {
             return $this->$name;
         }
 
@@ -257,24 +258,26 @@ class WSConnection implements EventEmitterInterface
     /**
      * Connects to the gateway url. Resolves with $this.
      *
+     * @param  bool  $reconnect
+     *
      * @return \React\Promise\ExtendedPromiseInterface
-     * @throws \RuntimeException
+     * @throws \Throwable
      */
     public function connect(bool $reconnect = false)
     {
         if ($this->ws) {
-            return \React\Promise\resolve();
+            return resolve();
         }
 
         if (! $this->wsmanager->gateway) {
             throw new \RuntimeException('Unable to connect to unknown gateway');
         }
 
-        if (($this->wsmanager->lastIdentify ?? 0) > (\time() - 5)) {
+        if (($this->wsmanager->lastIdentify ?? 0) > (time() - 5)) {
             return new Promise(
                 function (callable $resolve, callable $reject) {
                     $this->wsmanager->client->addTimer(
-                        (5 - (\time() - $this->wsmanager->lastIdentify)),
+                        (5 - (time() - $this->wsmanager->lastIdentify)),
                         function () use ($resolve, $reject) {
                             $this->connect()->done($resolve, $reject);
                         }
@@ -283,10 +286,10 @@ class WSConnection implements EventEmitterInterface
             );
         }
 
-        $compress = \explode('\\', \get_class($this->compressContext));
+        $compress = explode('\\', get_class($this->compressContext));
         $this->wsmanager->client->emit(
             'debug',
-            'Shard '.$this->shardID.' using compress context '.\array_pop($compress)
+            'Shard '.$this->shardID.' using compress context '.array_pop($compress)
         );
         $compress = null;
 
@@ -333,6 +336,9 @@ class WSConnection implements EventEmitterInterface
     /**
      * Closes the WS connection.
      *
+     * @param  int  $code
+     * @param  string  $reason
+     *
      * @return void
      */
     public function disconnect(int $code = 1000, string $reason = '')
@@ -352,6 +358,8 @@ class WSConnection implements EventEmitterInterface
     /**
      * Closes the WS connection.
      *
+     * @param  bool  $resumable
+     *
      * @return void
      */
     public function reconnect(bool $resumable = true)
@@ -370,6 +378,8 @@ class WSConnection implements EventEmitterInterface
 
     /**
      * Closes the WS connection.
+     *
+     * @param  bool  $forceNewGateway
      *
      * @return \React\Promise\ExtendedPromiseInterface
      */
@@ -396,7 +406,7 @@ class WSConnection implements EventEmitterInterface
                 $this->status = Client::WS_STATUS_DISCONNECTED;
 
                 if ($error instanceof \Throwable) {
-                    $error = \str_replace(["\r", "\n"], '', $error->getMessage());
+                    $error = str_replace(["\r", "\n"], '', $error->getMessage());
                 }
 
                 $this->wsmanager->client->emit(
@@ -454,13 +464,13 @@ class WSConnection implements EventEmitterInterface
             return;
         } elseif ($this->ratelimits['remaining'] === 0) {
             return;
-        } elseif (\count($this->queue) === 0) {
+        } elseif (count($this->queue) === 0) {
             return;
         }
 
         $this->running = true;
 
-        while ($this->ratelimits['remaining'] > 0 && \count($this->queue) > 0) {
+        while ($this->ratelimits['remaining'] > 0 && count($this->queue) > 0) {
             $element = \array_shift($this->queue);
             $this->ratelimits['remaining']--;
 
@@ -478,6 +488,8 @@ class WSConnection implements EventEmitterInterface
 
     /**
      * Set authenticated.
+     *
+     * @param  bool  $state
      *
      * @return void
      */
@@ -499,6 +511,8 @@ class WSConnection implements EventEmitterInterface
     /**
      * Set the session ID.
      *
+     * @param  string|null  $id
+     *
      * @return void
      */
     public function setSessionID(?string $id)
@@ -508,6 +522,8 @@ class WSConnection implements EventEmitterInterface
 
     /**
      * Sets the sequence.
+     *
+     * @param $sequence
      *
      * @return void
      */
@@ -539,7 +555,7 @@ class WSConnection implements EventEmitterInterface
             'd'  => [
                 'token'           => $this->wsmanager->client->token,
                 'properties'      => [
-                    '$os'      => \php_uname('s'),
+                    '$os'      => php_uname('s'),
                     '$browser' => 'Yasmin '.Client::VERSION,
                     '$device'  => 'Yasmin '.Client::VERSION,
                 ],
@@ -553,7 +569,7 @@ class WSConnection implements EventEmitterInterface
         ];
 
         $presence = (array) $this->wsmanager->client->getOption('ws.presence', []);
-        if (\is_array($presence) && ! empty($presence)) {
+        if (is_array($presence) && ! empty($presence)) {
             $packet['d']['presence'] = $presence;
         }
 
@@ -610,6 +626,8 @@ class WSConnection implements EventEmitterInterface
     /**
      * Handles heartbeat ack.
      *
+     * @param $end
+     *
      * @return void
      */
     public function _pong($end)
@@ -617,9 +635,9 @@ class WSConnection implements EventEmitterInterface
         $time = \ceil(($end - $this->wsHeartbeat['dateline']) * 1000);
         $this->pings[] = (int) $time;
 
-        $pings = \count($this->pings);
+        $pings = count($this->pings);
         if ($pings > 3) {
-            $this->pings = \array_slice($this->pings, ($pings - 3));
+            $this->pings = array_slice($this->pings, ($pings - 3));
         }
 
         $this->wsHeartbeat['ack'] = true;
@@ -630,6 +648,8 @@ class WSConnection implements EventEmitterInterface
 
     /**
      * Direct ws send method. DO NOT USE.
+     *
+     * @param  array  $packet
      *
      * @return void
      */
@@ -657,7 +677,13 @@ class WSConnection implements EventEmitterInterface
     /**
      * Initializes the websocet.
      *
+     * @param  WebSocket  $conn
+     * @param  bool  $ready
+     * @param  bool  $reconnect
+     * @param  Deferred  $deferred
+     *
      * @return void
+     * @throws \Exception
      */
     protected function initWS(
         WebSocket $conn,
@@ -838,7 +864,7 @@ class WSConnection implements EventEmitterInterface
 
             $this->emit('close', $code, $reason);
 
-            if (\in_array($code, $this->wsCloseCodes['end'])) {
+            if (in_array($code, $this->wsCloseCodes['end'])) {
                 return $deferred->reject(new \RuntimeException(WSManager::WS_CLOSE_CODES[$code]));
             }
 
@@ -851,7 +877,7 @@ class WSConnection implements EventEmitterInterface
                 return;
             }
 
-            if ($code === 1000 || ($code >= 4000 && ! \in_array($code, $this->wsCloseCodes['resumable']))) {
+            if ($code === 1000 || ($code >= 4000 && ! in_array($code, $this->wsCloseCodes['resumable']))) {
                 $this->wsSessionID = null;
             }
 

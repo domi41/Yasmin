@@ -63,11 +63,11 @@ class WSHandler
 
     public function __get($name)
     {
-        if (\property_exists($this, $name)) {
+        if (property_exists($this, $name)) {
             return $this->$name;
         }
 
-        throw new \RuntimeException('Undefined property: '.\get_class($this).'::$'.$name);
+        throw new \RuntimeException('Undefined property: '.get_class($this).'::$'.$name);
     }
 
     /**
@@ -86,6 +86,9 @@ class WSHandler
 
     /**
      * Handles a message.
+     *
+     * @param  WSConnection  $ws
+     * @param $message
      *
      * @return void
      */
@@ -108,12 +111,14 @@ class WSHandler
     /**
      * Registers a handler.
      *
+     * @param  int  $op
+     * @param  string  $class
+     *
      * @return void
-     * @throws \RuntimeException
      */
     public function register(int $op, string $class)
     {
-        if (! \in_array('CharlotteDunois\Yasmin\Interfaces\WSHandlerInterface', \class_implements($class))) {
+        if (! in_array('CharlotteDunois\Yasmin\Interfaces\WSHandlerInterface', \class_implements($class))) {
             throw new \RuntimeException('Specified handler class does not implement interface');
         }
 

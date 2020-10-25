@@ -157,19 +157,19 @@ class WSManager implements EventEmitterInterface
 
         $compression = $this->client->getOption('ws.compression', Client::WS_DEFAULT_COMPRESSION);
 
-        $name = \str_replace('-', '', \ucwords($compression, '-'));
-        if (\strpos($name, '\\') === false) {
+        $name = str_replace('-', '', \ucwords($compression, '-'));
+        if (strpos($name, '\\') === false) {
             $name = '\\CharlotteDunois\\Yasmin\\WebSocket\\Compression\\'.$name;
         }
 
-        if (! \class_exists($name, true)) {
+        if (! class_exists($name, true)) {
             throw new \RuntimeException('Specified WS compression class does not exist');
         }
 
         $name::supported();
 
-        $interfaces = \class_implements($name);
-        if (! \in_array('CharlotteDunois\\Yasmin\\Interfaces\\WSCompressionInterface', $interfaces)) {
+        $interfaces = class_implements($name);
+        if (! in_array('CharlotteDunois\\Yasmin\\Interfaces\\WSCompressionInterface', $interfaces)) {
             throw new \RuntimeException('Specified WS compression class does not implement necessary interface');
         }
 
@@ -262,9 +262,12 @@ class WSManager implements EventEmitterInterface
     /**
      * Connects the specified shard to the gateway url. Resolves with an instance of WSConnection.
      *
+     * @param  int  $shardID
+     * @param  string|null  $gateway
+     * @param  array  $querystring
+     *
      * @return \React\Promise\ExtendedPromiseInterface
-     * @throws \RuntimeException
-     * @throws \LogicException
+     * @throws \Throwable
      * @see \CharlotteDunois\Yasmin\WebSocket\WSConnection
      */
     public function connectShard(int $shardID, ?string $gateway = null, array $querystring = [])
@@ -277,11 +280,11 @@ class WSManager implements EventEmitterInterface
             throw new \LogicException('No client token to start with');
         }
 
-        if (($this->lastIdentify ?? 0) > (\time() - 5)) {
+        if (($this->lastIdentify ?? 0) > (time() - 5)) {
             return new Promise(
                 function (callable $resolve, callable $reject) use ($shardID, $gateway, $querystring) {
                     $this->client->addTimer(
-                        (5 - (\time() - $this->lastIdentify)),
+                        (5 - (time() - $this->lastIdentify)),
                         function () use ($shardID, $gateway, $querystring, $resolve, $reject) {
                             $this->connectShard($shardID, $gateway, $querystring)->done($resolve, $reject);
                         }
@@ -296,11 +299,11 @@ class WSManager implements EventEmitterInterface
                 $gateway = $this->gateway;
             }
 
-            if (($this->lastIdentify ?? 0) > (\time(
+            if (($this->lastIdentify ?? 0) > (time(
                     ) - 30)) { // Make sure we reconnect after at least 30 seconds, if there was like an outage, to prevent spamming
                 return new Promise(
                     function (callable $resolve, callable $reject) use ($shardID, $gateway, $querystring) {
-                        $time = (30 - (\time() - $this->lastIdentify));
+                        $time = (30 - (time() - $this->lastIdentify));
                         $this->client->emit(
                             'debug',
                             'Reconnect for shard '.$shardID.' will be attempted in '.$time.' seconds'
@@ -385,15 +388,15 @@ class WSManager implements EventEmitterInterface
         if ($this->encoding === null) {
             $encoding = $querystring['encoding'] ?? self::WS['encoding'];
 
-            $name = \str_replace('-', '', \ucwords($encoding, '-'));
-            if (\strpos($name, '\\') === false) {
+            $name = str_replace('-', '', \ucwords($encoding, '-'));
+            if (strpos($name, '\\') === false) {
                 $name = '\\CharlotteDunois\\Yasmin\\WebSocket\\Encoding\\'.$name;
             }
 
             $name::supported();
 
-            $interfaces = \class_implements($name);
-            if (! \in_array('CharlotteDunois\\Yasmin\\Interfaces\\WSEncodingInterface', $interfaces)) {
+            $interfaces = class_implements($name);
+            if (! in_array('CharlotteDunois\\Yasmin\\Interfaces\\WSEncodingInterface', $interfaces)) {
                 throw new \RuntimeException('Specified WS encoding class does not implement necessary interface');
             }
 
@@ -420,7 +423,7 @@ class WSManager implements EventEmitterInterface
             }
 
             $this->gatewayQS = $querystring;
-            $gateway = \rtrim($gateway, '/').'/?'.\http_build_query($querystring);
+            $gateway = rtrim($gateway, '/').'/?'.\http_build_query($querystring);
         }
 
         return $gateway;

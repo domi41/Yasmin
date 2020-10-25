@@ -9,11 +9,9 @@
 
 namespace CharlotteDunois\Yasmin\WebSocket\Handlers;
 
-use function ceil;
 use CharlotteDunois\Yasmin\Interfaces\WSHandlerInterface;
 use CharlotteDunois\Yasmin\WebSocket\WSConnection;
 use CharlotteDunois\Yasmin\WebSocket\WSHandler;
-use function time;
 
 /**
  * WS Event handler.
