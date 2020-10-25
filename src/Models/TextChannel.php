@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -22,9 +22,8 @@ use CharlotteDunois\Yasmin\Utils\Snowflake;
 use DateTime;
 use React\Promise\ExtendedPromiseInterface;
 use React\Promise\Promise;
-use RuntimeException;
-
 use function React\Promise\resolve;
+use RuntimeException;
 
 /**
  * Represents a guild's text channel.
@@ -142,7 +141,7 @@ class TextChannel extends ClientBase implements GuildTextChannelInterface
      *
      * @internal
      */
-    function __construct(
+    public function __construct(
         Client $client,
         Guild $guild,
         array $channel
@@ -172,7 +171,7 @@ class TextChannel extends ClientBase implements GuildTextChannelInterface
      * @throws RuntimeException
      * @internal
      */
-    function __get($name)
+    public function __get($name)
     {
         if (property_exists($this, $name)) {
             return $this->$name;
@@ -200,9 +199,9 @@ class TextChannel extends ClientBase implements GuildTextChannelInterface
      * @return ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Models\Webhook
      */
-    function createWebhook(string $name, ?string $avatar = null, string $reason = '')
+    public function createWebhook(string $name, ?string $avatar = null, string $reason = '')
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($name, $avatar, $reason) {
                 if (! empty($avatar)) {
                     $file = FileHelpers::resolveFileResolvable($avatar)->then(
@@ -232,7 +231,7 @@ class TextChannel extends ClientBase implements GuildTextChannelInterface
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -241,9 +240,9 @@ class TextChannel extends ClientBase implements GuildTextChannelInterface
      * @return ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Models\Webhook
      */
-    function fetchWebhooks()
+    public function fetchWebhooks()
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) {
                 $this->client->apimanager()->endpoints->webhook->getChannelWebhooks($this->id)->done(
                     function ($data) use ($resolve) {
@@ -259,7 +258,7 @@ class TextChannel extends ClientBase implements GuildTextChannelInterface
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -270,7 +269,7 @@ class TextChannel extends ClientBase implements GuildTextChannelInterface
      *
      * @return ExtendedPromiseInterface
      */
-    function setSlowmode(int $slowmode, string $reason = '')
+    public function setSlowmode(int $slowmode, string $reason = '')
     {
         return $this->edit(['slowmode' => $slowmode], $reason);
     }
@@ -280,7 +279,7 @@ class TextChannel extends ClientBase implements GuildTextChannelInterface
      *
      * @return string
      */
-    function __toString()
+    public function __toString()
     {
         return '<#'.$this->id.'>';
     }
@@ -289,7 +288,7 @@ class TextChannel extends ClientBase implements GuildTextChannelInterface
      * @return void
      * @internal
      */
-    function _patch(array $channel)
+    public function _patch(array $channel)
     {
         $this->name = (string) ($channel['name'] ?? $this->name ?? '');
         $this->topic = (string) ($channel['topic'] ?? $this->topic ?? '');

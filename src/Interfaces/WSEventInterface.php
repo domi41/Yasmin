@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -23,7 +23,7 @@ interface WSEventInterface
     /**
      * Constructor.
      */
-    function __construct(
+    public function __construct(
         Client $client,
         WSManager $wsmanager
     );
@@ -33,5 +33,5 @@ interface WSEventInterface
      *
      * @return void
      */
-    function handle(WSConnection $ws, $data): void;
+    public function handle(WSConnection $ws, $data): void;
 }

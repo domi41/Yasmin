@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -137,7 +137,7 @@ class AuditLogEntry extends ClientBase
      *
      * @internal
      */
-    function __construct(Client $client, AuditLog $log, array $entry)
+    public function __construct(Client $client, AuditLog $log, array $entry)
     {
         parent::__construct($client);
         $this->log = $log;
@@ -215,7 +215,7 @@ class AuditLogEntry extends ClientBase
                         function ($invites) use ($change) {
                             return $invites->first(
                                 function ($invite) use ($change) {
-                                    return ($invite->code === $change);
+                                    return $invite->code === $change;
                                 }
                             );
                         }
@@ -245,7 +245,7 @@ class AuditLogEntry extends ClientBase
      * @return mixed
      * @internal
      */
-    function __get($name)
+    public function __get($name)
     {
         if (\property_exists($this, $name)) {
             return $this->$name;
@@ -270,7 +270,7 @@ class AuditLogEntry extends ClientBase
      *
      * @return string
      */
-    static function getActionType(int $actionType)
+    public static function getActionType(int $actionType)
     {
         if (\in_array(
             $actionType,
@@ -333,7 +333,7 @@ class AuditLogEntry extends ClientBase
      * @return string
      * @see \CharlotteDunois\Yasmin\Models\AuditLogEntry::TARGET_TYPES
      */
-    static function getTargetType(int $target)
+    public static function getTargetType(int $target)
     {
         if ($target < 10) {
             return 'GUILD';
@@ -367,7 +367,7 @@ class AuditLogEntry extends ClientBase
      * @return mixed
      * @internal
      */
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         return $this->id;
     }

@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -64,7 +64,7 @@ class MessageApplication extends ClientBase
      *
      * @internal
      */
-    function __construct(Client $client, array $application)
+    public function __construct(Client $client, array $application)
     {
         parent::__construct($client);
 
@@ -81,7 +81,7 @@ class MessageApplication extends ClientBase
      * @throws \RuntimeException
      * @internal
      */
-    function __get($name)
+    public function __get($name)
     {
         if (property_exists($this, $name)) {
             return $this->$name;
@@ -97,7 +97,7 @@ class MessageApplication extends ClientBase
      *
      * @return string|null
      */
-    function getCoverImageURL(?int $size = null)
+    public function getCoverImageURL(?int $size = null)
     {
         if ($size & ($size - 1)) {
             throw new \InvalidArgumentException('Invalid size "'.$size.'", expected any powers of 2');

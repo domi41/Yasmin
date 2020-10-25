@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -34,7 +34,7 @@ class Snowflake
     const EPOCH = 1420070400;
 
     protected static $incrementIndex = 0;
-    protected static $incrementTime  = 0;
+    protected static $incrementTime = 0;
 
     protected $value;
     protected $timestamp;
@@ -50,7 +50,7 @@ class Snowflake
      *
      * @throws InvalidArgumentException
      */
-    function __construct($snowflake)
+    public function __construct($snowflake)
     {
         if (PHP_INT_SIZE === 4) {
             $this->value = $snowflake;
@@ -86,7 +86,7 @@ class Snowflake
      * @throws Exception
      * @internal
      */
-    function __get($name)
+    public function __get($name)
     {
         switch ($name) {
             case 'timestamp':
@@ -111,9 +111,9 @@ class Snowflake
      *
      * @return Snowflake
      */
-    static function deconstruct($snowflake)
+    public static function deconstruct($snowflake)
     {
-        return (new self($snowflake));
+        return new self($snowflake);
     }
 
     /**
@@ -124,7 +124,7 @@ class Snowflake
      *
      * @return string
      */
-    static function generate(int $workerID = 1, int $processID = 0)
+    public static function generate(int $workerID = 1, int $processID = 0)
     {
         if ($workerID > 31 || $workerID < 0) {
             throw new InvalidArgumentException('Worker ID is out of range');
@@ -177,7 +177,7 @@ class Snowflake
                     STR_PAD_LEFT
                 );
 
-            return ((string) bindec($binary));
+            return (string) bindec($binary);
         }
     }
 
@@ -188,7 +188,7 @@ class Snowflake
      *
      * @return int
      */
-    function getShardID(int $shardCount)
+    public function getShardID(int $shardCount)
     {
         if (PHP_INT_SIZE === 4) {
             $time = base_convert(substr($this->binary, 0, 42), 2, 10);
@@ -198,7 +198,7 @@ class Snowflake
         } else {
             $time = $this->value >> 22;
 
-            return ($time % $shardCount);
+            return $time % $shardCount;
         }
     }
 }

@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -72,40 +72,40 @@ class Channel
      *
      * @param  APIManager  $api
      */
-    function __construct(APIManager $api)
+    public function __construct(APIManager $api)
     {
         $this->api = $api;
     }
 
-    function getChannel(string $channelid)
+    public function getChannel(string $channelid)
     {
         $url = APIEndpoints::format(self::ENDPOINTS['get'], $channelid);
 
         return $this->api->makeRequest('GET', $url, []);
     }
 
-    function modifyChannel(string $channelid, array $data, string $reason = '')
+    public function modifyChannel(string $channelid, array $data, string $reason = '')
     {
         $url = APIEndpoints::format(self::ENDPOINTS['modify'], $channelid);
 
         return $this->api->makeRequest('PATCH', $url, ['auditLogReason' => $reason, 'data' => $data]);
     }
 
-    function deleteChannel(string $channelid, string $reason = '')
+    public function deleteChannel(string $channelid, string $reason = '')
     {
         $url = APIEndpoints::format(self::ENDPOINTS['delete'], $channelid);
 
         return $this->api->makeRequest('DELETE', $url, ['auditLogReason' => $reason]);
     }
 
-    function getChannelMessages(string $channelid, array $options = [])
+    public function getChannelMessages(string $channelid, array $options = [])
     {
         $url = APIEndpoints::format(self::ENDPOINTS['messages']['list'], $channelid);
 
         return $this->api->makeRequest('GET', $url, ['querystring' => $options]);
     }
 
-    function getChannelMessage(string $channelid, string $messageid)
+    public function getChannelMessage(string $channelid, string $messageid)
     {
         $url = APIEndpoints::format(
             self::ENDPOINTS['messages']['get'],
@@ -116,14 +116,14 @@ class Channel
         return $this->api->makeRequest('GET', $url, []);
     }
 
-    function createMessage(string $channelid, array $options, array $files = [])
+    public function createMessage(string $channelid, array $options, array $files = [])
     {
         $url = APIEndpoints::format(self::ENDPOINTS['messages']['create'], $channelid);
 
         return $this->api->makeRequest('POST', $url, ['data' => $options, 'files' => $files]);
     }
 
-    function editMessage(string $channelid, string $messageid, array $options)
+    public function editMessage(string $channelid, string $messageid, array $options)
     {
         $url = APIEndpoints::format(
             self::ENDPOINTS['messages']['edit'],
@@ -134,7 +134,7 @@ class Channel
         return $this->api->makeRequest('PATCH', $url, ['data' => $options]);
     }
 
-    function deleteMessage(string $channelid, string $messageid, string $reason = '')
+    public function deleteMessage(string $channelid, string $messageid, string $reason = '')
     {
         $url = APIEndpoints::format(
             self::ENDPOINTS['messages']['delete'],
@@ -145,7 +145,7 @@ class Channel
         return $this->api->makeRequest('DELETE', $url, ['auditLogReason' => $reason]);
     }
 
-    function bulkDeleteMessages(string $channelid, array $snowflakes, string $reason = '')
+    public function bulkDeleteMessages(string $channelid, array $snowflakes, string $reason = '')
     {
         $url = APIEndpoints::format(self::ENDPOINTS['messages']['bulkDelete'], $channelid);
 
@@ -156,7 +156,7 @@ class Channel
         );
     }
 
-    function createMessageReaction(string $channelid, string $messageid, string $emoji)
+    public function createMessageReaction(string $channelid, string $messageid, string $emoji)
     {
         $url = APIEndpoints::format(
             self::ENDPOINTS['messages']['reactions']['create'],
@@ -168,7 +168,7 @@ class Channel
         return $this->api->makeRequest('PUT', $url, ['reactionRatelimit' => true]);
     }
 
-    function deleteMessageUserReaction(string $channelid, string $messageid, string $emoji, string $userid)
+    public function deleteMessageUserReaction(string $channelid, string $messageid, string $emoji, string $userid)
     {
         $url = APIEndpoints::format(
             self::ENDPOINTS['messages']['reactions']['delete'],
@@ -181,7 +181,7 @@ class Channel
         return $this->api->makeRequest('DELETE', $url, ['reactionRatelimit' => true]);
     }
 
-    function getMessageReactions(string $channelid, string $messageid, string $emoji, array $querystring = [])
+    public function getMessageReactions(string $channelid, string $messageid, string $emoji, array $querystring = [])
     {
         $url = APIEndpoints::format(
             self::ENDPOINTS['messages']['reactions']['get'],
@@ -193,7 +193,7 @@ class Channel
         return $this->api->makeRequest('GET', $url, ['querystring' => $querystring]);
     }
 
-    function deleteMessageReactions(string $channelid, string $messageid)
+    public function deleteMessageReactions(string $channelid, string $messageid)
     {
         $url = APIEndpoints::format(
             self::ENDPOINTS['messages']['reactions']['deleteAll'],
@@ -204,7 +204,7 @@ class Channel
         return $this->api->makeRequest('DELETE', $url, []);
     }
 
-    function editChannelPermissions(string $channelid, string $overwriteid, array $options, string $reason = '')
+    public function editChannelPermissions(string $channelid, string $overwriteid, array $options, string $reason = '')
     {
         $url = APIEndpoints::format(
             self::ENDPOINTS['permissions']['edit'],
@@ -215,7 +215,7 @@ class Channel
         return $this->api->makeRequest('PUT', $url, ['auditLogReason' => $reason, 'data' => $options]);
     }
 
-    function deleteChannelPermission(string $channelid, string $overwriteid, string $reason = '')
+    public function deleteChannelPermission(string $channelid, string $overwriteid, string $reason = '')
     {
         $url = APIEndpoints::format(
             self::ENDPOINTS['permissions']['delete'],
@@ -226,35 +226,35 @@ class Channel
         return $this->api->makeRequest('DELETE', $url, ['auditLogReason' => $reason]);
     }
 
-    function getChannelInvites(string $channelid)
+    public function getChannelInvites(string $channelid)
     {
         $url = APIEndpoints::format(self::ENDPOINTS['invites']['list'], $channelid);
 
         return $this->api->makeRequest('GET', $url, []);
     }
 
-    function createChannelInvite(string $channelid, array $options = [])
+    public function createChannelInvite(string $channelid, array $options = [])
     {
         $url = APIEndpoints::format(self::ENDPOINTS['invites']['create'], $channelid);
 
         return $this->api->makeRequest('POST', $url, ['data' => $options]);
     }
 
-    function triggerChannelTyping(string $channelid)
+    public function triggerChannelTyping(string $channelid)
     {
         $url = APIEndpoints::format(self::ENDPOINTS['typing'], $channelid);
 
         return $this->api->makeRequest('POST', $url, []);
     }
 
-    function getPinnedChannelMessages(string $channelid)
+    public function getPinnedChannelMessages(string $channelid)
     {
         $url = APIEndpoints::format(self::ENDPOINTS['pins']['list'], $channelid);
 
         return $this->api->makeRequest('GET', $url, []);
     }
 
-    function pinChannelMessage(string $channelid, string $messageid)
+    public function pinChannelMessage(string $channelid, string $messageid)
     {
         $url = APIEndpoints::format(
             self::ENDPOINTS['pins']['add'],
@@ -265,7 +265,7 @@ class Channel
         return $this->api->makeRequest('PUT', $url, []);
     }
 
-    function unpinChannelMessage(string $channelid, string $messageid)
+    public function unpinChannelMessage(string $channelid, string $messageid)
     {
         $url = APIEndpoints::format(
             self::ENDPOINTS['pins']['delete'],
@@ -276,7 +276,7 @@ class Channel
         return $this->api->makeRequest('DELETE', $url, []);
     }
 
-    function groupDMAddRecipient(string $channelid, string $userid, string $accessToken, string $nick)
+    public function groupDMAddRecipient(string $channelid, string $userid, string $accessToken, string $nick)
     {
         $url = APIEndpoints::format(
             self::ENDPOINTS['groupDM']['add'],
@@ -287,7 +287,7 @@ class Channel
         return $this->api->makeRequest('PUT', $url, ['data' => ['access_token' => $accessToken, 'nick' => $nick]]);
     }
 
-    function groupDMRemoveRecipient(string $channelid, string $userid)
+    public function groupDMRemoveRecipient(string $channelid, string $userid)
     {
         $url = APIEndpoints::format(
             self::ENDPOINTS['groupDM']['remove'],

@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -32,7 +32,7 @@ class RoleStorage extends Storage implements RoleStorageInterface
      *
      * @internal
      */
-    function __construct(Client $client, Guild $guild, array $data = null)
+    public function __construct(Client $client, Guild $guild, array $data = null)
     {
         parent::__construct($client, $data);
         $this->guild = $guild;
@@ -48,7 +48,7 @@ class RoleStorage extends Storage implements RoleStorageInterface
      * @return Role
      * @throws InvalidArgumentException
      */
-    function resolve($role)
+    public function resolve($role)
     {
         if ($role instanceof Role) {
             return $role;
@@ -71,7 +71,7 @@ class RoleStorage extends Storage implements RoleStorageInterface
      *
      * @return bool
      */
-    function has($key)
+    public function has($key)
     {
         return parent::has($key);
     }
@@ -82,7 +82,7 @@ class RoleStorage extends Storage implements RoleStorageInterface
      *
      * @return Role|null
      */
-    function get($key)
+    public function get($key)
     {
         return parent::get($key);
     }
@@ -94,7 +94,7 @@ class RoleStorage extends Storage implements RoleStorageInterface
      *
      * @return $this
      */
-    function set($key, $value)
+    public function set($key, $value)
     {
         parent::set($key, $value);
 
@@ -107,7 +107,7 @@ class RoleStorage extends Storage implements RoleStorageInterface
      *
      * @return $this
      */
-    function delete($key)
+    public function delete($key)
     {
         parent::delete($key);
 
@@ -122,7 +122,7 @@ class RoleStorage extends Storage implements RoleStorageInterface
      * @return Role
      * @internal
      */
-    function factory(array $data)
+    public function factory(array $data)
     {
         if (parent::has($data['id'])) {
             $role = parent::get($data['id']);

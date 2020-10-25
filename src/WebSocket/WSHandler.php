@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -43,7 +43,7 @@ class WSHandler
      *
      * @param  WSManager  $wsmanager
      */
-    function __construct(WSManager $wsmanager)
+    public function __construct(WSManager $wsmanager)
     {
         $this->wsmanager = $wsmanager;
 
@@ -61,7 +61,7 @@ class WSHandler
         );
     }
 
-    function __get($name)
+    public function __get($name)
     {
         if (\property_exists($this, $name)) {
             return $this->$name;
@@ -75,7 +75,7 @@ class WSHandler
      *
      * @return \CharlotteDunois\Yasmin\Interfaces\WSHandlerInterface
      */
-    function getHandler(int $name)
+    public function getHandler(int $name)
     {
         if (isset($this->handlers[$name])) {
             return $this->handlers[$name];
@@ -89,7 +89,7 @@ class WSHandler
      *
      * @return void
      */
-    function handle(WSConnection $ws, $message)
+    public function handle(WSConnection $ws, $message)
     {
         $packet = $this->wsmanager->encoding->decode($message);
         $this->wsmanager->client->emit('raw', $packet);
@@ -111,7 +111,7 @@ class WSHandler
      * @return void
      * @throws \RuntimeException
      */
-    function register(int $op, string $class)
+    public function register(int $op, string $class)
     {
         if (! \in_array('CharlotteDunois\Yasmin\Interfaces\WSHandlerInterface', \class_implements($class))) {
             throw new \RuntimeException('Specified handler class does not implement interface');

@@ -1,21 +1,21 @@
 <?php
 /**
  * Yasmin
- * Copyright 2018 Charlotte Dunois, All Rights Reserved
+ * Copyright 2018 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
-*/
+ */
 
 /*
  * This example will demonstrate how you can send a message to a specific channel,
  * when the bot is ready.
  */
 
-require_once(__DIR__.'/vendor/autoload.php');
+require_once __DIR__.'/vendor/autoload.php';
 
 $loop = \React\EventLoop\Factory::create();
-$client = new \CharlotteDunois\Yasmin\Client(array(), $loop);
+$client = new \CharlotteDunois\Yasmin\Client([], $loop);
 
 $client->once('ready', function () use ($client) {
     try {
@@ -26,11 +26,11 @@ $client->once('ready', function () use ($client) {
                 return ($channel->name === 'general');
             });
         */
-        
+
         // Making sure the channel exists
-        if($channel) {
+        if ($channel) {
             // Send the message
-            
+
             // We do not need another promise here, so
             // we call done, because we want to consume the promise
             $channel->send('Hello, I am a Discord Bot written in PHP using Yasmin.')
@@ -39,7 +39,7 @@ $client->once('ready', function () use ($client) {
                         echo $error.PHP_EOL;
                     });
         }
-    } catch(\Exception $error) {
+    } catch (\Exception $error) {
         // Handle exception
     }
 });

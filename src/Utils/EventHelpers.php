@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -39,7 +39,7 @@ class EventHelpers
      * @throws RangeException          The exception the promise gets rejected with, if waiting times out.
      * @throws OutOfBoundsException    The exception the promise gets rejected with, if the promise gets cancelled.
      */
-    static function waitForEvent($emitter, string $event, ?callable $filter = null, array $options = [])
+    public static function waitForEvent($emitter, string $event, ?callable $filter = null, array $options = [])
     {
         $options['max'] = 1;
         $options['time'] = $options['time'] ?? 0;

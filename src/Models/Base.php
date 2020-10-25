@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -26,7 +26,7 @@ abstract class Base implements JsonSerializable, Serializable
      *
      * @internal
      */
-    function __construct()
+    public function __construct()
     {
         // We don't have anything to do.
     }
@@ -36,7 +36,7 @@ abstract class Base implements JsonSerializable, Serializable
      *
      * @internal
      */
-    function __destruct()
+    public function __destruct()
     {
         $this->_markForDelete();
     }
@@ -48,10 +48,10 @@ abstract class Base implements JsonSerializable, Serializable
      * @throws Exception
      * @internal
      */
-    function __isset($name)
+    public function __isset($name)
     {
         try {
-            return ($this->$name !== null);
+            return $this->$name !== null;
         } catch (RuntimeException $e) {
             if ($e->getTrace()[0]['function'] === '__get') {
                 return false;
@@ -68,7 +68,7 @@ abstract class Base implements JsonSerializable, Serializable
      * @throws RuntimeException
      * @internal
      */
-    function __get($name)
+    public function __get($name)
     {
         throw new RuntimeException('Unknown property '.get_class($this).'::$'.$name);
     }
@@ -81,7 +81,7 @@ abstract class Base implements JsonSerializable, Serializable
      * @throws RuntimeException
      * @internal
      */
-    function __call($name, $args)
+    public function __call($name, $args)
     {
         if (substr($name, 0, 3) === 'get') {
             $sname = substr($name, 3);
@@ -99,7 +99,7 @@ abstract class Base implements JsonSerializable, Serializable
      * @return mixed
      * @internal
      */
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         return get_object_vars($this);
     }
@@ -108,7 +108,7 @@ abstract class Base implements JsonSerializable, Serializable
      * @return string
      * @internal
      */
-    function serialize()
+    public function serialize()
     {
         $vars = get_object_vars($this);
 
@@ -119,7 +119,7 @@ abstract class Base implements JsonSerializable, Serializable
      * @return void
      * @internal
      */
-    function unserialize($data)
+    public function unserialize($data)
     {
         $data = unserialize($data);
         foreach ($data as $name => $val) {
@@ -133,7 +133,7 @@ abstract class Base implements JsonSerializable, Serializable
      * @return void
      * @internal
      */
-    function _patch(array $data)
+    public function _patch(array $data)
     {
         foreach ($data as $key => $val) {
             if (strpos($key, '_') !== false) {
@@ -206,7 +206,7 @@ abstract class Base implements JsonSerializable, Serializable
      * @return bool
      * @internal
      */
-    function _shouldUpdate(array $data)
+    public function _shouldUpdate(array $data)
     {
         $oldData = json_decode(json_encode($this), true);
 
@@ -227,7 +227,7 @@ abstract class Base implements JsonSerializable, Serializable
      * @return void
      * @internal
      */
-    function _markForDelete()
+    public function _markForDelete()
     {
         foreach ($this as $key => $val) {
             $this->$key = null;

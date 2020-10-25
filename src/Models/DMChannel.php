@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -83,7 +83,7 @@ class DMChannel extends ClientBase implements DMChannelInterface
      *
      * @internal
      */
-    function __construct(Client $client, array $channel)
+    public function __construct(Client $client, array $channel)
     {
         parent::__construct($client);
 
@@ -121,7 +121,7 @@ class DMChannel extends ClientBase implements DMChannelInterface
      * @throws RuntimeException
      * @internal
      */
-    function __get($name)
+    public function __get($name)
     {
         if (property_exists($this, $name)) {
             return $this->$name;
@@ -147,7 +147,7 @@ class DMChannel extends ClientBase implements DMChannelInterface
      * @return bool
      * @throws InvalidArgumentException
      */
-    function isRecipient($user)
+    public function isRecipient($user)
     {
         $user = $this->client->users->resolve($user);
 
@@ -158,7 +158,7 @@ class DMChannel extends ClientBase implements DMChannelInterface
      * @return void
      * @internal
      */
-    function _patch(array $channel)
+    public function _patch(array $channel)
     {
         $this->ownerID = DataHelpers::typecastVariable(
             ($channel['owner_id'] ?? $this->ownerID ?? null),

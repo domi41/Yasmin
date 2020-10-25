@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -234,7 +234,7 @@ class Message extends ClientBase
      *
      * @internal
      */
-    function __construct(Client $client, TextChannelInterface $channel, array $message)
+    public function __construct(Client $client, TextChannelInterface $channel, array $message)
     {
         parent::__construct($client);
         $this->channel = $channel;
@@ -273,7 +273,7 @@ class Message extends ClientBase
      * @throws RuntimeException
      * @internal
      */
-    function __get($name)
+    public function __get($name)
     {
         if (property_exists($this, $name)) {
             return $this->$name;
@@ -314,9 +314,9 @@ class Message extends ClientBase
      *
      * @return ExtendedPromiseInterface
      */
-    function clearReactions()
+    public function clearReactions()
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) {
                 $this->client->apimanager()->endpoints->channel->deleteMessageReactions(
                     $this->channel->getId(),
@@ -328,7 +328,7 @@ class Message extends ClientBase
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -354,13 +354,13 @@ class Message extends ClientBase
      * @see \CharlotteDunois\Yasmin\Models\User
      * @see \CharlotteDunois\Yasmin\Utils\Collector
      */
-    function collectReactions(callable $filter, array $options = [])
+    public function collectReactions(callable $filter, array $options = [])
     {
         $rhandler = function (MessageReaction $reaction, User $user) {
             return [($reaction->emoji->id ?? $reaction->emoji->name), [$reaction, $user]];
         };
         $rfilter = function (MessageReaction $reaction, User $user) use ($filter) {
-            return ($this->id === $reaction->message->id && $filter($reaction, $user));
+            return $this->id === $reaction->message->id && $filter($reaction, $user);
         };
 
         $collector = new Collector($this->client, 'messageReactionAdd', $rhandler, $rfilter, $options);
@@ -377,9 +377,9 @@ class Message extends ClientBase
      * @return ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Traits\TextChannelTrait::send()
      */
-    function edit(?string $content, array $options = [])
+    public function edit(?string $content, array $options = [])
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($content, $options) {
                 $msg = [];
 
@@ -402,7 +402,7 @@ class Message extends ClientBase
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -413,9 +413,9 @@ class Message extends ClientBase
      *
      * @return ExtendedPromiseInterface
      */
-    function delete($timeout = 0, string $reason = '')
+    public function delete($timeout = 0, string $reason = '')
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($timeout, $reason) {
                 if ($timeout > 0) {
                     $this->client->addTimer(
@@ -437,7 +437,7 @@ class Message extends ClientBase
                     );
                 }
             }
-        ));
+        );
     }
 
     /**
@@ -447,7 +447,7 @@ class Message extends ClientBase
      * @throws BadMethodCallException
      * @see \CharlotteDunois\Yasmin\Models\Webhook
      */
-    function fetchWebhook()
+    public function fetchWebhook()
     {
         if ($this->webhookID === null) {
             throw new BadMethodCallException(
@@ -455,7 +455,7 @@ class Message extends ClientBase
             );
         }
 
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) {
                 $this->client->apimanager()->endpoints->webhook->getWebhook($this->webhookID)->done(
                     function ($data) use ($resolve) {
@@ -465,7 +465,7 @@ class Message extends ClientBase
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -473,7 +473,7 @@ class Message extends ClientBase
      *
      * @return string
      */
-    function getJumpURL()
+    public function getJumpURL()
     {
         $guild = ($this->channel instanceof TextChannel ? $this->guild->id : '@me');
 
@@ -485,9 +485,9 @@ class Message extends ClientBase
      *
      * @return ExtendedPromiseInterface
      */
-    function pin()
+    public function pin()
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) {
                 $this->client->apimanager()->endpoints->channel->pinChannelMessage(
                     $this->channel->getId(),
@@ -499,7 +499,7 @@ class Message extends ClientBase
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -511,7 +511,7 @@ class Message extends ClientBase
      * @throws InvalidArgumentException
      * @see \CharlotteDunois\Yasmin\Models\MessageReaction
      */
-    function react($emoji)
+    public function react($emoji)
     {
         try {
             $emoji = $this->client->emojis->resolve($emoji);
@@ -528,14 +528,14 @@ class Message extends ClientBase
             }
         }
 
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($emoji) {
                 if ($emoji instanceof Emoji) {
                     $emoji = $emoji->identifier;
                 }
 
                 $filter = function (MessageReaction $reaction, User $user) use ($emoji) {
-                    return ($user->id === $this->client->user->id && $reaction->message->id === $this->id && $reaction->emoji->identifier === $emoji);
+                    return $user->id === $this->client->user->id && $reaction->message->id === $this->id && $reaction->emoji->identifier === $emoji;
                 };
 
                 $prom = EventHelpers::waitForEvent($this->client, 'messageReactionAdd', $filter, ['time' => 30])->then(
@@ -563,7 +563,7 @@ class Message extends ClientBase
                     }
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -575,7 +575,7 @@ class Message extends ClientBase
      * @return ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Traits\TextChannelTrait::send()
      */
-    function reply(string $content, array $options = [])
+    public function reply(string $content, array $options = [])
     {
         return $this->channel->send($this->author->__toString().self::$replySeparator.$content, $options);
     }
@@ -585,9 +585,9 @@ class Message extends ClientBase
      *
      * @return ExtendedPromiseInterface
      */
-    function unpin()
+    public function unpin()
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) {
                 $this->client->apimanager()->endpoints->channel->unpinChannelMessage(
                     $this->channel->getId(),
@@ -599,7 +599,7 @@ class Message extends ClientBase
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -607,7 +607,7 @@ class Message extends ClientBase
      *
      * @return string
      */
-    function __toString()
+    public function __toString()
     {
         return $this->content;
     }
@@ -616,7 +616,7 @@ class Message extends ClientBase
      * @return MessageReaction
      * @internal
      */
-    function _addReaction(array $data)
+    public function _addReaction(array $data)
     {
         $id = (! empty($data['emoji']['id']) ? ((string) $data['emoji']['id']) : $data['emoji']['name']);
 
@@ -634,10 +634,10 @@ class Message extends ClientBase
 
             $reaction = new MessageReaction(
                 $this->client, $this, $emoji, [
-                                 'count' => 0,
-                                 'me'    => ((bool) ($this->client->user->id === $data['user_id'])),
-                                 'emoji' => $emoji,
-                             ]
+                    'count' => 0,
+                    'me'    => ((bool) ($this->client->user->id === $data['user_id'])),
+                    'emoji' => $emoji,
+                ]
             );
 
             $this->reactions->set($id, $reaction);
@@ -657,7 +657,7 @@ class Message extends ClientBase
      * @return void
      * @internal
      */
-    function _patch(array $message)
+    public function _patch(array $message)
     {
         $this->content = (string) ($message['content'] ?? $this->content ?? '');
         $this->editedTimestamp = (! empty($message['edited_timestamp']) ? (new DateTime(

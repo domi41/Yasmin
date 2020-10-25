@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -62,7 +62,7 @@ class MessageReaction extends ClientBase
     /**
      * @internal
      */
-    function __construct(Client $client, Message $message, Emoji $emoji, array $reaction)
+    public function __construct(Client $client, Message $message, Emoji $emoji, array $reaction)
     {
         parent::__construct($client);
         $this->message = $message;
@@ -79,7 +79,7 @@ class MessageReaction extends ClientBase
      * @throws \RuntimeException
      * @internal
      */
-    function __get($name)
+    public function __get($name)
     {
         if (\property_exists($this, $name)) {
             return $this->$name;
@@ -98,9 +98,9 @@ class MessageReaction extends ClientBase
      * @return \React\Promise\ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Models\User
      */
-    function fetchUsers(int $limit = 100, string $before = '', string $after = '')
+    public function fetchUsers(int $limit = 100, string $before = '', string $after = '')
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($limit, $before, $after) {
                 $query = ['limit' => $limit];
 
@@ -131,7 +131,7 @@ class MessageReaction extends ClientBase
                         $reject
                     );
             }
-        ));
+        );
     }
 
     /**
@@ -142,13 +142,13 @@ class MessageReaction extends ClientBase
      * @return \React\Promise\ExtendedPromiseInterface
      * @throws \InvalidArgumentException
      */
-    function remove($user = null)
+    public function remove($user = null)
     {
         if ($user !== null) {
             $user = $this->client->users->resolve($user);
         }
 
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($user) {
                 $this->client->apimanager()->endpoints->channel
                     ->deleteMessageUserReaction(
@@ -164,7 +164,7 @@ class MessageReaction extends ClientBase
                         $reject
                     );
             }
-        ));
+        );
     }
 
     /**
@@ -173,7 +173,7 @@ class MessageReaction extends ClientBase
      * @return void
      * @internal
      */
-    function _incrementCount()
+    public function _incrementCount()
     {
         $this->count++;
     }
@@ -184,7 +184,7 @@ class MessageReaction extends ClientBase
      * @return void
      * @internal
      */
-    function _decrementCount()
+    public function _decrementCount()
     {
         $this->count--;
     }

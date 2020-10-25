@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -121,7 +121,7 @@ class VoiceChannel extends ClientBase implements GuildVoiceChannelInterface
      *
      * @internal
      */
-    function __construct(Client $client, Guild $guild, array $channel)
+    public function __construct(Client $client, Guild $guild, array $channel)
     {
         parent::__construct($client);
         $this->guild = $guild;
@@ -141,7 +141,7 @@ class VoiceChannel extends ClientBase implements GuildVoiceChannelInterface
      * @throws \RuntimeException
      * @internal
      */
-    function __get($name)
+    public function __get($name)
     {
         if (property_exists($this, $name)) {
             return $this->$name;
@@ -149,7 +149,7 @@ class VoiceChannel extends ClientBase implements GuildVoiceChannelInterface
 
         switch ($name) {
             case 'full':
-                return ($this->userLimit > 0 && $this->userLimit <= $this->members->count());
+                return $this->userLimit > 0 && $this->userLimit <= $this->members->count();
                 break;
             case 'parent':
                 return $this->guild->channels->get($this->parentID);
@@ -164,7 +164,7 @@ class VoiceChannel extends ClientBase implements GuildVoiceChannelInterface
      *
      * @return bool
      */
-    function canSpeak()
+    public function canSpeak()
     {
         return $this->permissionsFor($this->guild->me)->has(Permissions::PERMISSIONS['SPEAK']);
     }
@@ -178,7 +178,7 @@ class VoiceChannel extends ClientBase implements GuildVoiceChannelInterface
      * @return \React\Promise\ExtendedPromiseInterface
      * @throws \InvalidArgumentException
      */
-    function setBitrate(int $bitrate, string $reason = '')
+    public function setBitrate(int $bitrate, string $reason = '')
     {
         return $this->edit(['bitrate' => $bitrate], $reason);
     }
@@ -192,7 +192,7 @@ class VoiceChannel extends ClientBase implements GuildVoiceChannelInterface
      * @return \React\Promise\ExtendedPromiseInterface
      * @throws \InvalidArgumentException
      */
-    function setUserLimit(int $userLimit, string $reason = '')
+    public function setUserLimit(int $userLimit, string $reason = '')
     {
         return $this->edit(['userLimit' => $userLimit], $reason);
     }
@@ -202,7 +202,7 @@ class VoiceChannel extends ClientBase implements GuildVoiceChannelInterface
      *
      * @return string
      */
-    function __toString()
+    public function __toString()
     {
         return $this->name;
     }
@@ -211,7 +211,7 @@ class VoiceChannel extends ClientBase implements GuildVoiceChannelInterface
      * @return void
      * @internal
      */
-    function _patch(array $channel)
+    public function _patch(array $channel)
     {
         $this->name = (string) ($channel['name'] ?? $this->name ?? '');
         $this->bitrate = (int) ($channel['bitrate'] ?? $this->bitrate ?? 0);

@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -23,7 +23,7 @@ class ImageHelpers
      */
     public static function getImageExtension(string $image): string
     {
-        return (strpos($image, 'a_') === 0 ? 'gif' : 'png');
+        return strpos($image, 'a_') === 0 ? 'gif' : 'png';
     }
 
     /**
@@ -35,6 +35,6 @@ class ImageHelpers
      */
     public static function isPowerOfTwo(?int $size): bool
     {
-        return ($size === null || ! ($size & ($size - 1)));
+        return $size === null || ! ($size & ($size - 1));
     }
 }

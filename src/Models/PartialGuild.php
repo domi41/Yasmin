@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -66,7 +66,7 @@ class PartialGuild extends ClientBase
     /**
      * @internal
      */
-    function __construct(Client $client, array $guild)
+    public function __construct(Client $client, array $guild)
     {
         parent::__construct($client);
 
@@ -84,7 +84,7 @@ class PartialGuild extends ClientBase
      * @throws \RuntimeException
      * @internal
      */
-    function __get($name)
+    public function __get($name)
     {
         if (\property_exists($this, $name)) {
             return $this->$name;
@@ -108,7 +108,7 @@ class PartialGuild extends ClientBase
      * @return string|null
      * @throws \InvalidArgumentException Thrown if $size is not a power of 2
      */
-    function getIconURL(?int $size = null, string $format = '')
+    public function getIconURL(?int $size = null, string $format = '')
     {
         if (! ImageHelpers::isPowerOfTwo($size)) {
             throw new \InvalidArgumentException('Invalid size "'.$size.'", expected any powers of 2');
@@ -138,7 +138,7 @@ class PartialGuild extends ClientBase
      *
      * @return string|null
      */
-    function getSplashURL(?int $size = null, string $format = 'png')
+    public function getSplashURL(?int $size = null, string $format = 'png')
     {
         if (! ImageHelpers::isPowerOfTwo($size)) {
             throw new \InvalidArgumentException('Invalid size "'.$size.'", expected any powers of 2');
@@ -161,7 +161,7 @@ class PartialGuild extends ClientBase
      *
      * @return string
      */
-    function __toString()
+    public function __toString()
     {
         return $this->name;
     }

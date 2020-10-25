@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -37,7 +37,7 @@ abstract class ClientBase extends Base
      *
      * @internal
      */
-    function __construct(Client $client)
+    public function __construct(Client $client)
     {
         parent::__construct();
 
@@ -49,7 +49,7 @@ abstract class ClientBase extends Base
      * @return mixed
      * @internal
      */
-    function __get($name)
+    public function __get($name)
     {
         switch ($name) {
             case 'client':
@@ -64,7 +64,7 @@ abstract class ClientBase extends Base
      * @return mixed
      * @internal
      */
-    function __debugInfo()
+    public function __debugInfo()
     {
         $vars = get_object_vars($this);
         unset($vars['client']);
@@ -76,7 +76,7 @@ abstract class ClientBase extends Base
      * @return mixed
      * @internal
      */
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         $vars = parent::jsonSerialize();
         unset($vars['client']);
@@ -88,7 +88,7 @@ abstract class ClientBase extends Base
      * @return string
      * @internal
      */
-    function serialize()
+    public function serialize()
     {
         $vars = get_object_vars($this);
         unset($vars['client']);
@@ -101,7 +101,7 @@ abstract class ClientBase extends Base
      * @throws Exception
      * @internal
      */
-    function unserialize($data)
+    public function unserialize($data)
     {
         if (self::$serializeClient === null) {
             throw new Exception('Unable to unserialize a class without ClientBase::$serializeClient being set');

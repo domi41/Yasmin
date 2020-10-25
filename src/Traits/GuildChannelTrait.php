@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -42,7 +42,7 @@ trait GuildChannelTrait
      * @return \React\Promise\ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Models\Invite
      */
-    function createInvite(array $options = [])
+    public function createInvite(array $options = [])
     {
         $data = [
             'max_uses'  => ($options['maxUses'] ?? 0),
@@ -54,7 +54,7 @@ trait GuildChannelTrait
             $data['max_age'] = $options['maxAge'];
         }
 
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($data) {
                 $this->client->apimanager()->endpoints->channel->createChannelInvite($this->id, $data)->done(
                     function ($data) use ($resolve) {
@@ -64,7 +64,7 @@ trait GuildChannelTrait
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -78,7 +78,7 @@ trait GuildChannelTrait
      * @return \React\Promise\ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Interfaces\GuildChannelInterface
      */
-    function clone(string $name = null, bool $withPermissions = true, bool $withTopic = true, string $reason = '')
+    public function clone(string $name = null, bool $withPermissions = true, bool $withTopic = true, string $reason = '')
     {
         $data = [
             'name' => (! empty($name) ? ((string) $name) : $this->name),
@@ -104,7 +104,7 @@ trait GuildChannelTrait
             $data['nsfw'] = $this->nsfw;
         }
 
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($data, $reason) {
                 $this->client->apimanager()->endpoints->guild->createGuildChannel(
                     $this->guild->id,
@@ -118,7 +118,7 @@ trait GuildChannelTrait
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -146,7 +146,7 @@ trait GuildChannelTrait
      * @return \React\Promise\ExtendedPromiseInterface
      * @throws \InvalidArgumentException
      */
-    function edit(array $options, string $reason = '')
+    public function edit(array $options, string $reason = '')
     {
         if (empty($options)) {
             throw new \InvalidArgumentException('Unable to edit channel with zero information');
@@ -165,7 +165,7 @@ trait GuildChannelTrait
                 'parent'               => [
                     'key'   => 'parent_id',
                     'parse' => function ($val) {
-                        return ($val instanceof CategoryChannel ? $val->id : $val);
+                        return $val instanceof CategoryChannel ? $val->id : $val;
                     },
                 ],
                 'permissionOverwrites' => [
@@ -181,7 +181,7 @@ trait GuildChannelTrait
             ]
         );
 
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($data, $reason) {
                 $this->client->apimanager()->endpoints->channel->modifyChannel($this->id, $data, $reason)->done(
                     function () use ($resolve) {
@@ -190,7 +190,7 @@ trait GuildChannelTrait
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -200,9 +200,9 @@ trait GuildChannelTrait
      *
      * @return \React\Promise\ExtendedPromiseInterface
      */
-    function delete(string $reason = '')
+    public function delete(string $reason = '')
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($reason) {
                 $this->client->apimanager()->endpoints->channel->deleteChannel($this->id, $reason)->done(
                     function () use ($resolve) {
@@ -211,7 +211,7 @@ trait GuildChannelTrait
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -220,9 +220,9 @@ trait GuildChannelTrait
      * @return \React\Promise\ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Models\Invite
      */
-    function fetchInvites()
+    public function fetchInvites()
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) {
                 $this->client->apimanager()->endpoints->channel->getChannelInvites($this->id)->done(
                     function ($data) use ($resolve) {
@@ -238,7 +238,7 @@ trait GuildChannelTrait
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -247,7 +247,7 @@ trait GuildChannelTrait
      * @return bool
      * @throws \BadMethodCallException
      */
-    function isPermissionsLocked()
+    public function isPermissionsLocked()
     {
         if ($this->parentID === null) {
             throw new \BadMethodCallException('This channel does not have a parent');
@@ -263,7 +263,7 @@ trait GuildChannelTrait
             function ($perm) use ($parent) {
                 $permp = $parent->permissionOverwrites->get($perm->id);
 
-                return (! $permp || $perm->allowed->bitfield !== $permp->allowed->bitfield || $perm->denied->bitfield !== $permp->denied->bitfield);
+                return ! $permp || $perm->allowed->bitfield !== $permp->allowed->bitfield || $perm->denied->bitfield !== $permp->denied->bitfield;
             }
         ));
     }
@@ -277,18 +277,18 @@ trait GuildChannelTrait
      * @throws \InvalidArgumentException
      * @see https://discordapp.com/developers/docs/topics/permissions#permission-overwrites
      */
-    function permissionsFor($member)
+    public function permissionsFor($member)
     {
         $member = $this->guild->members->resolve($member);
 
         if ($member->id === $this->guild->ownerID) {
-            return (new Permissions(Permissions::ALL));
+            return new Permissions(Permissions::ALL);
         }
 
         $permissions = $member->permissions;
 
         if ($permissions->has('ADMINISTRATOR')) {
-            return (new Permissions(Permissions::ALL));
+            return new Permissions(Permissions::ALL);
         }
 
         $overwrites = $this->overwritesFor($member);
@@ -339,7 +339,7 @@ trait GuildChannelTrait
      * @return array
      * @throws \InvalidArgumentException
      */
-    function overwritesFor($member)
+    public function overwritesFor($member)
     {
         $member = $this->guild->members->resolve($member);
 
@@ -376,11 +376,11 @@ trait GuildChannelTrait
      * @throws \InvalidArgumentException
      * @see \CharlotteDunois\Yasmin\Models\PermissionOverwrite
      */
-    function overwritePermissions($memberOrRole, $allow, $deny = 0, string $reason = '')
+    public function overwritePermissions($memberOrRole, $allow, $deny = 0, string $reason = '')
     {
         [$memberOrRole, $options] = $this->validateOverwritePermissions($memberOrRole, $allow, $deny);
 
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($memberOrRole, $options, $reason) {
                 $this->client->apimanager()->endpoints->channel->editChannelPermissions(
                     $this->id,
@@ -422,7 +422,7 @@ trait GuildChannelTrait
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -433,7 +433,7 @@ trait GuildChannelTrait
      * @return \React\Promise\ExtendedPromiseInterface
      * @throws \BadMethodCallException
      */
-    function lockPermissions(string $reason = '')
+    public function lockPermissions(string $reason = '')
     {
         if (! $this->parent) {
             throw new \BadMethodCallException('This channel does not have a parent');
@@ -452,7 +452,7 @@ trait GuildChannelTrait
             )->all()
         );
 
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($overwrites, $reason) {
                 $promises = [];
 
@@ -479,7 +479,7 @@ trait GuildChannelTrait
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -491,7 +491,7 @@ trait GuildChannelTrait
      * @return \React\Promise\ExtendedPromiseInterface
      * @throws \InvalidArgumentException
      */
-    function setName(string $name, string $reason = '')
+    public function setName(string $name, string $reason = '')
     {
         return $this->edit(['name' => $name], $reason);
     }
@@ -505,7 +505,7 @@ trait GuildChannelTrait
      * @return \React\Promise\ExtendedPromiseInterface
      * @throws \InvalidArgumentException
      */
-    function setNSFW(bool $nsfw, string $reason = '')
+    public function setNSFW(bool $nsfw, string $reason = '')
     {
         return $this->edit(['nsfw' => $nsfw], $reason);
     }
@@ -519,7 +519,7 @@ trait GuildChannelTrait
      * @return \React\Promise\ExtendedPromiseInterface
      * @throws \InvalidArgumentException
      */
-    function setParent($parent, string $reason = '')
+    public function setParent($parent, string $reason = '')
     {
         return $this->edit(['parent' => $parent], $reason);
     }
@@ -533,7 +533,7 @@ trait GuildChannelTrait
      * @return \React\Promise\ExtendedPromiseInterface
      * @throws \InvalidArgumentException
      */
-    function setPermissionOverwrites($permissionOverwrites, string $reason = '')
+    public function setPermissionOverwrites($permissionOverwrites, string $reason = '')
     {
         return $this->edit(['permissionOverwrites' => $permissionOverwrites], $reason);
     }
@@ -547,7 +547,7 @@ trait GuildChannelTrait
      * @return \React\Promise\ExtendedPromiseInterface
      * @throws \InvalidArgumentException
      */
-    function setPosition(int $position, string $reason = '')
+    public function setPosition(int $position, string $reason = '')
     {
         if ($position < 0) {
             throw new \InvalidArgumentException('Position can not be below 0');
@@ -583,7 +583,7 @@ trait GuildChannelTrait
             $pos++;
         }
 
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($newPositions, $reason) {
                 $this->client->apimanager()->endpoints->guild->modifyGuildChannelPositions(
                     $this->guild->id,
@@ -596,7 +596,7 @@ trait GuildChannelTrait
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -608,7 +608,7 @@ trait GuildChannelTrait
      * @return \React\Promise\ExtendedPromiseInterface
      * @throws \InvalidArgumentException
      */
-    function setTopic(string $topic, string $reason = '')
+    public function setTopic(string $topic, string $reason = '')
     {
         return $this->edit(['topic' => $topic], $reason);
     }

@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -25,5 +25,5 @@ interface DMChannelInterface extends ChannelInterface, TextChannelInterface
      * @return bool
      * @throws InvalidArgumentException
      */
-    function isRecipient($user);
+    public function isRecipient($user);
 }

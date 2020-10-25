@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -68,7 +68,7 @@ class PartialChannel extends ClientBase
      *
      * @internal
      */
-    function __construct(Client $client, array $channel)
+    public function __construct(Client $client, array $channel)
     {
         parent::__construct($client);
 
@@ -86,7 +86,7 @@ class PartialChannel extends ClientBase
      * @throws \RuntimeException
      * @internal
      */
-    function __get($name)
+    public function __get($name)
     {
         if (\property_exists($this, $name)) {
             return $this->$name;
@@ -109,7 +109,7 @@ class PartialChannel extends ClientBase
      *
      * @return string|null
      */
-    function getIconURL(?int $size = null, string $format = 'png')
+    public function getIconURL(?int $size = null, string $format = 'png')
     {
         if ($size & ($size - 1)) {
             throw new \InvalidArgumentException('Invalid size "'.$size.'", expected any powers of 2');
@@ -132,7 +132,7 @@ class PartialChannel extends ClientBase
      *
      * @return string
      */
-    function __toString()
+    public function __toString()
     {
         return $this->name;
     }

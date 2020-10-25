@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -16,7 +16,6 @@ use CharlotteDunois\Yasmin\Utils\Collector;
 use CharlotteDunois\Yasmin\Utils\MessageHelpers;
 use CharlotteDunois\Yasmin\Utils\Snowflake;
 use React\Promise\Promise;
-
 use function React\Promise\resolve;
 
 /**
@@ -53,7 +52,7 @@ trait TextChannelTrait
      * @return string
      * @internal
      */
-    function serialize()
+    public function serialize()
     {
         $triggers = $this->typingTriggered;
         $typings = clone $this->typings;
@@ -82,9 +81,9 @@ trait TextChannelTrait
      *
      * @return \React\Promise\ExtendedPromiseInterface
      */
-    function bulkDelete($messages, string $reason = '', bool $filterOldMessages = false)
+    public function bulkDelete($messages, string $reason = '', bool $filterOldMessages = false)
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($messages, $reason, $filterOldMessages) {
                 if (\is_numeric($messages)) {
                     $messages = $this->fetchMessages(['limit' => (int) $messages]);
@@ -108,7 +107,7 @@ trait TextChannelTrait
                                         $timestamp = (int) Snowflake::deconstruct($message)->timestamp;
                                     }
 
-                                    return ((\time() - $timestamp) < 1209600);
+                                    return (\time() - $timestamp) < 1209600;
                                 }
                             );
                         }
@@ -142,7 +141,7 @@ trait TextChannelTrait
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -167,13 +166,13 @@ trait TextChannelTrait
      * @see \CharlotteDunois\Yasmin\Models\Message
      * @see \CharlotteDunois\Yasmin\Utils\Collector
      */
-    function collectMessages(callable $filter, array $options = [])
+    public function collectMessages(callable $filter, array $options = [])
     {
         $mhandler = function (Message $message) {
             return [$message->id, $message];
         };
         $mfilter = function (Message $message) use ($filter) {
-            return ($message->channel->getId() === $this->id && $filter($message));
+            return $message->channel->getId() === $this->id && $filter($message);
         };
 
         $collector = new Collector($this->client, 'message', $mhandler, $mfilter, $options);
@@ -189,9 +188,9 @@ trait TextChannelTrait
      * @return \React\Promise\ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Models\Message
      */
-    function fetchMessage(string $id)
+    public function fetchMessage(string $id)
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($id) {
                 $this->client->apimanager()->endpoints->channel->getChannelMessage($this->id, $id)->done(
                     function ($data) use ($resolve) {
@@ -201,7 +200,7 @@ trait TextChannelTrait
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -223,9 +222,9 @@ trait TextChannelTrait
      * @return \React\Promise\ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Models\Message
      */
-    function fetchMessages(array $options = [])
+    public function fetchMessages(array $options = [])
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($options) {
                 $this->client->apimanager()->endpoints->channel->getChannelMessages($this->id, $options)->done(
                     function ($data) use ($resolve) {
@@ -241,7 +240,7 @@ trait TextChannelTrait
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -249,7 +248,7 @@ trait TextChannelTrait
      *
      * @return Message|null
      */
-    function getLastMessage()
+    public function getLastMessage()
     {
         if (! empty($this->lastMessageID) && $this->messages->has($this->lastMessageID)) {
             return $this->messages->get($this->lastMessageID);
@@ -287,9 +286,9 @@ trait TextChannelTrait
      * @return \React\Promise\ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Models\Message
      */
-    function send(string $content, array $options = [])
+    public function send(string $content, array $options = [])
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($content, $options) {
                 MessageHelpers::resolveMessageOptionsFiles($options)->done(
                     function ($files) use ($content, $options, $resolve, $reject) {
@@ -397,7 +396,7 @@ trait TextChannelTrait
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -405,7 +404,7 @@ trait TextChannelTrait
      *
      * @return void
      */
-    function startTyping()
+    public function startTyping()
     {
         if ($this->typingTriggered['count'] === 0) {
             $fn = function () {
@@ -439,7 +438,7 @@ trait TextChannelTrait
      *
      * @return void
      */
-    function stopTyping(bool $force = false)
+    public function stopTyping(bool $force = false)
     {
         if ($this->typingTriggered['count'] === 0) {
             return;
@@ -463,7 +462,7 @@ trait TextChannelTrait
      *
      * @return int
      */
-    function typingCount()
+    public function typingCount()
     {
         return $this->typings->count();
     }
@@ -475,7 +474,7 @@ trait TextChannelTrait
      *
      * @return bool
      */
-    function isTyping(User $user)
+    public function isTyping(User $user)
     {
         return $this->typings->has($user->id);
     }
@@ -487,13 +486,13 @@ trait TextChannelTrait
      *
      * @return int
      */
-    function isTypingSince(User $user)
+    public function isTypingSince(User $user)
     {
         if (! $this->isTyping($user)) {
             return -1;
         }
 
-        return (\time() - $this->typings->get($user->id)['timestamp']);
+        return \time() - $this->typings->get($user->id)['timestamp'];
     }
 
     /**
@@ -502,7 +501,7 @@ trait TextChannelTrait
      * @return Message
      * @internal
      */
-    function _createMessage(array $message)
+    public function _createMessage(array $message)
     {
         if ($this->messages->has($message['id'])) {
             return $this->messages->get($message['id']);
@@ -521,7 +520,7 @@ trait TextChannelTrait
      * @return bool
      * @internal
      */
-    function _updateTyping(User $user, ?int $timestamp = null)
+    public function _updateTyping(User $user, ?int $timestamp = null)
     {
         if ($timestamp === null) {
             $this->typings->delete($user->id);
@@ -550,6 +549,6 @@ trait TextChannelTrait
             ]
         );
 
-        return ($typing === null);
+        return $typing === null;
     }
 }

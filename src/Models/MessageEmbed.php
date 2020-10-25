@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -130,7 +130,7 @@ class MessageEmbed extends Base
      *
      * @throws \Throwable
      */
-    function __construct(array $embed = [])
+    public function __construct(array $embed = [])
     {
         parent::__construct();
 
@@ -213,7 +213,7 @@ class MessageEmbed extends Base
      * @throws \RuntimeException
      * @internal
      */
-    function __get($name)
+    public function __get($name)
     {
         if (\property_exists($this, $name)) {
             return $this->$name;
@@ -221,7 +221,7 @@ class MessageEmbed extends Base
 
         switch ($name) {
             case 'datetime':
-                return (new \DateTime('@'.$this->timestamp));
+                return new \DateTime('@'.$this->timestamp);
                 break;
         }
 
@@ -238,7 +238,7 @@ class MessageEmbed extends Base
      * @return $this
      * @throws \InvalidArgumentException
      */
-    function setAuthor($name, string $iconurl = '', string $url = '')
+    public function setAuthor($name, string $iconurl = '', string $url = '')
     {
         $name = (string) $name;
 
@@ -274,7 +274,7 @@ class MessageEmbed extends Base
      * @throws \InvalidArgumentException
      * @see \CharlotteDunois\Yasmin\Utils\DataHelpers::resolveColor()
      */
-    function setColor($color)
+    public function setColor($color)
     {
         $this->color = DataHelpers::resolveColor($color);
 
@@ -289,7 +289,7 @@ class MessageEmbed extends Base
      * @return $this
      * @throws \InvalidArgumentException
      */
-    function setDescription($description)
+    public function setDescription($description)
     {
         $description = (string) $description;
 
@@ -321,7 +321,7 @@ class MessageEmbed extends Base
      * @return $this
      * @throws \InvalidArgumentException
      */
-    function setFooter($text, string $iconurl = '')
+    public function setFooter($text, string $iconurl = '')
     {
         $text = (string) $text;
 
@@ -354,7 +354,7 @@ class MessageEmbed extends Base
      *
      * @return $this
      */
-    function setImage($url)
+    public function setImage($url)
     {
         $this->image = ['url' => (string) $url];
 
@@ -368,7 +368,7 @@ class MessageEmbed extends Base
      *
      * @return $this
      */
-    function setThumbnail($url)
+    public function setThumbnail($url)
     {
         $this->thumbnail = ['url' => (string) $url];
 
@@ -383,7 +383,7 @@ class MessageEmbed extends Base
      * @return $this
      * @throws \Exception
      */
-    function setTimestamp(?int $timestamp = null)
+    public function setTimestamp(?int $timestamp = null)
     {
         $this->timestamp = (new \DateTime(($timestamp !== null ? '@'.$timestamp : 'now')))->format('c');
 
@@ -398,7 +398,7 @@ class MessageEmbed extends Base
      * @return $this
      * @throws \InvalidArgumentException
      */
-    function setTitle(string $title)
+    public function setTitle(string $title)
     {
         if (\strlen($title) == 0) {
             $this->title = null;
@@ -426,7 +426,7 @@ class MessageEmbed extends Base
      *
      * @return $this
      */
-    function setURL(string $url)
+    public function setURL(string $url)
     {
         $this->url = $url;
 
@@ -444,7 +444,7 @@ class MessageEmbed extends Base
      * @throws \RangeException
      * @throws \InvalidArgumentException
      */
-    function addField($title, $value, bool $inline = false)
+    public function addField($title, $value, bool $inline = false)
     {
         if (\count($this->fields) >= 25) {
             throw new \RangeException('Embeds can not have more than 25 fields');
@@ -488,10 +488,10 @@ class MessageEmbed extends Base
     protected function exceedsOverallLimit(int $addition): bool
     {
         $total = (
-            \mb_strlen(($this->title ?? "")) +
-            \mb_strlen(($this->description ?? "")) +
-            \mb_strlen(($this->footer['text'] ?? "")) +
-            \mb_strlen(($this->author['name'] ?? "")) +
+            \mb_strlen(($this->title ?? '')) +
+            \mb_strlen(($this->description ?? '')) +
+            \mb_strlen(($this->footer['text'] ?? '')) +
+            \mb_strlen(($this->author['name'] ?? '')) +
             $addition
         );
 
@@ -500,6 +500,6 @@ class MessageEmbed extends Base
             $total += \mb_strlen($field['value']);
         }
 
-        return ($total > 6000);
+        return $total > 6000;
     }
 }

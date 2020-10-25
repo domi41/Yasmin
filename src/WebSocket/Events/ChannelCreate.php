@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -17,7 +17,7 @@ use CharlotteDunois\Yasmin\WebSocket\WSConnection;
 use CharlotteDunois\Yasmin\WebSocket\WSManager;
 
 /**
- * WS Event
+ * WS Event.
  *
  * @see https://discordapp.com/developers/docs/topics/gateway#channel-create
  * @internal
@@ -31,12 +31,12 @@ class ChannelCreate implements WSEventInterface
      */
     protected $client;
 
-    function __construct(Client $client, WSManager $wsmanager)
+    public function __construct(Client $client, WSManager $wsmanager)
     {
         $this->client = $client;
     }
 
-    function handle(WSConnection $ws, $data): void
+    public function handle(WSConnection $ws, $data): void
     {
         $channel = $this->client->channels->factory($data);
 

@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -30,7 +30,7 @@ class PresenceStorage extends Storage implements PresenceStorageInterface
      *
      * @internal
      */
-    function __construct(Client $client, ?array $data = null)
+    public function __construct(Client $client, ?array $data = null)
     {
         parent::__construct($client, $data);
         $this->enabled = (bool) $this->client->getOption('presenceCache', true);
@@ -44,7 +44,7 @@ class PresenceStorage extends Storage implements PresenceStorageInterface
      * @return Presence
      * @throws \InvalidArgumentException
      */
-    function resolve($presence)
+    public function resolve($presence)
     {
         if ($presence instanceof Presence) {
             return $presence;
@@ -71,7 +71,7 @@ class PresenceStorage extends Storage implements PresenceStorageInterface
      *
      * @return bool
      */
-    function has($key)
+    public function has($key)
     {
         return parent::has($key);
     }
@@ -82,7 +82,7 @@ class PresenceStorage extends Storage implements PresenceStorageInterface
      *
      * @return Presence|null
      */
-    function get($key)
+    public function get($key)
     {
         return parent::get($key);
     }
@@ -94,7 +94,7 @@ class PresenceStorage extends Storage implements PresenceStorageInterface
      *
      * @return $this
      */
-    function set($key, $value)
+    public function set($key, $value)
     {
         if (! $this->enabled) {
             return $this;
@@ -114,7 +114,7 @@ class PresenceStorage extends Storage implements PresenceStorageInterface
      *
      * @return $this
      */
-    function delete($key)
+    public function delete($key)
     {
         if (! $this->enabled) {
             return $this;
@@ -136,7 +136,7 @@ class PresenceStorage extends Storage implements PresenceStorageInterface
      * @return Presence
      * @internal
      */
-    function factory(array $data)
+    public function factory(array $data)
     {
         $presence = new Presence($this->client, $data);
         $this->set($presence->userID, $presence);

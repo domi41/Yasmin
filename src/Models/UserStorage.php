@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -32,7 +32,7 @@ class UserStorage extends Storage implements UserStorageInterface
      *
      * @internal
      */
-    function __construct(Client $client, array $data = null)
+    public function __construct(Client $client, array $data = null)
     {
         parent::__construct($client, $data);
 
@@ -55,7 +55,7 @@ class UserStorage extends Storage implements UserStorageInterface
      * @return User
      * @throws InvalidArgumentException
      */
-    function resolve($user)
+    public function resolve($user)
     {
         if ($user instanceof User) {
             return $user;
@@ -83,7 +83,7 @@ class UserStorage extends Storage implements UserStorageInterface
      *
      * @return User|null
      */
-    function patch(array $user)
+    public function patch(array $user)
     {
         if (parent::has($user['id'])) {
             return parent::get($user['id']);
@@ -102,7 +102,7 @@ class UserStorage extends Storage implements UserStorageInterface
      *
      * @return bool
      */
-    function has($key)
+    public function has($key)
     {
         return parent::has($key);
     }
@@ -113,7 +113,7 @@ class UserStorage extends Storage implements UserStorageInterface
      *
      * @return User|null
      */
-    function get($key)
+    public function get($key)
     {
         return parent::get($key);
     }
@@ -125,7 +125,7 @@ class UserStorage extends Storage implements UserStorageInterface
      *
      * @return $this
      */
-    function set($key, $value)
+    public function set($key, $value)
     {
         parent::set($key, $value);
         if ($this !== $this->client->users) {
@@ -141,7 +141,7 @@ class UserStorage extends Storage implements UserStorageInterface
      *
      * @return $this
      */
-    function delete($key)
+    public function delete($key)
     {
         parent::delete($key);
         if ($this !== $this->client->users) {
@@ -160,7 +160,7 @@ class UserStorage extends Storage implements UserStorageInterface
      * @return User
      * @internal
      */
-    function factory(array $data, bool $userFetched = false)
+    public function factory(array $data, bool $userFetched = false)
     {
         if (parent::has($data['id'])) {
             $user = parent::get($data['id']);
@@ -180,7 +180,7 @@ class UserStorage extends Storage implements UserStorageInterface
      *
      * @return int
      */
-    function sweep()
+    public function sweep()
     {
         $members = array_unique(
             $this->client->guilds->reduce(

@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -137,7 +137,7 @@ class GuildMember extends ClientBase
      * @throws Exception
      * @internal
      */
-    function __construct(Client $client, Guild $guild, array $member)
+    public function __construct(Client $client, Guild $guild, array $member)
     {
         parent::__construct($client);
         $this->guild = $guild;
@@ -159,7 +159,7 @@ class GuildMember extends ClientBase
      * @throws RuntimeException
      * @internal
      */
-    function __get($name)
+    public function __get($name)
     {
         if (property_exists($this, $name)) {
             return $this->$name;
@@ -167,14 +167,14 @@ class GuildMember extends ClientBase
 
         switch ($name) {
             case 'displayName':
-                return ($this->nickname ?? $this->user->username);
+                return $this->nickname ?? $this->user->username;
                 break;
             case 'joinedAt':
                 return DataHelpers::makeDateTime($this->joinedTimestamp);
                 break;
             case 'permissions':
                 if ($this->id === $this->guild->ownerID) {
-                    return (new Permissions(Permissions::ALL));
+                    return new Permissions(Permissions::ALL);
                 }
 
                 $permissions = 0;
@@ -182,7 +182,7 @@ class GuildMember extends ClientBase
                     $permissions |= $role->permissions->bitfield;
                 }
 
-                return (new Permissions($permissions));
+                return new Permissions($permissions);
                 break;
             case 'presence':
                 return $this->guild->presences->get($this->id);
@@ -206,13 +206,13 @@ class GuildMember extends ClientBase
      *
      * @return ExtendedPromiseInterface
      */
-    function addRole($role, string $reason = '')
+    public function addRole($role, string $reason = '')
     {
         if ($role instanceof Role) {
             $role = $role->id;
         }
 
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($role, $reason) {
                 $this->client->apimanager()->endpoints->guild->addGuildMemberRole(
                     $this->guild->id,
@@ -226,7 +226,7 @@ class GuildMember extends ClientBase
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -237,7 +237,7 @@ class GuildMember extends ClientBase
      *
      * @return ExtendedPromiseInterface
      */
-    function addRoles($roles, string $reason = '')
+    public function addRoles($roles, string $reason = '')
     {
         if ($roles instanceof Collection) {
             $roles = $roles->all();
@@ -256,7 +256,7 @@ class GuildMember extends ClientBase
      *
      * @return ExtendedPromiseInterface
      */
-    function ban(int $days = 0, string $reason = '')
+    public function ban(int $days = 0, string $reason = '')
     {
         return $this->guild->ban($this, $days, $reason);
     }
@@ -282,7 +282,7 @@ class GuildMember extends ClientBase
      * @return ExtendedPromiseInterface
      * @throws InvalidArgumentException
      */
-    function edit(array $options, string $reason = '')
+    public function edit(array $options, string $reason = '')
     {
         $data = DataHelpers::applyOptions(
             $options,
@@ -312,13 +312,13 @@ class GuildMember extends ClientBase
                 'mute'    => ['type' => 'bool'],
                 'channel' => [
                     'parse' => function ($val) {
-                        return ($val !== null ? $this->guild->channels->resolve($val)->getId() : null);
+                        return $val !== null ? $this->guild->channels->resolve($val)->getId() : null;
                     },
                 ],
             ]
         );
 
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($data, $reason) {
                 $this->client->apimanager()->endpoints->guild->modifyGuildMember(
                     $this->guild->id,
@@ -332,7 +332,7 @@ class GuildMember extends ClientBase
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -340,7 +340,7 @@ class GuildMember extends ClientBase
      *
      * @return Role
      */
-    function getColorRole()
+    public function getColorRole()
     {
         $roles = $this->roles->filter(
             function ($role) {
@@ -358,7 +358,7 @@ class GuildMember extends ClientBase
                     return $role;
                 }
 
-                return ($role->comparePositionTo($prev) > 0 ? $role : $prev);
+                return $role->comparePositionTo($prev) > 0 ? $role : $prev;
             }
         );
     }
@@ -368,7 +368,7 @@ class GuildMember extends ClientBase
      *
      * @return int|null
      */
-    function getDisplayColor()
+    public function getDisplayColor()
     {
         $colorRole = $this->getColorRole();
         if ($colorRole !== null && $colorRole->color > 0) {
@@ -383,7 +383,7 @@ class GuildMember extends ClientBase
      *
      * @return string|null
      */
-    function getDisplayHexColor()
+    public function getDisplayHexColor()
     {
         $colorRole = $this->getColorRole();
         if ($colorRole !== null && $colorRole->color > 0) {
@@ -398,7 +398,7 @@ class GuildMember extends ClientBase
      *
      * @return Role
      */
-    function getHighestRole()
+    public function getHighestRole()
     {
         return $this->roles->reduce(
             function ($prev, $role) {
@@ -406,7 +406,7 @@ class GuildMember extends ClientBase
                     return $role;
                 }
 
-                return ($role->comparePositionTo($prev) > 0 ? $role : $prev);
+                return $role->comparePositionTo($prev) > 0 ? $role : $prev;
             }
         );
     }
@@ -416,7 +416,7 @@ class GuildMember extends ClientBase
      *
      * @return Role|null
      */
-    function getHoistRole()
+    public function getHoistRole()
     {
         $roles = $this->roles->filter(
             function ($role) {
@@ -434,7 +434,7 @@ class GuildMember extends ClientBase
                     return $role;
                 }
 
-                return ($role->comparePositionTo($prev) > 0 ? $role : $prev);
+                return $role->comparePositionTo($prev) > 0 ? $role : $prev;
             }
         );
     }
@@ -444,7 +444,7 @@ class GuildMember extends ClientBase
      *
      * @return bool
      */
-    function isBannable()
+    public function isBannable()
     {
         if ($this->id === $this->guild->ownerID || $this->id === $this->client->user->id) {
             return false;
@@ -455,7 +455,7 @@ class GuildMember extends ClientBase
             return false;
         }
 
-        return ($member->getHighestRole()->comparePositionTo($this->getHighestRole()) > 0);
+        return $member->getHighestRole()->comparePositionTo($this->getHighestRole()) > 0;
     }
 
     /**
@@ -463,7 +463,7 @@ class GuildMember extends ClientBase
      *
      * @return bool
      */
-    function isKickable()
+    public function isKickable()
     {
         if ($this->id === $this->guild->ownerID || $this->id === $this->client->user->id) {
             return false;
@@ -474,7 +474,7 @@ class GuildMember extends ClientBase
             return false;
         }
 
-        return ($member->getHighestRole()->comparePositionTo($this->getHighestRole()) > 0);
+        return $member->getHighestRole()->comparePositionTo($this->getHighestRole()) > 0;
     }
 
     /**
@@ -484,9 +484,9 @@ class GuildMember extends ClientBase
      *
      * @return ExtendedPromiseInterface
      */
-    function kick(string $reason = '')
+    public function kick(string $reason = '')
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($reason) {
                 $this->client->apimanager()->endpoints->guild->removeGuildMember(
                     $this->guild->id,
@@ -499,7 +499,7 @@ class GuildMember extends ClientBase
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -510,7 +510,7 @@ class GuildMember extends ClientBase
      * @return Permissions
      * @throws InvalidArgumentException
      */
-    function permissionsIn($channel)
+    public function permissionsIn($channel)
     {
         $channel = $this->guild->channels->resolve($channel);
         if (! ($channel instanceof GuildChannelInterface)) {
@@ -528,13 +528,13 @@ class GuildMember extends ClientBase
      *
      * @return ExtendedPromiseInterface
      */
-    function removeRole($role, string $reason = '')
+    public function removeRole($role, string $reason = '')
     {
         if ($role instanceof Role) {
             $role = $role->id;
         }
 
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($role, $reason) {
                 $this->client->apimanager()->endpoints->guild->removeGuildMemberRole(
                     $this->guild->id,
@@ -548,7 +548,7 @@ class GuildMember extends ClientBase
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -559,7 +559,7 @@ class GuildMember extends ClientBase
      *
      * @return ExtendedPromiseInterface
      */
-    function removeRoles($roles, string $reason = '')
+    public function removeRoles($roles, string $reason = '')
     {
         if ($roles instanceof Collection) {
             $roles = $roles->all();
@@ -568,7 +568,7 @@ class GuildMember extends ClientBase
         $roles = array_filter(
             $this->roles->all(),
             function ($role) use ($roles) {
-                return (! in_array($role, $roles, true) && ! in_array(((string) $role->id), $roles, true));
+                return ! in_array($role, $roles, true) && ! in_array(((string) $role->id), $roles, true);
             }
         );
 
@@ -583,7 +583,7 @@ class GuildMember extends ClientBase
      *
      * @return ExtendedPromiseInterface
      */
-    function setDeaf(bool $deaf, string $reason = '')
+    public function setDeaf(bool $deaf, string $reason = '')
     {
         return $this->edit(['deaf' => $deaf], $reason);
     }
@@ -596,7 +596,7 @@ class GuildMember extends ClientBase
      *
      * @return ExtendedPromiseInterface
      */
-    function setMute(bool $mute, string $reason = '')
+    public function setMute(bool $mute, string $reason = '')
     {
         return $this->edit(['mute' => $mute], $reason);
     }
@@ -609,10 +609,10 @@ class GuildMember extends ClientBase
      *
      * @return ExtendedPromiseInterface
      */
-    function setNickname(string $nickname, string $reason = '')
+    public function setNickname(string $nickname, string $reason = '')
     {
         if ($this->id === $this->client->user->id) {
-            return (new Promise(
+            return new Promise(
                 function (callable $resolve, callable $reject) use ($nickname) {
                     $this->client->apimanager()->endpoints->guild->modifyCurrentNick(
                         $this->guild->id,
@@ -625,7 +625,7 @@ class GuildMember extends ClientBase
                         $reject
                     );
                 }
-            ));
+            );
         }
 
         return $this->edit(['nick' => $nickname], $reason);
@@ -639,7 +639,7 @@ class GuildMember extends ClientBase
      *
      * @return ExtendedPromiseInterface
      */
-    function setRoles($roles, string $reason = '')
+    public function setRoles($roles, string $reason = '')
     {
         return $this->edit(['roles' => $roles], $reason);
     }
@@ -655,7 +655,7 @@ class GuildMember extends ClientBase
      * @return ExtendedPromiseInterface
      * @throws InvalidArgumentException
      */
-    function setVoiceChannel($channel, string $reason = '')
+    public function setVoiceChannel($channel, string $reason = '')
     {
         return $this->edit(['channel' => $channel], $reason);
     }
@@ -666,7 +666,7 @@ class GuildMember extends ClientBase
      * @return void
      * @internal
      */
-    function __clone()
+    public function __clone()
     {
         $this->roles = clone $this->roles;
     }
@@ -676,7 +676,7 @@ class GuildMember extends ClientBase
      *
      * @return string
      */
-    function __toString()
+    public function __toString()
     {
         return '<@'.(! empty($this->nickname) ? '!' : '').$this->id.'>';
     }
@@ -685,7 +685,7 @@ class GuildMember extends ClientBase
      * @return void
      * @internal
      */
-    function _setVoiceState(array $voice)
+    public function _setVoiceState(array $voice)
     {
         $this->voiceChannelID = (! empty($voice['channel_id']) ? ((string) $voice['channel_id']) : null);
         $this->voiceSessionID = (string) $voice['session_id'];
@@ -700,7 +700,7 @@ class GuildMember extends ClientBase
      * @return void
      * @internal
      */
-    function _patch(array $data)
+    public function _patch(array $data)
     {
         if (empty($data['nick'])) {
             $this->nickname = null;

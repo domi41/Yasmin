@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -31,7 +31,7 @@ class APIRequest
      *
      * @var int|null
      */
-    static protected $jsonOptions;
+    protected static $jsonOptions;
     /**
      * The used deferred.
      *
@@ -84,7 +84,7 @@ class APIRequest
      * @param  string  $endpoint
      * @param  array  $options
      */
-    function __construct(APIManager $api, string $method, string $endpoint, array $options)
+    public function __construct(APIManager $api, string $method, string $endpoint, array $options)
     {
         $this->api = $api;
         $this->url = APIEndpoints::HTTP['url'].'v'.APIEndpoints::HTTP['version'].'/';
@@ -103,7 +103,7 @@ class APIRequest
      *
      * @return string
      */
-    function getMethod()
+    public function getMethod()
     {
         return $this->method;
     }
@@ -113,7 +113,7 @@ class APIRequest
      *
      * @return string
      */
-    function getEndpoint()
+    public function getEndpoint()
     {
         return $this->endpoint;
     }
@@ -125,7 +125,7 @@ class APIRequest
      *
      * @return ExtendedPromiseInterface
      */
-    function execute(?RatelimitBucketInterface $ratelimit = null)
+    public function execute(?RatelimitBucketInterface $ratelimit = null)
     {
         $request = $this->request();
 
@@ -180,7 +180,7 @@ class APIRequest
      *
      * @return RequestInterface
      */
-    function request()
+    public function request()
     {
         $url = $this->url.$this->endpoint;
 
@@ -245,7 +245,7 @@ class APIRequest
      *
      * @return bool
      */
-    function isReactionEndpoint()
+    public function isReactionEndpoint()
     {
         return ! empty($this->options['reactionRatelimit']);
     }
@@ -258,7 +258,7 @@ class APIRequest
      * @return mixed
      * @throws RuntimeException
      */
-    static function decodeBody(ResponseInterface $response)
+    public static function decodeBody(ResponseInterface $response)
     {
         $body = (string) $response->getBody();
 
@@ -301,7 +301,7 @@ class APIRequest
                     'Giving up on item "'.$this->endpoint.'" after '.$maxRetries.' retries due to HTTP '.$status
                 );
 
-                return (new RuntimeException('Maximum retry of '.$maxRetries.' reached - giving up'));
+                return new RuntimeException('Maximum retry of '.$maxRetries.' reached - giving up');
             }
 
             $this->api->client->emit('debug', 'Delaying unshifting item "'.$this->endpoint.'" due to HTTP '.$status);

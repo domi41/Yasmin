@@ -1,11 +1,11 @@
 <?php
 /**
  * Yasmin
- * Copyright 2018 Charlotte Dunois, All Rights Reserved
+ * Copyright 2018 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
-*/
+ */
 
 /*
  * This file is merely for the purpose of filling the docs with examples.
@@ -28,13 +28,13 @@ $client->user->setStatus('online');
 // ClientUser::setPresence
 // In/After ready event
 $client->user->setPresence(
-    array(
+    [
         'status' => 'idle',
-        'game' => array(
+        'game' => [
             'name' => 'Yasmin',
-            'type' => 0
-        )
-    )
+            'type' => 0,
+        ],
+    ]
 );
 
 // ClientUser::setUsername

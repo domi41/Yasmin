@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -73,7 +73,7 @@ class RatelimitBucket implements RatelimitBucketInterface
      * @param  APIManager  $api
      * @param  string  $endpoint
      */
-    function __construct(APIManager $api, string $endpoint)
+    public function __construct(APIManager $api, string $endpoint)
     {
         $this->api = $api;
         $this->endpoint = $endpoint;
@@ -82,7 +82,7 @@ class RatelimitBucket implements RatelimitBucketInterface
     /**
      * Destroys the bucket.
      */
-    function __destruct()
+    public function __destruct()
     {
         $this->clear();
     }
@@ -92,7 +92,7 @@ class RatelimitBucket implements RatelimitBucketInterface
      *
      * @return bool
      */
-    function isBusy(): bool
+    public function isBusy(): bool
     {
         return $this->busy;
     }
@@ -104,7 +104,7 @@ class RatelimitBucket implements RatelimitBucketInterface
      *
      * @return void
      */
-    function setBusy(bool $busy): void
+    public function setBusy(bool $busy): void
     {
         $this->busy = $busy;
     }
@@ -118,7 +118,7 @@ class RatelimitBucket implements RatelimitBucketInterface
      *
      * @return \React\Promise\ExtendedPromiseInterface|void
      */
-    function handleRatelimit(?int $limit, ?int $remaining, ?float $resetTime)
+    public function handleRatelimit(?int $limit, ?int $remaining, ?float $resetTime)
     {
         if ($limit === null && $remaining === null && $resetTime === null) {
             $this->remaining++; // there is no ratelimit...
@@ -145,7 +145,7 @@ class RatelimitBucket implements RatelimitBucketInterface
      *
      * @return string
      */
-    function getEndpoint(): string
+    public function getEndpoint(): string
     {
         return $this->endpoint;
     }
@@ -155,7 +155,7 @@ class RatelimitBucket implements RatelimitBucketInterface
      *
      * @return int
      */
-    function size(): int
+    public function size(): int
     {
         return count($this->queue);
     }
@@ -167,7 +167,7 @@ class RatelimitBucket implements RatelimitBucketInterface
      *
      * @return $this
      */
-    function push(APIRequest $request)
+    public function push(APIRequest $request)
     {
         $this->queue[] = $request;
 
@@ -181,7 +181,7 @@ class RatelimitBucket implements RatelimitBucketInterface
      *
      * @return $this
      */
-    function unshift(APIRequest $request)
+    public function unshift(APIRequest $request)
     {
         array_unshift($this->queue, $request);
         $this->remaining++;
@@ -202,7 +202,7 @@ class RatelimitBucket implements RatelimitBucketInterface
      *
      * @return \React\Promise\ExtendedPromiseInterface|array
      */
-    function getMeta()
+    public function getMeta()
     {
         if ($this->resetTime && microtime(true) > $this->resetTime) {
             $this->resetTime = null;
@@ -221,7 +221,7 @@ class RatelimitBucket implements RatelimitBucketInterface
      *
      * @return APIRequest|false
      */
-    function shift()
+    public function shift()
     {
         if (count($this->queue) === 0) {
             return false;
@@ -238,7 +238,7 @@ class RatelimitBucket implements RatelimitBucketInterface
      *
      * @return void
      */
-    function clear(): void
+    public function clear(): void
     {
         $this->remaining = 0;
         while ($item = array_shift($this->queue)) {

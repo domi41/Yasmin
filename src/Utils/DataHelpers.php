@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -26,7 +26,7 @@ class DataHelpers
      * @return int
      * @throws InvalidArgumentException
      */
-    static function resolveColor($color)
+    public static function resolveColor($color)
     {
         if (is_int($color)) {
             return $color;
@@ -40,7 +40,7 @@ class DataHelpers
             throw new InvalidArgumentException('Color "'.var_export($color, true).'" is not resolvable');
         }
 
-        return (($color[0] << 16) + (($color[1] ?? 0) << 8) + ($color[2] ?? 0));
+        return ($color[0] << 16) + (($color[1] ?? 0) << 8) + ($color[2] ?? 0);
     }
 
     /**
@@ -50,7 +50,7 @@ class DataHelpers
      *
      * @return DateTime
      */
-    static function makeDateTime(int $timestamp)
+    public static function makeDateTime(int $timestamp)
     {
         $zone = new DateTimeZone(date_default_timezone_get());
 
@@ -65,7 +65,7 @@ class DataHelpers
      * @return string
      * @throws InvalidArgumentException
      */
-    static function makeBase64URI(string $data)
+    public static function makeBase64URI(string $data)
     {
         $img = getimagesizefromstring($data);
         if (! $img) {
@@ -84,7 +84,7 @@ class DataHelpers
      * @return mixed|null
      * @throws InvalidArgumentException
      */
-    static function typecastVariable($variable, string $type)
+    public static function typecastVariable($variable, string $type)
     {
         if ($variable === null) {
             return null;
@@ -129,7 +129,7 @@ class DataHelpers
      *
      * @return array
      */
-    static function applyOptions(array $input, array $options)
+    public static function applyOptions(array $input, array $options)
     {
         $data = [];
 

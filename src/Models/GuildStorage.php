@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -24,7 +24,7 @@ class GuildStorage extends Storage implements GuildStorageInterface
      * @return Guild
      * @throws \InvalidArgumentException
      */
-    function resolve($guild)
+    public function resolve($guild)
     {
         if ($guild instanceof Guild) {
             return $guild;
@@ -47,7 +47,7 @@ class GuildStorage extends Storage implements GuildStorageInterface
      *
      * @return bool
      */
-    function has($key)
+    public function has($key)
     {
         return parent::has($key);
     }
@@ -58,7 +58,7 @@ class GuildStorage extends Storage implements GuildStorageInterface
      *
      * @return Guild|null
      */
-    function get($key)
+    public function get($key)
     {
         return parent::get($key);
     }
@@ -70,7 +70,7 @@ class GuildStorage extends Storage implements GuildStorageInterface
      *
      * @return $this
      */
-    function set($key, $value)
+    public function set($key, $value)
     {
         parent::set($key, $value);
 
@@ -83,7 +83,7 @@ class GuildStorage extends Storage implements GuildStorageInterface
      *
      * @return $this
      */
-    function delete($key)
+    public function delete($key)
     {
         parent::delete($key);
         if ($this !== $this->client->guilds) {
@@ -102,7 +102,7 @@ class GuildStorage extends Storage implements GuildStorageInterface
      * @return Guild
      * @internal
      */
-    function factory(array $data, ?int $shardID = null)
+    public function factory(array $data, ?int $shardID = null)
     {
         if (parent::has($data['id'])) {
             $guild = parent::get($data['id']);

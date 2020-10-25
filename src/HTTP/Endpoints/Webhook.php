@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -47,12 +47,12 @@ class Webhook
     /**
      * @param  APIManager  $api
      */
-    function __construct(APIManager $api)
+    public function __construct(APIManager $api)
     {
         $this->api = $api;
     }
 
-    function createWebhook(string $channelid, string $name, ?string $avatarBase64 = null, string $reason = '')
+    public function createWebhook(string $channelid, string $name, ?string $avatarBase64 = null, string $reason = '')
     {
         $url = APIEndpoints::format(self::ENDPOINTS['create'], $channelid);
 
@@ -66,42 +66,42 @@ class Webhook
         );
     }
 
-    function getChannelWebhooks(string $channelid)
+    public function getChannelWebhooks(string $channelid)
     {
         $url = APIEndpoints::format(self::ENDPOINTS['channels'], $channelid);
 
         return $this->api->makeRequest('GET', $url, []);
     }
 
-    function getGuildsWebhooks(string $guildid)
+    public function getGuildsWebhooks(string $guildid)
     {
         $url = APIEndpoints::format(self::ENDPOINTS['guilds'], $guildid);
 
         return $this->api->makeRequest('GET', $url, []);
     }
 
-    function getWebhook(string $webhookid)
+    public function getWebhook(string $webhookid)
     {
         $url = APIEndpoints::format(self::ENDPOINTS['get'], $webhookid);
 
         return $this->api->makeRequest('GET', $url, []);
     }
 
-    function getWebhookToken(string $webhookid, string $token)
+    public function getWebhookToken(string $webhookid, string $token)
     {
         $url = APIEndpoints::format(self::ENDPOINTS['getToken'], $webhookid, $token);
 
         return $this->api->makeRequest('GET', $url, []);
     }
 
-    function modifyWebhook(string $webhookid, array $options, string $reason = '')
+    public function modifyWebhook(string $webhookid, array $options, string $reason = '')
     {
         $url = APIEndpoints::format(self::ENDPOINTS['modify'], $webhookid);
 
         return $this->api->makeRequest('PATCH', $url, ['auditLogReason' => $reason, 'data' => $options]);
     }
 
-    function modifyWebhookToken(string $webhookid, string $token, array $options, string $reason = '')
+    public function modifyWebhookToken(string $webhookid, string $token, array $options, string $reason = '')
     {
         $url = APIEndpoints::format(self::ENDPOINTS['modifyToken'], $webhookid, $token);
 
@@ -112,21 +112,21 @@ class Webhook
         );
     }
 
-    function deleteWebhook(string $webhookid, string $reason = '')
+    public function deleteWebhook(string $webhookid, string $reason = '')
     {
         $url = APIEndpoints::format(self::ENDPOINTS['delete'], $webhookid);
 
         return $this->api->makeRequest('DELETE', $url, ['auditLogReason' => $reason]);
     }
 
-    function deleteWebhookToken(string $webhookid, string $token, string $reason = '')
+    public function deleteWebhookToken(string $webhookid, string $token, string $reason = '')
     {
         $url = APIEndpoints::format(self::ENDPOINTS['deleteToken'], $webhookid, $token);
 
         return $this->api->makeRequest('DELETE', $url, ['auditLogReason' => $reason, 'noAuth' => true]);
     }
 
-    function executeWebhook(
+    public function executeWebhook(
         string $webhookid,
         string $token,
         array $options,

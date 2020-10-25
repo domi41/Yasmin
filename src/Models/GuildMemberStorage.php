@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -31,7 +31,7 @@ class GuildMemberStorage extends Storage implements GuildMemberStorageInterface
      *
      * @internal
      */
-    function __construct(
+    public function __construct(
         Client $client,
         Guild $guild,
         ?array $data = null
@@ -50,7 +50,7 @@ class GuildMemberStorage extends Storage implements GuildMemberStorageInterface
      * @return GuildMember
      * @throws \InvalidArgumentException
      */
-    function resolve($guildmember)
+    public function resolve($guildmember)
     {
         if ($guildmember instanceof GuildMember) {
             return $guildmember;
@@ -77,7 +77,7 @@ class GuildMemberStorage extends Storage implements GuildMemberStorageInterface
      *
      * @return bool
      */
-    function has($key)
+    public function has($key)
     {
         return parent::has($key);
     }
@@ -88,7 +88,7 @@ class GuildMemberStorage extends Storage implements GuildMemberStorageInterface
      *
      * @return GuildMember|null
      */
-    function get($key)
+    public function get($key)
     {
         return parent::get($key);
     }
@@ -100,7 +100,7 @@ class GuildMemberStorage extends Storage implements GuildMemberStorageInterface
      *
      * @return $this
      */
-    function set($key, $value)
+    public function set($key, $value)
     {
         parent::set($key, $value);
 
@@ -113,7 +113,7 @@ class GuildMemberStorage extends Storage implements GuildMemberStorageInterface
      *
      * @return $this
      */
-    function delete($key)
+    public function delete($key)
     {
         parent::delete($key);
 
@@ -128,7 +128,7 @@ class GuildMemberStorage extends Storage implements GuildMemberStorageInterface
      * @return GuildMember
      * @internal
      */
-    function factory(array $data)
+    public function factory(array $data)
     {
         if (parent::has($data['user']['id'])) {
             $member = parent::get($data['user']['id']);

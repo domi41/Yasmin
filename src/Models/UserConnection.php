@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -64,7 +64,7 @@ class UserConnection extends ClientBase
      *
      * @internal
      */
-    function __construct(
+    public function __construct(
         Client $client,
         User $user,
         array $connection

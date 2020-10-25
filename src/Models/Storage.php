@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -41,7 +41,7 @@ class Storage extends Collection implements StorageInterface
      *
      * @internal
      */
-    function __construct(Client $client, array $data = null)
+    public function __construct(Client $client, array $data = null)
     {
         parent::__construct($data);
         $this->client = $client;
@@ -56,7 +56,7 @@ class Storage extends Collection implements StorageInterface
      * @throws Exception
      * @internal
      */
-    function __isset($name)
+    public function __isset($name)
     {
         try {
             return $this->$name !== null;
@@ -76,7 +76,7 @@ class Storage extends Collection implements StorageInterface
      * @throws RuntimeException
      * @internal
      */
-    function __get($name)
+    public function __get($name)
     {
         if (property_exists($this, $name)) {
             return $this->$name;
@@ -90,7 +90,7 @@ class Storage extends Collection implements StorageInterface
      * @return bool
      * @throws InvalidArgumentException
      */
-    function has($key)
+    public function has($key)
     {
         if (is_array($key) || is_object($key)) {
             throw new InvalidArgumentException('Key can not be an array or object');
@@ -106,7 +106,7 @@ class Storage extends Collection implements StorageInterface
      * @return mixed|null
      * @throws InvalidArgumentException
      */
-    function get($key)
+    public function get($key)
     {
         if (is_array($key) || is_object($key)) {
             throw new InvalidArgumentException('Key can not be an array or object');
@@ -122,7 +122,7 @@ class Storage extends Collection implements StorageInterface
      * @return $this
      * @throws InvalidArgumentException
      */
-    function set($key, $value)
+    public function set($key, $value)
     {
         if (is_array($key) || is_object($key)) {
             throw new InvalidArgumentException('Key can not be an array or object');
@@ -138,7 +138,7 @@ class Storage extends Collection implements StorageInterface
      * @return $this
      * @throws InvalidArgumentException
      */
-    function delete($key)
+    public function delete($key)
     {
         if (is_array($key) || is_object($key)) {
             throw new InvalidArgumentException('Key can not be an array or object');
@@ -153,12 +153,12 @@ class Storage extends Collection implements StorageInterface
      * {@inheritdoc}
      * @return StorageInterface
      */
-    function copy()
+    public function copy()
     {
         $args = $this->baseStorageArgs;
         $args[] = $this->data;
 
-        return (new static(...$args));
+        return new static(...$args);
     }
 
     /**
@@ -167,12 +167,12 @@ class Storage extends Collection implements StorageInterface
      *
      * @return StorageInterface
      */
-    function filter(callable $closure)
+    public function filter(callable $closure)
     {
         $args = $this->baseStorageArgs;
         $args[] = parent::filter($closure)->all();
 
-        return (new static(...$args));
+        return new static(...$args);
     }
 
     /**
@@ -182,12 +182,12 @@ class Storage extends Collection implements StorageInterface
      *
      * @return Collection
      */
-    function sort(bool $descending = false, int $options = SORT_REGULAR)
+    public function sort(bool $descending = false, int $options = SORT_REGULAR)
     {
         $args = $this->baseStorageArgs;
         $args[] = parent::sort($descending, $options)->all();
 
-        return (new static(...$args));
+        return new static(...$args);
     }
 
     /**
@@ -197,12 +197,12 @@ class Storage extends Collection implements StorageInterface
      *
      * @return Collection
      */
-    function sortKey(bool $descending = false, int $options = SORT_REGULAR)
+    public function sortKey(bool $descending = false, int $options = SORT_REGULAR)
     {
         $args = $this->baseStorageArgs;
         $args[] = parent::sortKey($descending, $options)->all();
 
-        return (new static(...$args));
+        return new static(...$args);
     }
 
     /**
@@ -211,12 +211,12 @@ class Storage extends Collection implements StorageInterface
      *
      * @return Collection
      */
-    function sortCustom(callable $closure)
+    public function sortCustom(callable $closure)
     {
         $args = $this->baseStorageArgs;
         $args[] = parent::sortCustom($closure)->all();
 
-        return (new static(...$args));
+        return new static(...$args);
     }
 
     /**
@@ -225,11 +225,11 @@ class Storage extends Collection implements StorageInterface
      *
      * @return Collection
      */
-    function sortCustomKey(callable $closure)
+    public function sortCustomKey(callable $closure)
     {
         $args = $this->baseStorageArgs;
         $args[] = parent::sortCustomKey($closure)->all();
 
-        return (new static(...$args));
+        return new static(...$args);
     }
 }

@@ -1,11 +1,11 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
-*/
+ */
 
 namespace CharlotteDunois\Yasmin\Interfaces;
 
@@ -22,33 +22,34 @@ namespace CharlotteDunois\Yasmin\Interfaces;
  * The Redis ratelimit bucket system uses Athena, an asynchronous redis cache for PHP. The package is called `charlottedunois/athena` (which is suggested on composer).<br>
  * To be able to use the Redis ratelimit bucket, you need to pass an instance of `AthenaCache` as client option `http.ratelimitbucket.athena` to the client.
  */
-interface RatelimitBucketInterface {
+interface RatelimitBucketInterface
+{
     /**
      * Initializes the bucket.
      * @param \CharlotteDunois\Yasmin\HTTP\APIManager  $api
      * @param string                                   $endpoint
      * @throws \RuntimeException
      */
-    function __construct(\CharlotteDunois\Yasmin\HTTP\APIManager $api, string $endpoint);
-    
+    public function __construct(\CharlotteDunois\Yasmin\HTTP\APIManager $api, string $endpoint);
+
     /**
      * Destroys the bucket.
      */
-    function __destruct();
-    
+    public function __destruct();
+
     /**
      * Whether we are busy.
      * @return bool
      */
-    function isBusy(): bool;
-    
+    public function isBusy(): bool;
+
     /**
      * Sets the busy flag (marking as running).
      * @param bool  $busy
      * @return void
      */
-    function setBusy(bool $busy): void;
-    
+    public function setBusy(bool $busy): void;
+
     /**
      * Sets the ratelimits from the response.
      * @param int|null    $limit
@@ -56,34 +57,34 @@ interface RatelimitBucketInterface {
      * @param float|null  $resetTime  Reset time in seconds with milliseconds.
      * @return \React\Promise\ExtendedPromiseInterface|void
      */
-    function handleRatelimit(?int $limit, ?int $remaining, ?float $resetTime);
-    
+    public function handleRatelimit(?int $limit, ?int $remaining, ?float $resetTime);
+
     /**
      * Returns the endpoint this bucket is for.
      * @return string
      */
-    function getEndpoint(): string;
-    
+    public function getEndpoint(): string;
+
     /**
      * Returns the size of the queue.
      * @return int
      */
-    function size(): int;
-    
+    public function size(): int;
+
     /**
      * Pushes a new request into the queue.
      * @param \CharlotteDunois\Yasmin\HTTP\APIRequest $request
      * @return $this
      */
-    function push(\CharlotteDunois\Yasmin\HTTP\APIRequest $request);
-    
+    public function push(\CharlotteDunois\Yasmin\HTTP\APIRequest $request);
+
     /**
      * Unshifts a new request into the queue. Modifies remaining ratelimit.
      * @param \CharlotteDunois\Yasmin\HTTP\APIRequest $request
      * @return $this
      */
-    function unshift(\CharlotteDunois\Yasmin\HTTP\APIRequest $request);
-    
+    public function unshift(\CharlotteDunois\Yasmin\HTTP\APIRequest $request);
+
     /**
      * Retrieves ratelimit meta data.
      *
@@ -97,17 +98,17 @@ interface RatelimitBucketInterface {
      *
      * @return \React\Promise\ExtendedPromiseInterface|array
      */
-    function getMeta();
-    
+    public function getMeta();
+
     /**
      * Returns the first queue item or false. Modifies remaining ratelimit.
      * @return \CharlotteDunois\Yasmin\HTTP\APIRequest|false
      */
-    function shift();
-    
+    public function shift();
+
     /**
      * Unsets all queue items.
      * @return void
      */
-    function clear(): void;
+    public function clear(): void;
 }

@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -150,7 +150,7 @@ class WSManager implements EventEmitterInterface
      *
      * @throws \RuntimeException
      */
-    function __construct(Client $client)
+    public function __construct(Client $client)
     {
         $this->client = $client;
         $this->wshandler = new WSHandler($this);
@@ -201,7 +201,7 @@ class WSManager implements EventEmitterInterface
      * @throws \Exception
      * @internal
      */
-    function __isset($name)
+    public function __isset($name)
     {
         try {
             return $this->$name !== null;
@@ -218,7 +218,7 @@ class WSManager implements EventEmitterInterface
      * @return mixed
      * @throws \RuntimeException
      */
-    function __get($name)
+    public function __get($name)
     {
         switch ($name) {
             case 'client':
@@ -252,7 +252,7 @@ class WSManager implements EventEmitterInterface
      *
      * @return void
      */
-    function destroy()
+    public function destroy()
     {
         foreach ($this->connections as $ws) {
             $ws->disconnect();
@@ -267,7 +267,7 @@ class WSManager implements EventEmitterInterface
      * @throws \LogicException
      * @see \CharlotteDunois\Yasmin\WebSocket\WSConnection
      */
-    function connectShard(int $shardID, ?string $gateway = null, array $querystring = [])
+    public function connectShard(int $shardID, ?string $gateway = null, array $querystring = [])
     {
         if (! $gateway && ! $this->gateway) {
             throw new \RuntimeException('Unable to connect to unknown gateway for shard '.$shardID);
@@ -278,7 +278,7 @@ class WSManager implements EventEmitterInterface
         }
 
         if (($this->lastIdentify ?? 0) > (\time() - 5)) {
-            return (new Promise(
+            return new Promise(
                 function (callable $resolve, callable $reject) use ($shardID, $gateway, $querystring) {
                     $this->client->addTimer(
                         (5 - (\time() - $this->lastIdentify)),
@@ -287,7 +287,7 @@ class WSManager implements EventEmitterInterface
                         }
                     );
                 }
-            ));
+            );
         }
 
         $reconnect = false;
@@ -298,7 +298,7 @@ class WSManager implements EventEmitterInterface
 
             if (($this->lastIdentify ?? 0) > (\time(
                     ) - 30)) { // Make sure we reconnect after at least 30 seconds, if there was like an outage, to prevent spamming
-                return (new Promise(
+                return new Promise(
                     function (callable $resolve, callable $reject) use ($shardID, $gateway, $querystring) {
                         $time = (30 - (\time() - $this->lastIdentify));
                         $this->client->emit(
@@ -313,7 +313,7 @@ class WSManager implements EventEmitterInterface
                             }
                         );
                     }
-                ));
+                );
             }
 
             $shard = $this->client->shards->get($shardID);
@@ -332,13 +332,13 @@ class WSManager implements EventEmitterInterface
     }
 
     /**
-     * Set last identified timestamp
+     * Set last identified timestamp.
      *
      * @param  int  $lastIdentified
      *
      * @return void
      */
-    function setLastIdentified(int $lastIdentified)
+    public function setLastIdentified(int $lastIdentified)
     {
         $this->lastIdentify = $lastIdentified;
     }

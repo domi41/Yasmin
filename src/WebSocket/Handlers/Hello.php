@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -9,16 +9,14 @@
 
 namespace CharlotteDunois\Yasmin\WebSocket\Handlers;
 
+use function ceil;
 use CharlotteDunois\Yasmin\Interfaces\WSHandlerInterface;
 use CharlotteDunois\Yasmin\WebSocket\WSConnection;
-
 use CharlotteDunois\Yasmin\WebSocket\WSHandler;
-
-use function ceil;
 use function time;
 
 /**
- * WS Event handler
+ * WS Event handler.
  *
  * @internal
  */
@@ -29,12 +27,12 @@ class Hello implements WSHandlerInterface
      */
     protected $wshandler;
 
-    function __construct(WSHandler $wshandler)
+    public function __construct(WSHandler $wshandler)
     {
         $this->wshandler = $wshandler;
     }
 
-    function handle(WSConnection $ws, $packet): void
+    public function handle(WSConnection $ws, $packet): void
     {
         $this->wshandler->wsmanager->client->emit('debug', 'Shard '.$ws->shardID.' connected to Gateway');
 

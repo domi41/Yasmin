@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -53,9 +53,8 @@ use React\EventLoop\Timer\Timer;
 use React\EventLoop\TimerInterface;
 use React\Promise\ExtendedPromiseInterface;
 use React\Promise\Promise;
-use RuntimeException;
-
 use function React\Promise\resolve;
+use RuntimeException;
 
 /**
  * The client. What else do you expect this to say?
@@ -270,7 +269,7 @@ class Client implements EventEmitterInterface
     protected $eventsQueue = [];
 
     /**
-     * What do you expect this to do? It makes a new Client instance. Available client options are as following (all are optional):
+     * What do you expect this to do? It makes a new Client instance. Available client options are as following (all are optional):.
      *
      * ```
      * array(
@@ -307,7 +306,7 @@ class Client implements EventEmitterInterface
      * @see \CharlotteDunois\Yasmin\ClientEvents
      * @see https://discordapp.com/developers/docs/topics/gateway#update-status
      */
-    function __construct(array $options = [], ?LoopInterface $loop = null)
+    public function __construct(array $options = [], ?LoopInterface $loop = null)
     {
         if (PHP_SAPI !== 'cli') {
             throw new Exception('Yasmin can only be used in the CLI SAPI. Please use PHP CLI to run Yasmin.');
@@ -388,7 +387,7 @@ class Client implements EventEmitterInterface
      * @throws Exception
      * @internal
      */
-    function __isset($name)
+    public function __isset($name)
     {
         try {
             return $this->$name !== null;
@@ -408,7 +407,7 @@ class Client implements EventEmitterInterface
      * @throws RuntimeException
      * @internal
      */
-    function __get($name)
+    public function __get($name)
     {
         $props = ['loop', 'channels', 'emojis', 'guilds', 'presences', 'users', 'shards', 'user'];
 
@@ -437,7 +436,7 @@ class Client implements EventEmitterInterface
      * @return APIManager
      * @internal
      */
-    function apimanager()
+    public function apimanager()
     {
         return $this->api;
     }
@@ -448,7 +447,7 @@ class Client implements EventEmitterInterface
      * @return WSManager
      * @internal
      */
-    function wsmanager()
+    public function wsmanager()
     {
         return $this->ws;
     }
@@ -458,7 +457,7 @@ class Client implements EventEmitterInterface
      *
      * @return LoopInterface
      */
-    function getLoop()
+    public function getLoop()
     {
         return $this->loop;
     }
@@ -471,7 +470,7 @@ class Client implements EventEmitterInterface
      *
      * @return mixed
      */
-    function getOption($name, $default = null)
+    public function getOption($name, $default = null)
     {
         if (isset($this->options[$name])) {
             return $this->options[$name];
@@ -485,7 +484,7 @@ class Client implements EventEmitterInterface
      *
      * @return int|float
      */
-    function getPing()
+    public function getPing()
     {
         $pings = $this->pings;
         $cpings = count($pings);
@@ -494,7 +493,7 @@ class Client implements EventEmitterInterface
             return NAN;
         }
 
-        return ((int) ceil(array_sum($pings) / $cpings));
+        return (int) ceil(array_sum($pings) / $cpings);
     }
 
     /**
@@ -502,7 +501,7 @@ class Client implements EventEmitterInterface
      *
      * @return int
      */
-    function getWSstatus()
+    public function getWSstatus()
     {
         $largest = 0;
 
@@ -526,7 +525,7 @@ class Client implements EventEmitterInterface
      * @return ExtendedPromiseInterface
      * @throws RuntimeException
      */
-    function login(string $token, bool $force = false)
+    public function login(string $token, bool $force = false)
     {
         $token = trim($token);
 
@@ -536,7 +535,7 @@ class Client implements EventEmitterInterface
 
         $this->token = $token;
 
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($force) {
                 if ($this->ws === null) {
                     return $resolve();
@@ -618,7 +617,7 @@ class Client implements EventEmitterInterface
                     }
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -628,9 +627,9 @@ class Client implements EventEmitterInterface
      *
      * @return ExtendedPromiseInterface
      */
-    function destroy(bool $destroyUtils = true)
+    public function destroy(bool $destroyUtils = true)
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve) use ($destroyUtils) {
                 if ($this->api !== null) {
                     $this->api->clear();
@@ -648,11 +647,11 @@ class Client implements EventEmitterInterface
 
                 $resolve();
             }
-        ));
+        );
     }
 
     /**
-     * Creates a new guild. Resolves with an instance of Guild. Options is as following, everything is optional unless specified:
+     * Creates a new guild. Resolves with an instance of Guild. Options is as following, everything is optional unless specified:.
      *
      * ```
      * array(
@@ -696,7 +695,7 @@ class Client implements EventEmitterInterface
      * @throws InvalidArgumentException
      * @see \CharlotteDunois\Yasmin\Models\Guild
      */
-    function createGuild(array $options)
+    public function createGuild(array $options)
     {
         if (empty($options['name'])) {
             throw new InvalidArgumentException('Guild name can not be empty');
@@ -706,7 +705,7 @@ class Client implements EventEmitterInterface
             throw new InvalidArgumentException('Guild region can not be empty');
         }
 
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($options) {
                 $data = [
                     'name'                          => $options['name'],
@@ -818,7 +817,7 @@ class Client implements EventEmitterInterface
                     }
                 )->done($resolve, $reject);
             }
-        ));
+        );
     }
 
     /**
@@ -827,9 +826,9 @@ class Client implements EventEmitterInterface
      * @return ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Models\OAuthApplication
      */
-    function fetchApplication()
+    public function fetchApplication()
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) {
                 $this->api->endpoints->getCurrentApplication()->done(
                     function ($data) use ($resolve) {
@@ -839,7 +838,7 @@ class Client implements EventEmitterInterface
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -851,9 +850,9 @@ class Client implements EventEmitterInterface
      * @return ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Models\Invite
      */
-    function fetchInvite(string $invite, bool $withCounts = false)
+    public function fetchInvite(string $invite, bool $withCounts = false)
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($invite, $withCounts) {
                 preg_match('/discord(?:app\.com\/invite|\.gg)\/([\w-]{2,255})/i', $invite, $matches);
                 if (! empty($matches[1])) {
@@ -868,7 +867,7 @@ class Client implements EventEmitterInterface
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -879,9 +878,9 @@ class Client implements EventEmitterInterface
      * @return ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Models\User
      */
-    function fetchUser(string $userid)
+    public function fetchUser(string $userid)
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($userid) {
                 if ($this->users->has($userid)) {
                     return $resolve($this->users->get($userid));
@@ -895,7 +894,7 @@ class Client implements EventEmitterInterface
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -904,9 +903,9 @@ class Client implements EventEmitterInterface
      * @return ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Models\VoiceRegion
      */
-    function fetchVoiceRegions()
+    public function fetchVoiceRegions()
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) {
                 $this->api->endpoints->voice->listVoiceRegions()->done(
                     function ($data) use ($resolve) {
@@ -922,7 +921,7 @@ class Client implements EventEmitterInterface
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -934,9 +933,9 @@ class Client implements EventEmitterInterface
      * @return ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Models\Webhook
      */
-    function fetchWebhook(string $id, ?string $token = null)
+    public function fetchWebhook(string $id, ?string $token = null)
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($id, $token) {
                 $method = (! empty($token) ? 'getWebhookToken' : 'getWebhook');
 
@@ -948,7 +947,7 @@ class Client implements EventEmitterInterface
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -959,7 +958,7 @@ class Client implements EventEmitterInterface
      * @return ExtendedPromiseInterface
      * @throws InvalidArgumentException
      */
-    function generateOAuthInvite(...$permissions)
+    public function generateOAuthInvite(...$permissions)
     {
         $perm = new Permissions();
         if (! empty($permissions)) {
@@ -981,7 +980,7 @@ class Client implements EventEmitterInterface
      *
      * @return Timer
      */
-    function addTimer($timeout, callable $callback)
+    public function addTimer($timeout, callable $callback)
     {
         $timer = $this->loop->addTimer(
             $timeout,
@@ -1004,7 +1003,7 @@ class Client implements EventEmitterInterface
      *
      * @return Timer
      */
-    function addPeriodicTimer($interval, callable $callback)
+    public function addPeriodicTimer($interval, callable $callback)
     {
         $timer = $this->loop->addPeriodicTimer(
             $interval,
@@ -1025,7 +1024,7 @@ class Client implements EventEmitterInterface
      *
      * @return bool
      */
-    function cancelTimer($timer)
+    public function cancelTimer($timer)
     {
         $this->loop->cancelTimer($timer);
 
@@ -1042,7 +1041,7 @@ class Client implements EventEmitterInterface
      *
      * @return void
      */
-    function cancelTimers()
+    public function cancelTimers()
     {
         foreach ($this->timers as $key => $timer) {
             $this->loop->cancelTimer($timer);
@@ -1056,7 +1055,7 @@ class Client implements EventEmitterInterface
      * @return void
      * @internal
      */
-    function setClientUser(array $user)
+    public function setClientUser(array $user)
     {
         $this->user = new ClientUser($this, $user);
         $this->users->set($this->user->id, $this->user);
@@ -1067,7 +1066,7 @@ class Client implements EventEmitterInterface
      *
      * @return string[]
      */
-    function getUtils()
+    public function getUtils()
     {
         return $this->utils;
     }
@@ -1080,7 +1079,7 @@ class Client implements EventEmitterInterface
      *
      * @return void
      */
-    function registerUtil(string $name)
+    public function registerUtil(string $name)
     {
         if (method_exists($name, 'setLoop')) {
             $name::setLoop($this->loop);
@@ -1095,7 +1094,7 @@ class Client implements EventEmitterInterface
      *
      * @return void
      */
-    function destroyUtil(string $name)
+    public function destroyUtil(string $name)
     {
         $pos = array_search($name, $this->utils, true);
         if ($pos !== false) {
@@ -1113,7 +1112,7 @@ class Client implements EventEmitterInterface
      * @return void
      * @internal
      */
-    function registerUtils()
+    public function registerUtils()
     {
         $utils = glob(__DIR__.'/Utils/*.php');
         foreach ($utils as $util) {
@@ -1134,7 +1133,7 @@ class Client implements EventEmitterInterface
      * @return void
      * @internal
      */
-    function destroyUtils()
+    public function destroyUtils()
     {
         foreach ($this->utils as $util) {
             if (method_exists($util, 'destroy')) {
@@ -1149,7 +1148,7 @@ class Client implements EventEmitterInterface
      * @return void
      * @internal
      */
-    function handlePromiseRejection($error)
+    public function handlePromiseRejection($error)
     {
         $this->emit('error', $error);
     }
@@ -1235,7 +1234,7 @@ class Client implements EventEmitterInterface
      * @return void
      * @internal
      */
-    function queuedEmit(string $event, ...$args)
+    public function queuedEmit(string $event, ...$args)
     {
         if ($this->readyTimestamp === null) {
             $this->eventsQueue[] = [$event, $args];

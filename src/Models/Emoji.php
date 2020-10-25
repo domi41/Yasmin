@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -18,9 +18,8 @@ use CharlotteDunois\Yasmin\Utils\Snowflake;
 use DateTime;
 use React\Promise\ExtendedPromiseInterface;
 use React\Promise\Promise;
-use RuntimeException;
-
 use function React\Promise\resolve;
+use RuntimeException;
 
 /**
  * Represents an emoji - both custom and unicode emojis.
@@ -100,7 +99,7 @@ class Emoji extends ClientBase
     /**
      * @internal
      */
-    function __construct(Client $client, ?Guild $guild, array $emoji)
+    public function __construct(Client $client, ?Guild $guild, array $emoji)
     {
         parent::__construct($client);
 
@@ -119,7 +118,7 @@ class Emoji extends ClientBase
      * @throws RuntimeException
      * @internal
      */
-    function __get($name)
+    public function __get($name)
     {
         if (property_exists($this, $name)) {
             return $this->$name;
@@ -141,7 +140,7 @@ class Emoji extends ClientBase
                 return rawurlencode($this->name);
                 break;
             case 'uid':
-                return ($this->id ?? $this->name);
+                return $this->id ?? $this->name;
                 break;
         }
 
@@ -156,7 +155,7 @@ class Emoji extends ClientBase
      * @return ExtendedPromiseInterface
      * @throws BadMethodCallException  Throws on unicode emojis.
      */
-    function addRestrictedRole($role)
+    public function addRestrictedRole($role)
     {
         $roles = $this->roles->map(
             function ($role) {
@@ -176,7 +175,7 @@ class Emoji extends ClientBase
      * @return ExtendedPromiseInterface
      * @throws BadMethodCallException  Throws on unicode emojis.
      */
-    function addRestrictedRoles(...$role)
+    public function addRestrictedRoles(...$role)
     {
         $roles = $this->roles->map(
             function ($role) {
@@ -209,13 +208,13 @@ class Emoji extends ClientBase
      * @return ExtendedPromiseInterface
      * @throws BadMethodCallException  Throws on unicode emojis.
      */
-    function edit(array $options, string $reason = '')
+    public function edit(array $options, string $reason = '')
     {
         if ($this->id === null) {
             throw new BadMethodCallException('Unable to edit an unicode emoji');
         }
 
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($options, $reason) {
                 if (! empty($options['roles'])) {
                     if ($options['roles'] instanceof Collection) {
@@ -246,7 +245,7 @@ class Emoji extends ClientBase
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -257,13 +256,13 @@ class Emoji extends ClientBase
      * @return ExtendedPromiseInterface
      * @throws BadMethodCallException  Throws on unicode emojis.
      */
-    function delete(string $reason = '')
+    public function delete(string $reason = '')
     {
         if ($this->id === null) {
             throw new BadMethodCallException('Unable to delete a non-guild emoji');
         }
 
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($reason) {
                 $this->client->apimanager()->endpoints->emoji->deleteGuildEmoji(
                     $this->guild->id,
@@ -276,7 +275,7 @@ class Emoji extends ClientBase
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -285,7 +284,7 @@ class Emoji extends ClientBase
      * @return string
      * @throws BadMethodCallException  Throws on unicode emojis.
      */
-    function getImageURL()
+    public function getImageURL()
     {
         if ($this->id === null) {
             throw new BadMethodCallException('Unable to get image url of a non-guild emoji');
@@ -306,7 +305,7 @@ class Emoji extends ClientBase
      * @return ExtendedPromiseInterface
      * @throws BadMethodCallException  Throws on unicode emojis.
      */
-    function removeRestrictedRole($role)
+    public function removeRestrictedRole($role)
     {
         if ($this->roles->count() === 0) {
             return resolve($this);
@@ -334,7 +333,7 @@ class Emoji extends ClientBase
      * @return ExtendedPromiseInterface
      * @throws BadMethodCallException  Throws on unicode emojis.
      */
-    function removeRestrictedRoles(...$role)
+    public function removeRestrictedRoles(...$role)
     {
         if ($this->roles->count() === 0) {
             return resolve($this);
@@ -366,7 +365,7 @@ class Emoji extends ClientBase
      * @return ExtendedPromiseInterface
      * @throws BadMethodCallException  Throws on unicode emojis.
      */
-    function setName(string $name, string $reason = '')
+    public function setName(string $name, string $reason = '')
     {
         return $this->edit(['name' => $name], $reason);
     }
@@ -376,7 +375,7 @@ class Emoji extends ClientBase
      *
      * @return string
      */
-    function __toString()
+    public function __toString()
     {
         if (! $this->requireColons) {
             return $this->name;
@@ -389,7 +388,7 @@ class Emoji extends ClientBase
      * @return void
      * @internal
      */
-    function _patch(array $emoji)
+    public function _patch(array $emoji)
     {
         $this->name = (string) $emoji['name'];
         $this->user = (! empty($emoji['user']) ? $this->client->users->patch($emoji['user']) : null);

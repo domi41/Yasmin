@@ -1,7 +1,7 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
@@ -27,12 +27,11 @@ use CharlotteDunois\Yasmin\WebSocket\WSManager;
 use DateTime;
 use Exception;
 use InvalidArgumentException;
+use function React\Promise\all;
 use React\Promise\ExtendedPromiseInterface;
 use React\Promise\Promise;
-use RuntimeException;
-
-use function React\Promise\all;
 use function React\Promise\resolve;
+use RuntimeException;
 
 /**
  * Represents a guild. It's recommended to see if a guild is available before performing operations or reading data from it.
@@ -281,7 +280,6 @@ class Guild extends ClientBase
     protected $afkChannelID;
 
     /**
-     *
      * @var int|null
      */
     protected $afkTimeout;
@@ -384,7 +382,7 @@ class Guild extends ClientBase
      *
      * @internal
      */
-    function __construct(Client $client, array $guild, ?int $shardID = null)
+    public function __construct(Client $client, array $guild, ?int $shardID = null)
     {
         parent::__construct($client);
 
@@ -423,7 +421,7 @@ class Guild extends ClientBase
      * @throws RuntimeException
      * @internal
      */
-    function __get($name)
+    public function __get($name)
     {
         if (property_exists($this, $name)) {
             return $this->$name;
@@ -482,9 +480,9 @@ class Guild extends ClientBase
      *
      * @return ExtendedPromiseInterface
      */
-    function addMember($user, string $accessToken, array $options = [])
+    public function addMember($user, string $accessToken, array $options = [])
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($user, $accessToken, $options) {
                 if ($user instanceof User) {
                     $user = $user->id;
@@ -532,7 +530,7 @@ class Guild extends ClientBase
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -544,9 +542,9 @@ class Guild extends ClientBase
      *
      * @return ExtendedPromiseInterface
      */
-    function ban($user, int $days = 0, string $reason = '')
+    public function ban($user, int $days = 0, string $reason = '')
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($user, $days, $reason) {
                 if ($user instanceof User || $user instanceof GuildMember) {
                     $user = $user->id;
@@ -559,7 +557,7 @@ class Guild extends ClientBase
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -596,13 +594,13 @@ class Guild extends ClientBase
      * @throws InvalidArgumentException
      * @see \CharlotteDunois\Yasmin\Interfaces\GuildChannelInterface
      */
-    function createChannel(array $options, string $reason = '')
+    public function createChannel(array $options, string $reason = '')
     {
         if (empty($options['name'])) {
             throw new InvalidArgumentException('Channel name can not be empty');
         }
 
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($options, $reason) {
                 $data = DataHelpers::applyOptions(
                     $options,
@@ -611,7 +609,7 @@ class Guild extends ClientBase
                         'type'                 => [
                             'type'  => 'string',
                             'parse' => function ($val) {
-                                return (ChannelStorage::CHANNEL_TYPES[$val] ?? 0);
+                                return ChannelStorage::CHANNEL_TYPES[$val] ?? 0;
                             },
                         ],
                         'topic'                => ['type' => 'string'],
@@ -651,7 +649,7 @@ class Guild extends ClientBase
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -665,9 +663,9 @@ class Guild extends ClientBase
      * @return ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Models\Emoji
      */
-    function createEmoji(string $file, string $name, $roles = [], string $reason = '')
+    public function createEmoji(string $file, string $name, $roles = [], string $reason = '')
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($file, $name, $roles, $reason) {
                 FileHelpers::resolveFileResolvable($file)->done(
                     function ($file) use ($name, $roles, $reason, $resolve, $reject) {
@@ -707,7 +705,7 @@ class Guild extends ClientBase
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -732,13 +730,13 @@ class Guild extends ClientBase
      * @throws InvalidArgumentException
      * @see \CharlotteDunois\Yasmin\Models\Role
      */
-    function createRole(array $options, string $reason = '')
+    public function createRole(array $options, string $reason = '')
     {
         if (! empty($options['color'])) {
             $options['color'] = DataHelpers::resolveColor($options['color']);
         }
 
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($options, $reason) {
                 $this->client->apimanager()->endpoints->guild->createGuildRole($this->id, $options, $reason)->done(
                     function ($data) use ($resolve) {
@@ -748,7 +746,7 @@ class Guild extends ClientBase
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -756,9 +754,9 @@ class Guild extends ClientBase
      *
      * @return ExtendedPromiseInterface
      */
-    function delete()
+    public function delete()
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) {
                 $this->client->apimanager()->endpoints->guild->deleteGuild($this->id)->done(
                     function () use ($resolve) {
@@ -767,7 +765,7 @@ class Guild extends ClientBase
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -797,9 +795,9 @@ class Guild extends ClientBase
      *
      * @return ExtendedPromiseInterface
      */
-    function edit(array $options, string $reason = '')
+    public function edit(array $options, string $reason = '')
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($options, $reason) {
                 $data = DataHelpers::applyOptions(
                     $options,
@@ -808,7 +806,7 @@ class Guild extends ClientBase
                         'region'                      => [
                             'type'  => 'string',
                             'parse' => function ($val) {
-                                return ($val instanceof VoiceRegion ? $val->id : $val);
+                                return $val instanceof VoiceRegion ? $val->id : $val;
                             },
                         ],
                         'verificationLevel'           => ['key' => 'verification_level', 'type' => 'int'],
@@ -817,20 +815,20 @@ class Guild extends ClientBase
                         'afkChannel'                  => [
                             'key'   => 'afk_channel_id',
                             'parse' => function ($val) {
-                                return ($val instanceof VoiceChannel ? $val->id : $val);
+                                return $val instanceof VoiceChannel ? $val->id : $val;
                             },
                         ],
                         'afkTimeout'                  => ['key' => 'afk_timeout', 'type' => 'int'],
                         'systemChannel'               => [
                             'key'   => 'system_channel_id',
                             'parse' => function ($val) {
-                                return ($val instanceof TextChannel ? $val->id : $val);
+                                return $val instanceof TextChannel ? $val->id : $val;
                             },
                         ],
                         'owner'                       => [
                             'key'   => 'owner_id',
                             'parse' => function ($val) {
-                                return ($val instanceof GuildMember ? $val->id : $val);
+                                return $val instanceof GuildMember ? $val->id : $val;
                             },
                         ],
                     ]
@@ -869,7 +867,7 @@ class Guild extends ClientBase
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -892,9 +890,9 @@ class Guild extends ClientBase
      * @return ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Models\AuditLog
      */
-    function fetchAuditLog(array $options = [])
+    public function fetchAuditLog(array $options = [])
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($options) {
                 if (! empty($options['user'])) {
                     $options['user'] = ($options['user'] instanceof User ? $options['user']->id : $options['user']);
@@ -908,7 +906,7 @@ class Guild extends ClientBase
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -919,9 +917,9 @@ class Guild extends ClientBase
      * @return ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Models\GuildBan
      */
-    function fetchBan($user)
+    public function fetchBan($user)
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($user) {
                 if ($user instanceof User) {
                     $user = $user->id;
@@ -937,7 +935,7 @@ class Guild extends ClientBase
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -946,9 +944,9 @@ class Guild extends ClientBase
      * @return ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Models\GuildBan
      */
-    function fetchBans()
+    public function fetchBans()
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) {
                 $this->client->apimanager()->endpoints->guild->getGuildBans($this->id)->done(
                     function ($data) use ($resolve) {
@@ -966,7 +964,7 @@ class Guild extends ClientBase
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -975,9 +973,9 @@ class Guild extends ClientBase
      * @return ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Models\Invite
      */
-    function fetchInvites()
+    public function fetchInvites()
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) {
                 $this->client->apimanager()->endpoints->guild->getGuildInvites($this->id)->done(
                     function ($data) use ($resolve) {
@@ -993,7 +991,7 @@ class Guild extends ClientBase
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -1004,9 +1002,9 @@ class Guild extends ClientBase
      * @return ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Models\GuildMember
      */
-    function fetchMember(string $userid)
+    public function fetchMember(string $userid)
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($userid) {
                 if ($this->members->has($userid) && ($this->members->get($userid) instanceof GuildMember)) {
                     return $resolve($this->members->get($userid));
@@ -1019,7 +1017,7 @@ class Guild extends ClientBase
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -1031,7 +1029,7 @@ class Guild extends ClientBase
      * @return ExtendedPromiseInterface
      * @throws InvalidArgumentException
      */
-    function fetchMembers(string $query = '', int $limit = 0)
+    public function fetchMembers(string $query = '', int $limit = 0)
     {
         if (! empty($query) && $limit <= 0) {
             throw new InvalidArgumentException(
@@ -1039,7 +1037,7 @@ class Guild extends ClientBase
             );
         }
 
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($query, $limit) {
                 if ($this->members->count() >= $this->memberCount) {
                     $resolve($this);
@@ -1123,7 +1121,7 @@ class Guild extends ClientBase
                     }
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -1133,9 +1131,9 @@ class Guild extends ClientBase
      *
      * @return ExtendedPromiseInterface
      */
-    function fetchPruneMembers(int $days)
+    public function fetchPruneMembers(int $days)
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($days) {
                 $this->client->apimanager()->endpoints->guild->getGuildPruneCount($this->id, $days)->done(
                     function ($data) use ($resolve) {
@@ -1144,7 +1142,7 @@ class Guild extends ClientBase
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -1153,9 +1151,9 @@ class Guild extends ClientBase
      * @return ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Models\Invite
      */
-    function fetchVanityInvite()
+    public function fetchVanityInvite()
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) {
                 if ($this->vanityInviteCode !== null) {
                     return $this->client->apimanager()->endpoints->invite->getInvite($this->vanityInviteCode)->done(
@@ -1179,7 +1177,7 @@ class Guild extends ClientBase
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -1188,9 +1186,9 @@ class Guild extends ClientBase
      * @return ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Models\VoiceRegion
      */
-    function fetchVoiceRegions()
+    public function fetchVoiceRegions()
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) {
                 $this->client->apimanager()->endpoints->guild->getGuildVoiceRegions($this->id)->done(
                     function ($data) use ($resolve) {
@@ -1206,7 +1204,7 @@ class Guild extends ClientBase
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -1215,9 +1213,9 @@ class Guild extends ClientBase
      * @return ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Models\Webhook
      */
-    function fetchWebhooks()
+    public function fetchWebhooks()
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) {
                 $this->client->apimanager()->endpoints->webhook->getGuildsWebhooks($this->id)->done(
                     function ($data) use ($resolve) {
@@ -1233,7 +1231,7 @@ class Guild extends ClientBase
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -1245,7 +1243,7 @@ class Guild extends ClientBase
      * @return string|null
      * @throws InvalidArgumentException Thrown if $size is not a power of 2
      */
-    function getBannerURL(?int $size = null, string $format = 'png')
+    public function getBannerURL(?int $size = null, string $format = 'png')
     {
         if (! ImageHelpers::isPowerOfTwo($size)) {
             throw new InvalidArgumentException('Invalid size "'.$size.'", expected any powers of 2');
@@ -1272,7 +1270,7 @@ class Guild extends ClientBase
      * @return string|null
      * @throws InvalidArgumentException Thrown if $size is not a power of 2
      */
-    function getIconURL(?int $size = null, string $format = '')
+    public function getIconURL(?int $size = null, string $format = '')
     {
         if (! ImageHelpers::isPowerOfTwo($size)) {
             throw new InvalidArgumentException('Invalid size "'.$size.'", expected any powers of 2');
@@ -1299,7 +1297,7 @@ class Guild extends ClientBase
      *
      * @return string
      */
-    function getNameAcronym()
+    public function getNameAcronym()
     {
         preg_match_all('/\w+/iu', $this->name, $matches);
 
@@ -1319,7 +1317,7 @@ class Guild extends ClientBase
      *
      * @return string|null
      */
-    function getSplashURL(?int $size = null, string $format = 'png')
+    public function getSplashURL(?int $size = null, string $format = 'png')
     {
         if ($size & ($size - 1)) {
             throw new InvalidArgumentException('Invalid size "'.$size.'", expected any powers of 2');
@@ -1342,9 +1340,9 @@ class Guild extends ClientBase
      *
      * @return ExtendedPromiseInterface
      */
-    function leave()
+    public function leave()
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) {
                 $this->client->apimanager()->endpoints->user->leaveUserGuild($this->id)->done(
                     function () use ($resolve) {
@@ -1353,7 +1351,7 @@ class Guild extends ClientBase
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -1365,9 +1363,9 @@ class Guild extends ClientBase
      *
      * @return ExtendedPromiseInterface
      */
-    function pruneMembers(int $days, bool $withCount = false, string $reason = '')
+    public function pruneMembers(int $days, bool $withCount = false, string $reason = '')
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($days, $withCount, $reason) {
                 $this->client->apimanager()->endpoints->guild->beginGuildPrune(
                     $this->id,
@@ -1381,7 +1379,7 @@ class Guild extends ClientBase
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -1392,7 +1390,7 @@ class Guild extends ClientBase
      *
      * @return ExtendedPromiseInterface
      */
-    function setAFKChannel($channel, string $reason = '')
+    public function setAFKChannel($channel, string $reason = '')
     {
         return $this->edit(['afkChannel' => $channel], $reason);
     }
@@ -1405,7 +1403,7 @@ class Guild extends ClientBase
      *
      * @return ExtendedPromiseInterface
      */
-    function setAFKTimeout($timeout, string $reason = '')
+    public function setAFKTimeout($timeout, string $reason = '')
     {
         return $this->edit(['afkTimeout' => $timeout], $reason);
     }
@@ -1418,9 +1416,9 @@ class Guild extends ClientBase
      *
      * @return ExtendedPromiseInterface
      */
-    function setChannelPositions(array $channels, string $reason = '')
+    public function setChannelPositions(array $channels, string $reason = '')
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($channels, $reason) {
                 $options = [];
 
@@ -1443,7 +1441,7 @@ class Guild extends ClientBase
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -1454,9 +1452,9 @@ class Guild extends ClientBase
      *
      * @return ExtendedPromiseInterface
      */
-    function setRolePositions(array $roles, string $reason = '')
+    public function setRolePositions(array $roles, string $reason = '')
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($roles, $reason) {
                 $options = [];
 
@@ -1479,7 +1477,7 @@ class Guild extends ClientBase
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
@@ -1490,7 +1488,7 @@ class Guild extends ClientBase
      *
      * @return ExtendedPromiseInterface
      */
-    function setExplicitContentFilter(int $filter, string $reason = '')
+    public function setExplicitContentFilter(int $filter, string $reason = '')
     {
         return $this->edit(['explicitContentFilter' => $filter], $reason);
     }
@@ -1503,7 +1501,7 @@ class Guild extends ClientBase
      *
      * @return ExtendedPromiseInterface
      */
-    function setIcon(string $icon, string $reason = '')
+    public function setIcon(string $icon, string $reason = '')
     {
         return $this->edit(['icon' => $icon], $reason);
     }
@@ -1516,7 +1514,7 @@ class Guild extends ClientBase
      *
      * @return ExtendedPromiseInterface
      */
-    function setName(string $name, string $reason = '')
+    public function setName(string $name, string $reason = '')
     {
         return $this->edit(['name' => $name], $reason);
     }
@@ -1529,7 +1527,7 @@ class Guild extends ClientBase
      *
      * @return ExtendedPromiseInterface
      */
-    function setOwner($owner, string $reason = '')
+    public function setOwner($owner, string $reason = '')
     {
         return $this->edit(['owner' => $owner], $reason);
     }
@@ -1542,7 +1540,7 @@ class Guild extends ClientBase
      *
      * @return ExtendedPromiseInterface
      */
-    function setRegion($region, string $reason = '')
+    public function setRegion($region, string $reason = '')
     {
         return $this->edit(['region' => $region], $reason);
     }
@@ -1555,7 +1553,7 @@ class Guild extends ClientBase
      *
      * @return ExtendedPromiseInterface
      */
-    function setSplash(string $splash, string $reason = '')
+    public function setSplash(string $splash, string $reason = '')
     {
         return $this->edit(['splash' => $splash], $reason);
     }
@@ -1568,7 +1566,7 @@ class Guild extends ClientBase
      *
      * @return ExtendedPromiseInterface
      */
-    function setSystemChannel($channel, string $reason = '')
+    public function setSystemChannel($channel, string $reason = '')
     {
         return $this->edit(['systemChannel' => $channel], $reason);
     }
@@ -1581,7 +1579,7 @@ class Guild extends ClientBase
      *
      * @return ExtendedPromiseInterface
      */
-    function setVerificationLevel(int $level, string $reason = '')
+    public function setVerificationLevel(int $level, string $reason = '')
     {
         return $this->edit(['verificationLevel' => $level], $reason);
     }
@@ -1594,9 +1592,9 @@ class Guild extends ClientBase
      *
      * @return ExtendedPromiseInterface
      */
-    function unban($user, string $reason = '')
+    public function unban($user, string $reason = '')
     {
-        return (new Promise(
+        return new Promise(
             function (callable $resolve, callable $reject) use ($user, $reason) {
                 if ($user instanceof User) {
                     $user = $user->id;
@@ -1609,14 +1607,14 @@ class Guild extends ClientBase
                     $reject
                 );
             }
-        ));
+        );
     }
 
     /**
      * @return GuildMember
      * @internal
      */
-    function _addMember(array $member, bool $initial = false)
+    public function _addMember(array $member, bool $initial = false)
     {
         $guildmember = $this->members->factory($member);
 
@@ -1631,7 +1629,7 @@ class Guild extends ClientBase
      * @return GuildMember|null
      * @internal
      */
-    function _removeMember(string $userid)
+    public function _removeMember(string $userid)
     {
         if ($this->members->has($userid)) {
             $member = $this->members->get($userid);
@@ -1653,7 +1651,7 @@ class Guild extends ClientBase
      * @return void
      * @internal
      */
-    function _patch(array $guild)
+    public function _patch(array $guild)
     {
         $this->available = (empty($guild['unavailable']));
 

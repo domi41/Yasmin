@@ -1,18 +1,19 @@
 <?php
 /**
  * Yasmin
- * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved
+ * Copyright 2017-2019 Charlotte Dunois, All Rights Reserved.
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Yasmin/blob/master/LICENSE
-*/
+ */
 
 namespace CharlotteDunois\Yasmin\Interfaces;
 
 /**
  * Something all guild text channels implement.
  */
-interface GuildTextChannelInterface extends GuildChannelInterface, TextChannelInterface {
+interface GuildTextChannelInterface extends GuildChannelInterface, TextChannelInterface
+{
     /**
      * Deletes multiple messages at once. Resolves with $this.
      * @param \CharlotteDunois\Collect\Collection|array|int  $messages
@@ -20,8 +21,8 @@ interface GuildTextChannelInterface extends GuildChannelInterface, TextChannelIn
      * @param bool                                           $filterOldMessages
      * @return \React\Promise\ExtendedPromiseInterface
      */
-    function bulkDelete($messages, string $reason = '', bool $filterOldMessages = false);
-    
+    public function bulkDelete($messages, string $reason = '', bool $filterOldMessages = false);
+
     /**
      * Creates an invite. Resolves with an instance of Invite.
      *
@@ -39,23 +40,23 @@ interface GuildTextChannelInterface extends GuildChannelInterface, TextChannelIn
      * @param array $options
      * @return \React\Promise\ExtendedPromiseInterface
      */
-    function createInvite(array $options = array());
-    
+    public function createInvite(array $options = []);
+
     /**
      * Fetches all invites of this channel. Resolves with a Collection of Invite instances, mapped by their code.
      * @return \React\Promise\ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Models\Invite
      */
-    function fetchInvites();
-    
+    public function fetchInvites();
+
     /**
      * Sets the slowmode in seconds for this channel.
      * @param int     $slowmode
      * @param string  $reason
      * @return \React\Promise\ExtendedPromiseInterface
      */
-    function setSlowmode(int $slowmode, string $reason = '');
-    
+    public function setSlowmode(int $slowmode, string $reason = '');
+
     /**
      * Sets the topic of the channel. Resolves with $this.
      * @param string  $topic
@@ -63,5 +64,5 @@ interface GuildTextChannelInterface extends GuildChannelInterface, TextChannelIn
      * @return \React\Promise\ExtendedPromiseInterface
      * @throws \InvalidArgumentException
      */
-    function setTopic(string $topic, string $reason = '');
+    public function setTopic(string $topic, string $reason = '');
 }
