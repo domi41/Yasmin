@@ -20,7 +20,6 @@ use CharlotteDunois\Yasmin\Interfaces\GuildStoreChannelInterface;
 use CharlotteDunois\Yasmin\Interfaces\GuildVoiceChannelInterface;
 use InvalidArgumentException;
 
-
 /**
  * Channel Storage to store channels, which utilizes Collection.
  */

@@ -19,7 +19,6 @@ use CharlotteDunois\Yasmin\WebSocket\Handlers\Reconnect;
 use Exception;
 use RuntimeException;
 
-
 /**
  * Handles WS messages.
  *

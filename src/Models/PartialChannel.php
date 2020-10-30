@@ -15,10 +15,8 @@ use CharlotteDunois\Yasmin\Utils\DataHelpers;
 use CharlotteDunois\Yasmin\Utils\Snowflake;
 use DateTime;
 use InvalidArgumentException;
-
-use RuntimeException;
-
 use function property_exists;
+use RuntimeException;
 
 /**
  * Represents a partial channel (of a guild or a group DM).

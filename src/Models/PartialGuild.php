@@ -18,7 +18,6 @@ use DateTime;
 use InvalidArgumentException;
 use RuntimeException;
 
-
 /**
  * Represents a partial guild.
  *

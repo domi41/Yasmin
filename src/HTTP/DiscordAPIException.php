@@ -11,7 +11,6 @@ namespace CharlotteDunois\Yasmin\HTTP;
 
 use CharlotteDunois\Yasmin\DiscordException;
 
-
 /**
  * Represents an error from the Discord HTTP API.
  */

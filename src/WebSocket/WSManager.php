@@ -18,11 +18,8 @@ use LogicException;
 use Ratchet\Client\Connector;
 use React\Promise\ExtendedPromiseInterface;
 use React\Promise\Promise;
-
 use RuntimeException;
-
 use Throwable;
-
 
 /**
  * Manages the WS connections.

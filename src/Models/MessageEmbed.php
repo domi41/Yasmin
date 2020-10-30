@@ -17,7 +17,6 @@ use RangeException;
 use RuntimeException;
 use Throwable;
 
-
 /**
  * Represents a received embed from a message. This class can also be used to make a Rich Embed.
  *

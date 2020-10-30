@@ -12,7 +12,6 @@ namespace CharlotteDunois\Yasmin\HTTP;
 use CharlotteDunois\Yasmin\Interfaces\RatelimitBucketInterface;
 use React\Promise\ExtendedPromiseInterface;
 
-
 /**
  * Manages a route's ratelimit in memory.
  *
