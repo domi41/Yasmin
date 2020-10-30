@@ -1231,6 +1231,9 @@ class Client implements EventEmitterInterface
     /**
      * Puts events into a queue, if the client is not ready yet.
      *
+     * @param  string  $event
+     * @param  mixed  ...$args
+     *
      * @return void
      * @internal
      */
@@ -1242,6 +1245,6 @@ class Client implements EventEmitterInterface
             return;
         }
 
-        return $this->emit($event, ...$args);
+        $this->emit($event, ...$args);
     }
 }
