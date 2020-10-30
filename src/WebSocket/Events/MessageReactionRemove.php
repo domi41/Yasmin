@@ -88,10 +88,10 @@ class MessageReactionRemove implements WSEventInterface
 
                             $reaction = new MessageReaction(
                                 $this->client, $message, $emoji, [
-                                                 'count' => 0,
-                                                 'me'    => false,
-                                                 'emoji' => $emoji,
-                                             ]
+                                    'count' => 0,
+                                    'me'    => false,
+                                    'emoji' => $emoji,
+                                ]
                             );
                         }
                     }

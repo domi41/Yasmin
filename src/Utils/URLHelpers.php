@@ -14,11 +14,11 @@ use Psr\Http\Message\RequestInterface;
 use React\EventLoop\LoopInterface;
 use React\Http\Browser;
 use React\Promise\ExtendedPromiseInterface;
+use function React\Promise\reject;
 use RingCentral\Psr7\MultipartStream;
 use RingCentral\Psr7\Request;
 use RingCentral\Psr7\Stream;
 use RuntimeException;
-use function React\Promise\reject;
 
 /**
  * URL Helper methods.

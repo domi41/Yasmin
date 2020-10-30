@@ -13,7 +13,6 @@ use CharlotteDunois\Collect\Collection;
 use CharlotteDunois\Yasmin\Client;
 use RuntimeException;
 
-
 /**
  * Holds message mentions.
  *

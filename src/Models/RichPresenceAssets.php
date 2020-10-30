@@ -14,7 +14,6 @@ use CharlotteDunois\Yasmin\HTTP\APIEndpoints;
 use InvalidArgumentException;
 use RuntimeException;
 
-
 /**
  * Rich Presence assets.
  *

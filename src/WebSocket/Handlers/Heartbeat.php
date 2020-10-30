@@ -20,7 +20,7 @@ use CharlotteDunois\Yasmin\WebSocket\WSHandler;
  */
 class Heartbeat implements WSHandlerInterface
 {
-    public    $heartbeat;
+    public $heartbeat;
     protected $wshandler;
 
     public function __construct(WSHandler $wshandler)

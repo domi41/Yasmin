@@ -634,10 +634,10 @@ class Message extends ClientBase
 
             $reaction = new MessageReaction(
                 $this->client, $this, $emoji, [
-                                 'count' => 0,
-                                 'me'    => ((bool) ($this->client->user->id === $data['user_id'])),
-                                 'emoji' => $emoji,
-                             ]
+                    'count' => 0,
+                    'me'    => ((bool) ($this->client->user->id === $data['user_id'])),
+                    'emoji' => $emoji,
+                ]
             );
 
             $this->reactions->set($id, $reaction);
