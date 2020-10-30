@@ -9,6 +9,9 @@
 
 namespace CharlotteDunois\Yasmin\Interfaces;
 
+use CharlotteDunois\Yasmin\Models\Role;
+use InvalidArgumentException;
+
 /**
  * Something all role storages implement. The storage also is used as factory.
  */
@@ -17,7 +20,7 @@ interface RoleStorageInterface extends StorageInterface
     /**
      * Returns the current element. From Iterator interface.
      *
-     * @return \CharlotteDunois\Yasmin\Models\Role
+     * @return Role
      */
     public function current();
 
@@ -31,14 +34,14 @@ interface RoleStorageInterface extends StorageInterface
     /**
      * Advances the internal pointer. From Iterator interface.
      *
-     * @return \CharlotteDunois\Yasmin\Models\Role|false
+     * @return Role|false
      */
     public function next();
 
     /**
      * Resets the internal pointer. From Iterator interface.
      *
-     * @return \CharlotteDunois\Yasmin\Models\Role|false
+     * @return Role|false
      */
     public function rewind();
 
@@ -52,17 +55,17 @@ interface RoleStorageInterface extends StorageInterface
     /**
      * Returns all items.
      *
-     * @return \CharlotteDunois\Yasmin\Models\Role[]
+     * @return Role[]
      */
     public function all();
 
     /**
      * Resolves given data to a Role.
      *
-     * @param  \CharlotteDunois\Yasmin\Models\Role|string|int  $role  string/int = role ID
+     * @param  Role|string|int  $role  string/int = role ID
      *
-     * @return \CharlotteDunois\Yasmin\Models\Role
-     * @throws \InvalidArgumentException
+     * @return Role
+     * @throws InvalidArgumentException
      */
     public function resolve($role);
 
@@ -71,8 +74,8 @@ interface RoleStorageInterface extends StorageInterface
      *
      * @param  string  $key
      *
-     * @return \CharlotteDunois\Yasmin\Models\Role|null
-     * @throws \InvalidArgumentException
+     * @return Role|null
+     * @throws InvalidArgumentException
      */
     public function get($key);
 
@@ -80,10 +83,10 @@ interface RoleStorageInterface extends StorageInterface
      * Sets a key-value pair.
      *
      * @param  string  $key
-     * @param  \CharlotteDunois\Yasmin\Models\Role  $value
+     * @param  Role  $value
      *
      * @return $this
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function set($key, $value);
 
@@ -92,7 +95,7 @@ interface RoleStorageInterface extends StorageInterface
      *
      * @param  array  $data
      *
-     * @return \CharlotteDunois\Yasmin\Models\Role
+     * @return Role
      * @internal
      */
     public function factory(array $data);

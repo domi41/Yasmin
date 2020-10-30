@@ -9,6 +9,9 @@
 
 namespace CharlotteDunois\Yasmin\Interfaces;
 
+use InvalidArgumentException;
+use React\Promise\ExtendedPromiseInterface;
+
 /**
  * Something all guild voice channels implement.
  */
@@ -16,10 +19,12 @@ interface GuildVoiceChannelInterface extends GuildChannelInterface, VoiceChannel
 {
     /**
      * Sets the topic of the channel. Resolves with $this.
-     * @param string  $topic
-     * @param string  $reason
-     * @return \React\Promise\ExtendedPromiseInterface
-     * @throws \InvalidArgumentException
+     *
+     * @param  string  $topic
+     * @param  string  $reason
+     *
+     * @return ExtendedPromiseInterface
+     * @throws InvalidArgumentException
      */
     public function setTopic(string $topic, string $reason = '');
 }

@@ -9,6 +9,9 @@
 
 namespace CharlotteDunois\Yasmin\Interfaces;
 
+use InvalidArgumentException;
+use React\Promise\ExtendedPromiseInterface;
+
 /**
  * Something all guild news channels implement.
  */
@@ -28,24 +31,28 @@ interface GuildNewsChannelInterface extends GuildChannelInterface, TextChannelIn
      * )
      * ```
      *
-     * @param array $options
-     * @return \React\Promise\ExtendedPromiseInterface
+     * @param  array  $options
+     *
+     * @return ExtendedPromiseInterface
      */
     public function createInvite(array $options = []);
 
     /**
      * Fetches all invites of this channel. Resolves with a Collection of Invite instances, mapped by their code.
-     * @return \React\Promise\ExtendedPromiseInterface
+     *
+     * @return ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Models\Invite
      */
     public function fetchInvites();
 
     /**
      * Sets the topic of the channel. Resolves with $this.
-     * @param string  $topic
-     * @param string  $reason
-     * @return \React\Promise\ExtendedPromiseInterface
-     * @throws \InvalidArgumentException
+     *
+     * @param  string  $topic
+     * @param  string  $reason
+     *
+     * @return ExtendedPromiseInterface
+     * @throws InvalidArgumentException
      */
     public function setTopic(string $topic, string $reason = '');
 }

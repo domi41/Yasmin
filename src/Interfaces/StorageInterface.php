@@ -13,6 +13,7 @@ use CharlotteDunois\Collect\Collection;
 use Countable;
 use InvalidArgumentException;
 use Iterator;
+
 use const SORT_REGULAR;
 
 /**

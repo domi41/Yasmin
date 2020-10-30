@@ -9,10 +9,16 @@
 
 namespace CharlotteDunois\Yasmin\Interfaces;
 
+use CharlotteDunois\Yasmin\Models\Message;
+use CharlotteDunois\Yasmin\Models\User;
+use OutOfBoundsException;
+use RangeException;
+use React\Promise\ExtendedPromiseInterface;
+
 /**
  * Something all text channels implement.
  *
- * @method \CharlotteDunois\Yasmin\Interfaces\MessageStorageInterface  getMessages()       Gets the storage with all cached messages.
+ * @method MessageStorageInterface  getMessages()       Gets the storage with all cached messages.
  * @method string                                                      getLastMessageID()  Gets the ID of the last sent message in this channel.
  */
 interface TextChannelInterface extends ChannelInterface
@@ -30,11 +36,12 @@ interface TextChannelInterface extends ChannelInterface
      * )
      * ```
      *
-     * @param callable  $filter
-     * @param array     $options
-     * @return \React\Promise\ExtendedPromiseInterface  This promise is cancellable.
-     * @throws \RangeException          The exception the promise gets rejected with, if waiting times out.
-     * @throws \OutOfBoundsException    The exception the promise gets rejected with, if the promise gets cancelled.
+     * @param  callable  $filter
+     * @param  array  $options
+     *
+     * @return ExtendedPromiseInterface  This promise is cancellable.
+     * @throws RangeException          The exception the promise gets rejected with, if waiting times out.
+     * @throws OutOfBoundsException    The exception the promise gets rejected with, if the promise gets cancelled.
      * @see \CharlotteDunois\Yasmin\Models\Message
      * @see \CharlotteDunois\Yasmin\Utils\Collector
      */
@@ -42,8 +49,10 @@ interface TextChannelInterface extends ChannelInterface
 
     /**
      * Fetches a specific message using the ID. Resolves with an instance of Message.
-     * @param string  $id
-     * @return \React\Promise\ExtendedPromiseInterface
+     *
+     * @param  string  $id
+     *
+     * @return ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Models\Message
      */
     public function fetchMessage(string $id);
@@ -62,8 +71,9 @@ interface TextChannelInterface extends ChannelInterface
      * )
      * ```
      *
-     * @param array  $options
-     * @return \React\Promise\ExtendedPromiseInterface
+     * @param  array  $options
+     *
+     * @return ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Models\Message
      */
     public function fetchMessages(array $options = []);
@@ -91,51 +101,60 @@ interface TextChannelInterface extends ChannelInterface
      *   * )
      * ```
      *
-     * @param string  $content
-     * @param array   $options
-     * @return \React\Promise\ExtendedPromiseInterface
+     * @param  string  $content
+     * @param  array  $options
+     *
+     * @return ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Models\Message
      */
     public function send(string $content, array $options = []);
 
     /**
      * Starts sending the typing indicator in this channel. Counts up a triggered typing counter.
+     *
      * @return void
      */
     public function startTyping();
 
     /**
      * Stops sending the typing indicator in this channel. Counts down a triggered typing counter.
-     * @param bool  $force
+     *
+     * @param  bool  $force
+     *
      * @return void
      */
     public function stopTyping(bool $force = false);
 
     /**
      * Returns the amount of user typing in this channel.
+     *
      * @return int
      */
     public function typingCount();
 
     /**
      * Determines whether the given user is typing in this channel or not.
-     * @param \CharlotteDunois\Yasmin\Models\User  $user
+     *
+     * @param  User  $user
+     *
      * @return bool
      */
-    public function isTyping(\CharlotteDunois\Yasmin\Models\User $user);
+    public function isTyping(User $user);
 
     /**
-     * @param array  $message
-     * @return \CharlotteDunois\Yasmin\Models\Message
+     * @param  array  $message
+     *
+     * @return Message
      * @internal
      */
     public function _createMessage(array $message);
 
     /**
-     * @param \CharlotteDunois\Yasmin\Models\User  $user
-     * @param int|null                             $timestamp
+     * @param  User  $user
+     * @param  int|null  $timestamp
+     *
      * @return bool
      * @internal
      */
-    public function _updateTyping(\CharlotteDunois\Yasmin\Models\User $user, ?int $timestamp = null);
+    public function _updateTyping(User $user, ?int $timestamp = null);
 }

@@ -9,6 +9,11 @@
 
 namespace CharlotteDunois\Yasmin\Interfaces;
 
+use CharlotteDunois\Yasmin\HTTP\APIManager;
+use CharlotteDunois\Yasmin\HTTP\APIRequest;
+use React\Promise\ExtendedPromiseInterface;
+use RuntimeException;
+
 /**
  * This interface defines required methods and their arguments for managing route ratelimits using various systems.<br>
  * The ratelimit bucket queue is always managed in memory (as in belongs to that process), however the ratelimits are distributed to the used system.
@@ -26,11 +31,13 @@ interface RatelimitBucketInterface
 {
     /**
      * Initializes the bucket.
-     * @param \CharlotteDunois\Yasmin\HTTP\APIManager  $api
-     * @param string                                   $endpoint
-     * @throws \RuntimeException
+     *
+     * @param  APIManager  $api
+     * @param  string  $endpoint
+     *
+     * @throws RuntimeException
      */
-    public function __construct(\CharlotteDunois\Yasmin\HTTP\APIManager $api, string $endpoint);
+    public function __construct(APIManager $api, string $endpoint);
 
     /**
      * Destroys the bucket.
@@ -39,51 +46,62 @@ interface RatelimitBucketInterface
 
     /**
      * Whether we are busy.
+     *
      * @return bool
      */
     public function isBusy(): bool;
 
     /**
      * Sets the busy flag (marking as running).
-     * @param bool  $busy
+     *
+     * @param  bool  $busy
+     *
      * @return void
      */
     public function setBusy(bool $busy): void;
 
     /**
      * Sets the ratelimits from the response.
-     * @param int|null    $limit
-     * @param int|null    $remaining
-     * @param float|null  $resetTime  Reset time in seconds with milliseconds.
-     * @return \React\Promise\ExtendedPromiseInterface|void
+     *
+     * @param  int|null  $limit
+     * @param  int|null  $remaining
+     * @param  float|null  $resetTime  Reset time in seconds with milliseconds.
+     *
+     * @return ExtendedPromiseInterface|void
      */
     public function handleRatelimit(?int $limit, ?int $remaining, ?float $resetTime);
 
     /**
      * Returns the endpoint this bucket is for.
+     *
      * @return string
      */
     public function getEndpoint(): string;
 
     /**
      * Returns the size of the queue.
+     *
      * @return int
      */
     public function size(): int;
 
     /**
      * Pushes a new request into the queue.
-     * @param \CharlotteDunois\Yasmin\HTTP\APIRequest $request
+     *
+     * @param  APIRequest  $request
+     *
      * @return $this
      */
-    public function push(\CharlotteDunois\Yasmin\HTTP\APIRequest $request);
+    public function push(APIRequest $request);
 
     /**
      * Unshifts a new request into the queue. Modifies remaining ratelimit.
-     * @param \CharlotteDunois\Yasmin\HTTP\APIRequest $request
+     *
+     * @param  APIRequest  $request
+     *
      * @return $this
      */
-    public function unshift(\CharlotteDunois\Yasmin\HTTP\APIRequest $request);
+    public function unshift(APIRequest $request);
 
     /**
      * Retrieves ratelimit meta data.
@@ -96,18 +114,20 @@ interface RatelimitBucketInterface
      * )
      * ```
      *
-     * @return \React\Promise\ExtendedPromiseInterface|array
+     * @return ExtendedPromiseInterface|array
      */
     public function getMeta();
 
     /**
      * Returns the first queue item or false. Modifies remaining ratelimit.
-     * @return \CharlotteDunois\Yasmin\HTTP\APIRequest|false
+     *
+     * @return APIRequest|false
      */
     public function shift();
 
     /**
      * Unsets all queue items.
+     *
      * @return void
      */
     public function clear(): void;
