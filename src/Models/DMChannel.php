@@ -180,12 +180,4 @@ class DMChannel extends ClientBase implements DMChannelInterface
             }
         }
     }
-
-    public function __call($name, $arguments)
-    {
-        // TODO: Implement @method string getId()
-        // TODO: Implement @method int getCreatedTimestamp()
-        // TODO: Implement @method \CharlotteDunois\Yasmin\Interfaces\MessageStorageInterface getMessages()
-        // TODO: Implement @method string getLastMessageID()
-    }
 }

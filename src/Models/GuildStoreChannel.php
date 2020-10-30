@@ -180,15 +180,4 @@ class GuildStoreChannel extends ClientBase implements GuildStoreChannelInterface
             }
         }
     }
-
-    public function __call($name, $arguments)
-    {
-        // TODO: Implement @method string getId()
-        // TODO: Implement @method int getCreatedTimestamp()
-        // TODO: Implement @method string getName()
-        // TODO: Implement @method \CharlotteDunois\Yasmin\Models\Guild getGuild()
-        // TODO: Implement @method int getPosition()
-        // TODO: Implement @method \CharlotteDunois\Collect\Collection getPermissionOverwrites()
-        // TODO: Implement @method null getParent()
-    }
 }

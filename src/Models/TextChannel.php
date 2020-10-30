@@ -22,8 +22,9 @@ use CharlotteDunois\Yasmin\Utils\Snowflake;
 use DateTime;
 use React\Promise\ExtendedPromiseInterface;
 use React\Promise\Promise;
-use function React\Promise\resolve;
 use RuntimeException;
+
+use function React\Promise\resolve;
 
 /**
  * Represents a guild's text channel.
@@ -308,18 +309,5 @@ class TextChannel extends ClientBase implements GuildTextChannelInterface
                 $this->permissionOverwrites->set($overwrite->id, $overwrite);
             }
         }
-    }
-
-    public function __call($name, $arguments)
-    {
-        // TODO: Implement @method string getId()
-        // TODO: Implement @method int getCreatedTimestamp()
-        // TODO: Implement @method string getName()
-        // TODO: Implement @method \CharlotteDunois\Yasmin\Models\Guild getGuild()
-        // TODO: Implement @method int getPosition()
-        // TODO: Implement @method \CharlotteDunois\Collect\Collection getPermissionOverwrites()
-        // TODO: Implement @method null getParent()
-        // TODO: Implement @method \CharlotteDunois\Yasmin\Interfaces\MessageStorageInterface getMessages()
-        // TODO: Implement @method string getLastMessageID()
     }
 }
