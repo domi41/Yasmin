@@ -14,11 +14,7 @@ use CharlotteDunois\Yasmin\WebSocket\DiscordGatewayException;
 use Ratchet\RFC6455\Messaging\Frame;
 use Ratchet\RFC6455\Messaging\Message;
 use RuntimeException;
-use function json_decode;
-use function json_encode;
-use function json_last_error;
-use function json_last_error_msg;
-use const JSON_ERROR_NONE;
+
 
 /**
  * Handles WS encoding.
