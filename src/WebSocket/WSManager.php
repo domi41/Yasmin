@@ -83,7 +83,7 @@ class WSManager implements EventEmitterInterface
     /**
      * All : 32767
      * Without GUILD_MEMBERS, GUILD_PRESENCES and typing : 14077 (default)
-     * Without typing : 14335
+     * Without typing : 14335.
      *
      * @var array
      */
