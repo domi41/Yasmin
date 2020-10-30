@@ -12,7 +12,6 @@ namespace CharlotteDunois\Yasmin\Models;
 use CharlotteDunois\Yasmin\Client;
 use RuntimeException;
 
-
 /**
  * Represents a voice region.
  *

@@ -13,7 +13,6 @@ use CharlotteDunois\Yasmin\Client;
 use CharlotteDunois\Yasmin\Interfaces\EmojiStorageInterface;
 use InvalidArgumentException;
 
-
 /**
  * Emoji Storage to store emojis, utilizes Collection.
  */

@@ -12,9 +12,7 @@ namespace CharlotteDunois\Yasmin\Models;
 use CharlotteDunois\Yasmin\Client;
 use CharlotteDunois\Yasmin\Interfaces\MessageStorageInterface;
 use CharlotteDunois\Yasmin\Interfaces\TextChannelInterface;
-
 use React\EventLoop\Timer\TimerInterface;
-
 use function time;
 
 /**

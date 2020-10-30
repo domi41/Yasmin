@@ -21,9 +21,7 @@ use RangeException;
 use React\EventLoop\TimerInterface;
 use React\Promise\ExtendedPromiseInterface;
 use React\Promise\Promise;
-
 use function React\Promise\resolve;
-
 
 /**
  * The text based channel trait.

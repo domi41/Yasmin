@@ -15,7 +15,6 @@ use React\Promise\ExtendedPromiseInterface;
 use RuntimeException;
 use Throwable;
 
-
 /**
  * Manages a route's ratelimit in Redis, using Athena. Requires client option `http.ratelimitbucket.athena` to be set to an instance of `AthenaCache`.
  *
