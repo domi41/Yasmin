@@ -14,7 +14,6 @@ use CharlotteDunois\Yasmin\HTTP\APIEndpoints;
 use CharlotteDunois\Yasmin\Interfaces\GroupDMChannelInterface;
 use CharlotteDunois\Yasmin\Utils\DataHelpers;
 use InvalidArgumentException;
-use function property_exists;
 use React\Promise\ExtendedPromiseInterface;
 use React\Promise\Promise;
 use RuntimeException;
