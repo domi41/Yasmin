@@ -46,7 +46,7 @@ class Intents
             'GUILD_MEMBERS',
             'GUILD_PRESENCES',
             'GUILD_MESSAGE_TYPING',
-            'DIRECT_MESSAGE_TYPING'
+            'DIRECT_MESSAGE_TYPING',
         ]);
     }
 
