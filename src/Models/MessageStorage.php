@@ -14,7 +14,6 @@ use CharlotteDunois\Yasmin\Interfaces\MessageStorageInterface;
 use CharlotteDunois\Yasmin\Interfaces\TextChannelInterface;
 use React\EventLoop\Timer\TimerInterface;
 
-
 /**
  * Message Storage to store and handle messages, utilizes Collection.
  */

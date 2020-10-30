@@ -9,9 +9,11 @@
 
 namespace CharlotteDunois\Yasmin;
 
+use RuntimeException;
+
 /**
  * Exception for Discord.
  */
-class DiscordException extends \RuntimeException
+class DiscordException extends RuntimeException
 {
 }

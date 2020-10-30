@@ -11,6 +11,12 @@ namespace CharlotteDunois\Yasmin\WebSocket\Compression;
 
 use CharlotteDunois\Yasmin\Interfaces\WSCompressionInterface;
 use CharlotteDunois\Yasmin\WebSocket\DiscordGatewayException;
+use Exception;
+use RuntimeException;
+use function function_exists;
+use function inflate_add;
+use function inflate_init;
+use const ZLIB_ENCODING_DEFLATE;
 
 /**
  * Handles WS compression.
@@ -28,12 +34,12 @@ class ZlibStream implements WSCompressionInterface
      * Checks if the system supports it.
      *
      * @return void
-     * @throws \Exception
+     * @throws Exception
      */
     public static function supported(): void
     {
-        if (! \function_exists('\inflate_init')) {
-            throw new \RuntimeException('Zlib is not supported by this PHP installation');
+        if (! function_exists('\inflate_init')) {
+            throw new RuntimeException('Zlib is not supported by this PHP installation');
         }
     }
 
@@ -61,13 +67,13 @@ class ZlibStream implements WSCompressionInterface
      * Initializes the context.
      *
      * @return void
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function init(): void
     {
-        $this->context = \inflate_init(\ZLIB_ENCODING_DEFLATE);
+        $this->context = inflate_init(ZLIB_ENCODING_DEFLATE);
         if (! $this->context) {
-            throw new \RuntimeException('Unable to initialize Zlib Inflate');
+            throw new RuntimeException('Unable to initialize Zlib Inflate');
         }
     }
 
@@ -95,7 +101,7 @@ class ZlibStream implements WSCompressionInterface
             throw new DiscordGatewayException('No inflate context initialized');
         }
 
-        $uncompressed = \inflate_add($this->context, $data);
+        $uncompressed = inflate_add($this->context, $data);
         if ($uncompressed === false) {
             throw new DiscordGatewayException('The inflate context was unable to decompress the data');
         }

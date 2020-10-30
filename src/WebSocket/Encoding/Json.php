@@ -13,6 +13,12 @@ use CharlotteDunois\Yasmin\Interfaces\WSEncodingInterface;
 use CharlotteDunois\Yasmin\WebSocket\DiscordGatewayException;
 use Ratchet\RFC6455\Messaging\Frame;
 use Ratchet\RFC6455\Messaging\Message;
+use RuntimeException;
+use function json_decode;
+use function json_encode;
+use function json_last_error;
+use function json_last_error_msg;
+use const JSON_ERROR_NONE;
 
 /**
  * Handles WS encoding.
@@ -35,7 +41,7 @@ class Json implements WSEncodingInterface
      * Checks if the system supports it.
      *
      * @return void
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public static function supported(): void
     {
@@ -52,10 +58,10 @@ class Json implements WSEncodingInterface
      */
     public function decode(string $data)
     {
-        $msg = \json_decode($data, true);
-        if ($msg === null && \json_last_error() !== \JSON_ERROR_NONE) {
+        $msg = json_decode($data, true);
+        if ($msg === null && json_last_error() !== JSON_ERROR_NONE) {
             throw new DiscordGatewayException(
-                'The JSON decoder was unable to decode the data. Error: '.\json_last_error_msg()
+                'The JSON decoder was unable to decode the data. Error: '.json_last_error_msg()
             );
         }
 
@@ -72,10 +78,10 @@ class Json implements WSEncodingInterface
      */
     public function encode($data): string
     {
-        $msg = \json_encode($data);
-        if ($msg === false && \json_last_error() !== \JSON_ERROR_NONE) {
+        $msg = json_encode($data);
+        if ($msg === false && json_last_error() !== JSON_ERROR_NONE) {
             throw new DiscordGatewayException(
-                'The JSON encoder was unable to encode the data. Error: '.\json_last_error_msg()
+                'The JSON encoder was unable to encode the data. Error: '.json_last_error_msg()
             );
         }
 

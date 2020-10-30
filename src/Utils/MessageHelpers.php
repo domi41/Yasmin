@@ -19,7 +19,6 @@ use CharlotteDunois\Yasmin\Models\User;
 use InvalidArgumentException;
 use React\Promise\ExtendedPromiseInterface;
 use React\Promise\Promise;
-
 use function React\Promise\all;
 use function React\Promise\resolve;
 

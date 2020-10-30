@@ -11,7 +11,11 @@ namespace CharlotteDunois\Yasmin\Models;
 
 use CharlotteDunois\Yasmin\Client;
 use CharlotteDunois\Yasmin\Interfaces\GuildChannelInterface;
+use InvalidArgumentException;
+use React\Promise\ExtendedPromiseInterface;
 use React\Promise\Promise;
+use RuntimeException;
+
 
 /**
  * Represents a permission overwrite.
@@ -22,8 +26,8 @@ use React\Promise\Promise;
  * @property Permissions $allow     The allowed Permissions instance.
  * @property Permissions $deny      The denied Permissions instance.
  *
- * @property \CharlotteDunois\Yasmin\Models\Guild $guild     The guild this Permission Overwrite belongs to.
- * @property \CharlotteDunois\Yasmin\Models\Role|\CharlotteDunois\Yasmin\Models\GuildMember|null $target    The role or guild member, or null if not a cached member.
+ * @property Guild $guild     The guild this Permission Overwrite belongs to.
+ * @property Role|GuildMember|null $target    The role or guild member, or null if not a cached member.
  */
 class PermissionOverwrite extends ClientBase
 {
@@ -83,12 +87,12 @@ class PermissionOverwrite extends ClientBase
     /**
      * {@inheritdoc}
      * @return mixed
-     * @throws \RuntimeException
+     * @throws RuntimeException
      * @internal
      */
     public function __get($name)
     {
-        if (\property_exists($this, $name)) {
+        if (property_exists($this, $name)) {
             return $this->$name;
         }
 
@@ -113,8 +117,8 @@ class PermissionOverwrite extends ClientBase
      * @param  Permissions|int|null  $deny  Which permissions should be denied?
      * @param  string  $reason  The reason for this.
      *
-     * @return \React\Promise\ExtendedPromiseInterface
-     * @throws \InvalidArgumentException
+     * @return ExtendedPromiseInterface
+     * @throws InvalidArgumentException
      */
     public function edit($allow, $deny = null, string $reason = '')
     {
@@ -134,11 +138,11 @@ class PermissionOverwrite extends ClientBase
         }
 
         if ($allow === $this->allow->bitfield && $deny === $this->deny->bitfield) {
-            throw new \InvalidArgumentException('One of allow or deny has to be changed');
+            throw new InvalidArgumentException('One of allow or deny has to be changed');
         }
 
-        if (\json_encode($allow) === \json_encode($deny)) {
-            throw new \InvalidArgumentException('Allow and deny must have different permissions');
+        if (json_encode($allow) === json_encode($deny)) {
+            throw new InvalidArgumentException('Allow and deny must have different permissions');
         }
 
         $options['allow'] = $allow;
@@ -168,7 +172,7 @@ class PermissionOverwrite extends ClientBase
      *
      * @param  string  $reason
      *
-     * @return \React\Promise\ExtendedPromiseInterface
+     * @return ExtendedPromiseInterface
      */
     public function delete(string $reason = '')
     {
@@ -195,10 +199,10 @@ class PermissionOverwrite extends ClientBase
     public function jsonSerialize()
     {
         return [
-            'type' => $this->type,
-            'id' => $this->id,
+            'type'  => $this->type,
+            'id'    => $this->id,
             'allow' => $this->allow,
-            'deny' => $this->deny,
+            'deny'  => $this->deny,
         ];
     }
 }

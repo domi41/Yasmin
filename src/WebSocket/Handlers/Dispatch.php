@@ -55,7 +55,7 @@ use RuntimeException;
  */
 class Dispatch implements WSHandlerInterface
 {
-    private $wsevents = [];
+    private   $wsevents = [];
     protected $wshandler;
 
     public function __construct(WSHandler $wshandler)

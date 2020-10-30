@@ -15,6 +15,9 @@ use CharlotteDunois\Yasmin\Interfaces\GuildStoreChannelInterface;
 use CharlotteDunois\Yasmin\Traits\GuildChannelTrait;
 use CharlotteDunois\Yasmin\Utils\DataHelpers;
 use CharlotteDunois\Yasmin\Utils\Snowflake;
+use DateTime;
+use RuntimeException;
+
 
 /**
  * Represents a guild's store channel.
@@ -28,8 +31,8 @@ use CharlotteDunois\Yasmin\Utils\Snowflake;
  * @property int $position               The channel position.
  * @property Collection $permissionOverwrites   A collection of PermissionOverwrite instances, mapped by their ID.
  *
- * @property \DateTime $createdAt              The DateTime instance of createdTimestamp.
- * @property \CharlotteDunois\Yasmin\Models\CategoryChannel|null $parent                 The channel's parent, or null.
+ * @property DateTime $createdAt              The DateTime instance of createdTimestamp.
+ * @property CategoryChannel|null $parent                 The channel's parent, or null.
  * @method string getId()
  * @method int getCreatedTimestamp()
  * @method string getName()
@@ -124,12 +127,12 @@ class GuildStoreChannel extends ClientBase implements GuildStoreChannelInterface
     /**
      * {@inheritdoc}
      * @return mixed
-     * @throws \RuntimeException
+     * @throws RuntimeException
      * @internal
      */
     public function __get($name)
     {
-        if (\property_exists($this, $name)) {
+        if (property_exists($this, $name)) {
             return $this->$name;
         }
 

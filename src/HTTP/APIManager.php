@@ -20,7 +20,6 @@ use React\Promise\ExtendedPromiseInterface;
 use React\Promise\Promise;
 use RuntimeException;
 use Throwable;
-
 use function React\Promise\resolve;
 
 /**

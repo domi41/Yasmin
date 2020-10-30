@@ -9,65 +9,79 @@
 
 namespace CharlotteDunois\Yasmin\Models;
 
+use CharlotteDunois\Yasmin\Utils\DataHelpers;
+use CharlotteDunois\Yasmin\Utils\Snowflake;
+use DateTime;
+use RuntimeException;
+
+
 /**
  * Represents an attachment (from a message).
  *
- * @property string     $id                 The attachment ID.
- * @property string     $filename           The filename.
- * @property int        $size               The filesize in bytes.
- * @property string     $url                The url to the file.
- * @property int|null   $height             The height (if image), or null.
- * @property int|null   $width              The width (if image), or null.
- * @property int        $createdTimestamp   The timestamp of when this attachment was created.
+ * @property string $id                 The attachment ID.
+ * @property string $filename           The filename.
+ * @property int $size               The filesize in bytes.
+ * @property string $url                The url to the file.
+ * @property int|null $height             The height (if image), or null.
+ * @property int|null $width              The width (if image), or null.
+ * @property int $createdTimestamp   The timestamp of when this attachment was created.
  *
- * @property \DateTime  $createdAt          An DateTime instance of the createdTimestamp.
+ * @property DateTime $createdAt          An DateTime instance of the createdTimestamp.
  */
 class MessageAttachment extends Base
 {
     /**
      * The attachment ID.
+     *
      * @var string
      */
     protected $id;
 
     /**
      * The filename.
+     *
      * @var string
      */
     protected $filename;
 
     /**
      * The filesize in bytes.
+     *
      * @var int
      */
     protected $size;
 
     /**
      * The url to the file.
+     *
      * @var string
      */
     protected $url;
 
     /**
      * The height (if image), or null.
+     *
      * @var int|null
      */
     protected $height;
 
     /**
      * The width (if image), or null.
+     *
      * @var int|null
      */
     protected $width;
 
     /**
      * The timestamp of when this attachment was created.
+     *
      * @var int
      */
     protected $createdTimestamp;
 
     /**
      * Used for sending attachments.
+     *
      * @var string
      * @internal
      */
@@ -75,7 +89,8 @@ class MessageAttachment extends Base
 
     /**
      * Constructs a new instance.
-     * @param array  $attachment  This parameter is used internally and should not be used.
+     *
+     * @param  array  $attachment  This parameter is used internally and should not be used.
      */
     public function __construct(array $attachment = [])
     {
@@ -84,29 +99,35 @@ class MessageAttachment extends Base
             $this->filename = (string) $attachment['filename'];
             $this->size = (int) $attachment['size'];
             $this->url = (string) $attachment['url'];
-            $this->height = \CharlotteDunois\Yasmin\Utils\DataHelpers::typecastVariable(($attachment['height'] ?? null), 'int');
-            $this->width = \CharlotteDunois\Yasmin\Utils\DataHelpers::typecastVariable(($attachment['width'] ?? null), 'int');
+            $this->height = DataHelpers::typecastVariable(
+                ($attachment['height'] ?? null),
+                'int'
+            );
+            $this->width = DataHelpers::typecastVariable(
+                ($attachment['width'] ?? null),
+                'int'
+            );
 
-            $this->createdTimestamp = (int) \CharlotteDunois\Yasmin\Utils\Snowflake::deconstruct($this->id)->timestamp;
+            $this->createdTimestamp = (int) Snowflake::deconstruct($this->id)->timestamp;
         }
     }
 
     /**
      * {@inheritdoc}
      * @return mixed
-     * @throws \RuntimeException
+     * @throws RuntimeException
      * @internal
      */
     public function __get($name)
     {
-        if (\property_exists($this, $name)) {
+        if (property_exists($this, $name)) {
             return $this->$name;
         }
 
         switch ($name) {
             case 'createdAt':
-                return \CharlotteDunois\Yasmin\Utils\DataHelpers::makeDateTime($this->createdTimestamp);
-            break;
+                return DataHelpers::makeDateTime($this->createdTimestamp);
+                break;
         }
 
         return parent::__get($name);
@@ -114,8 +135,10 @@ class MessageAttachment extends Base
 
     /**
      * Sets the attachment.
-     * @param string  $attachment  An URL or the filepath, or the data.
-     * @param string  $filename    The filename.
+     *
+     * @param  string  $attachment  An URL or the filepath, or the data.
+     * @param  string  $filename  The filename.
+     *
      * @return $this
      */
     public function setAttachment(string $attachment, string $filename = '')
@@ -128,6 +151,7 @@ class MessageAttachment extends Base
 
     /**
      * Returns a proper message files array.
+     *
      * @return array
      * @internal
      */
@@ -137,10 +161,10 @@ class MessageAttachment extends Base
             'name' => $this->filename,
         ];
 
-        $file = @\realpath($this->attachment);
+        $file = @realpath($this->attachment);
         if ($file) {
             $props['path'] = $file;
-        } elseif (\filter_var($this->attachment, \FILTER_VALIDATE_URL)) {
+        } elseif (filter_var($this->attachment, FILTER_VALIDATE_URL)) {
             $props['path'] = $this->attachment;
         } else {
             $props['data'] = $this->attachment;
@@ -148,9 +172,9 @@ class MessageAttachment extends Base
 
         if (empty($props['name'])) {
             if (! empty($props['path'])) {
-                $props['name'] = \basename($props['path']);
+                $props['name'] = basename($props['path']);
             } else {
-                $props['name'] = 'file-'.\bin2hex(\random_bytes(3)).'.jpg';
+                $props['name'] = 'file-'.bin2hex(random_bytes(3)).'.jpg';
             }
         }
 

@@ -11,6 +11,8 @@ namespace CharlotteDunois\Yasmin\Models;
 
 use CharlotteDunois\Collect\Collection;
 use CharlotteDunois\Yasmin\Client;
+use RuntimeException;
+
 
 /**
  * Holds message mentions.
@@ -116,7 +118,7 @@ class MessageMentions extends ClientBase
 
         $this->everyone = ! empty($msg['mention_everyone']);
 
-        \preg_match_all(self::PATTERN_CHANNELS, $message->content, $matches);
+        preg_match_all(self::PATTERN_CHANNELS, $message->content, $matches);
         if (! empty($matches[1])) {
             foreach ($matches[1] as $match) {
                 $channel = $this->client->channels->get($match);
@@ -156,12 +158,12 @@ class MessageMentions extends ClientBase
     /**
      * {@inheritdoc}
      * @return mixed
-     * @throws \RuntimeException
+     * @throws RuntimeException
      * @internal
      */
     public function __get($name)
     {
-        if (\property_exists($this, $name)) {
+        if (property_exists($this, $name)) {
             return $this->$name;
         }
 

@@ -18,7 +18,6 @@ use RingCentral\Psr7\MultipartStream;
 use RingCentral\Psr7\Request;
 use RingCentral\Psr7\Stream;
 use RuntimeException;
-
 use function React\Promise\reject;
 
 /**

@@ -14,7 +14,6 @@ use React\Filesystem\Filesystem;
 use React\Filesystem\FilesystemInterface;
 use React\Promise\ExtendedPromiseInterface;
 use RuntimeException;
-
 use function React\Promise\reject;
 use function React\Promise\resolve;
 

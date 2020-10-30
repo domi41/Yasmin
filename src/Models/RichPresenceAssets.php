@@ -11,6 +11,9 @@ namespace CharlotteDunois\Yasmin\Models;
 
 use CharlotteDunois\Yasmin\Client;
 use CharlotteDunois\Yasmin\HTTP\APIEndpoints;
+use InvalidArgumentException;
+use RuntimeException;
+
 
 /**
  * Rich Presence assets.
@@ -81,12 +84,12 @@ class RichPresenceAssets extends ClientBase
     /**
      * {@inheritdoc}
      * @return mixed
-     * @throws \RuntimeException
+     * @throws RuntimeException
      * @internal
      */
     public function __get($name)
     {
-        if (\property_exists($this, $name)) {
+        if (property_exists($this, $name)) {
             return $this->$name;
         }
 
@@ -104,11 +107,11 @@ class RichPresenceAssets extends ClientBase
     {
         if ($this->largeImage !== null) {
             if ($size & ($size - 1)) {
-                throw new \InvalidArgumentException('Invalid size "'.$size.'", expected any powers of 2');
+                throw new InvalidArgumentException('Invalid size "'.$size.'", expected any powers of 2');
             }
 
-            if (\strpos($this->largeImage, 'spotify:') === 0) {
-                return 'https://i.scdn.co/image/'.\substr($this->largeImage, 8);
+            if (strpos($this->largeImage, 'spotify:') === 0) {
+                return 'https://i.scdn.co/image/'.substr($this->largeImage, 8);
             }
 
             return APIEndpoints::CDN['url'].APIEndpoints::format(
@@ -132,11 +135,11 @@ class RichPresenceAssets extends ClientBase
     {
         if ($this->smallImage !== null) {
             if ($size & ($size - 1)) {
-                throw new \InvalidArgumentException('Invalid size "'.$size.'", expected any powers of 2');
+                throw new InvalidArgumentException('Invalid size "'.$size.'", expected any powers of 2');
             }
 
-            if (\strpos($this->smallImage, 'spotify:') === 0) {
-                return 'https://i.scdn.co/image/'.\substr($this->smallImage, 8);
+            if (strpos($this->smallImage, 'spotify:') === 0) {
+                return 'https://i.scdn.co/image/'.substr($this->smallImage, 8);
             }
 
             return APIEndpoints::CDN['url'].APIEndpoints::format(

@@ -11,6 +11,8 @@ namespace CharlotteDunois\Yasmin\Models;
 
 use CharlotteDunois\Yasmin\Client;
 use CharlotteDunois\Yasmin\Interfaces\PresenceStorageInterface;
+use InvalidArgumentException;
+
 
 /**
  * Presence Storage, which utilizes Collection.
@@ -42,7 +44,7 @@ class PresenceStorage extends Storage implements PresenceStorageInterface
      * @param  Presence|User|string|int  $presence  string/int = user ID
      *
      * @return Presence
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function resolve($presence)
     {
@@ -54,15 +56,15 @@ class PresenceStorage extends Storage implements PresenceStorageInterface
             $presence = $presence->id;
         }
 
-        if (\is_int($presence)) {
+        if (is_int($presence)) {
             $presence = (string) $presence;
         }
 
-        if (\is_string($presence) && parent::has($presence)) {
+        if (is_string($presence) && parent::has($presence)) {
             return parent::get($presence);
         }
 
-        throw new \InvalidArgumentException('Unable to resolve unknown presence');
+        throw new InvalidArgumentException('Unable to resolve unknown presence');
     }
 
     /**

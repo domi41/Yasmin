@@ -12,6 +12,7 @@ namespace CharlotteDunois\Yasmin\WebSocket\Handlers;
 use CharlotteDunois\Yasmin\Interfaces\WSHandlerInterface;
 use CharlotteDunois\Yasmin\WebSocket\WSConnection;
 use CharlotteDunois\Yasmin\WebSocket\WSHandler;
+use function microtime;
 
 /**
  * WS Event handler.
@@ -29,6 +30,6 @@ class HeartbeatAck implements WSHandlerInterface
 
     public function handle(WSConnection $ws, $packet): void
     {
-        $ws->_pong(\microtime(true));
+        $ws->_pong(microtime(true));
     }
 }

@@ -9,6 +9,7 @@
 
 namespace CharlotteDunois\Yasmin;
 
+use CharlotteDunois\Yasmin\Models\User;
 use CharlotteDunois\Yasmin\Models\Webhook;
 use React\EventLoop\LoopInterface;
 
@@ -20,7 +21,7 @@ use React\EventLoop\LoopInterface;
  * @property string|null $avatar     The webhook default avatar, or null.
  * @property string|null $channelID  The channel the webhook belongs to.
  * @property string|null $guildID    The guild the webhook belongs to, or null.
- * @property \CharlotteDunois\Yasmin\Models\User|null $owner      The owner of the webhook, or null.
+ * @property User|null $owner      The owner of the webhook, or null.
  * @property string $token      The webhook token.
  */
 class WebhookClient extends Webhook

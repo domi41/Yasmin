@@ -11,7 +11,11 @@ namespace CharlotteDunois\Yasmin\Models;
 
 use CharlotteDunois\Collect\Collection;
 use CharlotteDunois\Yasmin\Client;
+use InvalidArgumentException;
+use React\Promise\ExtendedPromiseInterface;
 use React\Promise\Promise;
+use RuntimeException;
+
 
 /**
  * Represents a message reaction.
@@ -76,12 +80,12 @@ class MessageReaction extends ClientBase
     /**
      * {@inheritdoc}
      * @return mixed
-     * @throws \RuntimeException
+     * @throws RuntimeException
      * @internal
      */
     public function __get($name)
     {
-        if (\property_exists($this, $name)) {
+        if (property_exists($this, $name)) {
             return $this->$name;
         }
 
@@ -95,7 +99,7 @@ class MessageReaction extends ClientBase
      * @param  string  $before  Limit fetching users to those with an ID smaller than the given ID.
      * @param  string  $after  Limit fetching users to those with an ID greater than the given ID.
      *
-     * @return \React\Promise\ExtendedPromiseInterface
+     * @return ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Models\User
      */
     public function fetchUsers(int $limit = 100, string $before = '', string $after = '')
@@ -137,10 +141,10 @@ class MessageReaction extends ClientBase
     /**
      * Removes an user from the reaction. Resolves with $this.
      *
-     * @param  \CharlotteDunois\Yasmin\Models\User|string  $user  Defaults to the client user.
+     * @param  User|string  $user  Defaults to the client user.
      *
-     * @return \React\Promise\ExtendedPromiseInterface
-     * @throws \InvalidArgumentException
+     * @return ExtendedPromiseInterface
+     * @throws InvalidArgumentException
      */
     public function remove($user = null)
     {

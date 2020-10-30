@@ -11,6 +11,7 @@ namespace CharlotteDunois\Yasmin\Models;
 
 use CharlotteDunois\Yasmin\Client;
 use CharlotteDunois\Yasmin\HTTP\APIEndpoints;
+use RuntimeException;
 
 /**
  * Represents an OAuth Application.
@@ -22,7 +23,7 @@ use CharlotteDunois\Yasmin\HTTP\APIEndpoints;
  * @property string[]|null $rpcOrigins           An array of RPC origin url strings, if RPC is enabled, or null.
  * @property bool $botPublic            Whether the bot is public.
  * @property bool $botRequireCodeGrant  Whether the bot requires a code grant (full OAuth flow).
- * @property \CharlotteDunois\Yasmin\Models\User|null $owner                The User instance of the owner, or null.
+ * @property User|null $owner                The User instance of the owner, or null.
  */
 class OAuthApplication extends ClientBase
 {
@@ -78,7 +79,7 @@ class OAuthApplication extends ClientBase
     /**
      * The User instance of the owner, or null.
      *
-     * @var \CharlotteDunois\Yasmin\Models\User|null
+     * @var User|null
      */
     protected $owner;
 
@@ -105,7 +106,7 @@ class OAuthApplication extends ClientBase
     /**
      * {@inheritdoc}
      * @return mixed
-     * @throws \RuntimeException
+     * @throws RuntimeException
      * @internal
      */
     public function __get($name)

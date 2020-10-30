@@ -11,6 +11,8 @@ namespace CharlotteDunois\Yasmin\Models;
 
 use CharlotteDunois\Yasmin\Client;
 use CharlotteDunois\Yasmin\HTTP\APIEndpoints;
+use InvalidArgumentException;
+use RuntimeException;
 
 /**
  * Represents a message application.
@@ -78,7 +80,7 @@ class MessageApplication extends ClientBase
     /**
      * {@inheritdoc}
      * @return mixed
-     * @throws \RuntimeException
+     * @throws RuntimeException
      * @internal
      */
     public function __get($name)
@@ -100,7 +102,7 @@ class MessageApplication extends ClientBase
     public function getCoverImageURL(?int $size = null)
     {
         if ($size & ($size - 1)) {
-            throw new \InvalidArgumentException('Invalid size "'.$size.'", expected any powers of 2');
+            throw new InvalidArgumentException('Invalid size "'.$size.'", expected any powers of 2');
         }
 
         if ($this->coverImage !== null) {
