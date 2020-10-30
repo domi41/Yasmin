@@ -22,8 +22,9 @@ use CharlotteDunois\Yasmin\Utils\Snowflake;
 use DateTime;
 use React\Promise\ExtendedPromiseInterface;
 use React\Promise\Promise;
-use function React\Promise\resolve;
 use RuntimeException;
+
+use function React\Promise\resolve;
 
 /**
  * Represents a guild's text channel.

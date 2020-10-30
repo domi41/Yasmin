@@ -27,11 +27,12 @@ use CharlotteDunois\Yasmin\WebSocket\WSManager;
 use DateTime;
 use Exception;
 use InvalidArgumentException;
-use function React\Promise\all;
 use React\Promise\ExtendedPromiseInterface;
 use React\Promise\Promise;
-use function React\Promise\resolve;
 use RuntimeException;
+
+use function React\Promise\all;
+use function React\Promise\resolve;
 
 /**
  * Represents a guild. It's recommended to see if a guild is available before performing operations or reading data from it.

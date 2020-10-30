@@ -12,9 +12,12 @@ namespace CharlotteDunois\Yasmin\Models;
 use CharlotteDunois\Collect\Collection;
 use CharlotteDunois\Yasmin\Client;
 use CharlotteDunois\Yasmin\Interfaces\CategoryChannelInterface;
+use CharlotteDunois\Yasmin\Interfaces\StorageInterface;
 use CharlotteDunois\Yasmin\Traits\GuildChannelTrait;
 use CharlotteDunois\Yasmin\Utils\DataHelpers;
 use CharlotteDunois\Yasmin\Utils\Snowflake;
+use DateTime;
+use RuntimeException;
 
 /**
  * Represents a guild's category channel.
@@ -26,13 +29,13 @@ use CharlotteDunois\Yasmin\Utils\Snowflake;
  * @property int $position               The channel position.
  * @property Collection $permissionOverwrites   A collection of PermissionOverwrite instances.
  *
- * @property \DateTime $createdAt              The DateTime instance of createdTimestamp.
+ * @property DateTime $createdAt              The DateTime instance of createdTimestamp.
  * @method string getId()
  * @method int getCreatedTimestamp()
  * @method string getName()
- * @method \CharlotteDunois\Yasmin\Models\Guild getGuild()
+ * @method Guild getGuild()
  * @method int getPosition()
- * @method \CharlotteDunois\Collect\Collection getPermissionOverwrites()
+ * @method Collection getPermissionOverwrites()
  * @method null getParent()
  */
 class CategoryChannel extends ClientBase implements CategoryChannelInterface
@@ -106,7 +109,7 @@ class CategoryChannel extends ClientBase implements CategoryChannelInterface
     /**
      * {@inheritdoc}
      * @return mixed
-     * @throws \RuntimeException
+     * @throws RuntimeException
      * @internal
      */
     public function __get($name)
@@ -127,7 +130,7 @@ class CategoryChannel extends ClientBase implements CategoryChannelInterface
     /**
      * Returns all channels which are childrens of this category.
      *
-     * @return \CharlotteDunois\Yasmin\Interfaces\StorageInterface
+     * @return StorageInterface
      */
     public function getChildren()
     {
