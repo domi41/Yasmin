@@ -562,7 +562,7 @@ class WSConnection implements EventEmitterInterface
             'op' => $op,
             'd'  => [
                 'token'           => $this->wsmanager->client->token,
-                'intents'         => WSManager::GATEWAY_INTENTS['GUILD_MESSAGES'] + WSManager::GATEWAY_INTENTS['DIRECT_MESSAGES'],
+                'intents'         => WSManager::GATEWAY_INTENTS['GUILD_MESSAGES'] + WSManager::GATEWAY_INTENTS['GUILD_MESSAGE_REACTIONS'] + WSManager::GATEWAY_INTENTS['DIRECT_MESSAGES'] + WSManager::GATEWAY_INTENTS['DIRECT_MESSAGE_REACTIONS'],
                 'properties'      => [
                     '$os'      => php_uname('s'),
                     '$browser' => 'Yasmin '.Client::VERSION,
