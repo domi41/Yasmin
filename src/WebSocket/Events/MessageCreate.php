@@ -16,7 +16,6 @@ use CharlotteDunois\Yasmin\Models\GuildMember;
 use CharlotteDunois\Yasmin\Models\TextChannel;
 use CharlotteDunois\Yasmin\WebSocket\WSConnection;
 use CharlotteDunois\Yasmin\WebSocket\WSManager;
-
 use function React\Promise\all;
 use function React\Promise\resolve;
 
