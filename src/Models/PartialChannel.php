@@ -15,7 +15,6 @@ use CharlotteDunois\Yasmin\Utils\DataHelpers;
 use CharlotteDunois\Yasmin\Utils\Snowflake;
 use DateTime;
 use InvalidArgumentException;
-use function property_exists;
 use RuntimeException;
 
 /**
