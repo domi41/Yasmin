@@ -11,6 +11,8 @@ namespace CharlotteDunois\Yasmin\Models;
 
 use CharlotteDunois\Yasmin\Client;
 use CharlotteDunois\Yasmin\Interfaces\EmojiStorageInterface;
+use InvalidArgumentException;
+
 
 /**
  * Emoji Storage to store emojis, utilizes Collection.
@@ -45,7 +47,7 @@ class EmojiStorage extends Storage implements EmojiStorageInterface
      * @param  Emoji|MessageReaction|string|int  $emoji  string/int = emoji ID
      *
      * @return Emoji
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function resolve($emoji)
     {
@@ -57,15 +59,15 @@ class EmojiStorage extends Storage implements EmojiStorageInterface
             return $emoji->emoji;
         }
 
-        if (\is_int($emoji)) {
+        if (is_int($emoji)) {
             $emoji = (string) $emoji;
         }
 
-        if (\is_string($emoji) && parent::has($emoji)) {
+        if (is_string($emoji) && parent::has($emoji)) {
             return parent::get($emoji);
         }
 
-        throw new \InvalidArgumentException('Unable to resolve unknown emoji');
+        throw new InvalidArgumentException('Unable to resolve unknown emoji');
     }
 
     /**

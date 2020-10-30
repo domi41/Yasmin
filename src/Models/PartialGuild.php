@@ -14,6 +14,10 @@ use CharlotteDunois\Yasmin\HTTP\APIEndpoints;
 use CharlotteDunois\Yasmin\Utils\DataHelpers;
 use CharlotteDunois\Yasmin\Utils\ImageHelpers;
 use CharlotteDunois\Yasmin\Utils\Snowflake;
+use DateTime;
+use InvalidArgumentException;
+use RuntimeException;
+
 
 /**
  * Represents a partial guild.
@@ -24,7 +28,7 @@ use CharlotteDunois\Yasmin\Utils\Snowflake;
  * @property string|null $icon              The guild icon, or null.
  * @property string|null $splash            The guild splash, or null.
  *
- * @property \DateTime $createdAt          The DateTime instance of createdTimestamp.
+ * @property DateTime $createdAt          The DateTime instance of createdTimestamp.
  */
 class PartialGuild extends ClientBase
 {
@@ -81,12 +85,12 @@ class PartialGuild extends ClientBase
     /**
      * {@inheritdoc}
      * @return mixed
-     * @throws \RuntimeException
+     * @throws RuntimeException
      * @internal
      */
     public function __get($name)
     {
-        if (\property_exists($this, $name)) {
+        if (property_exists($this, $name)) {
             return $this->$name;
         }
 
@@ -106,12 +110,12 @@ class PartialGuild extends ClientBase
      * @param  string  $format  One of png, jpg or webp.
      *
      * @return string|null
-     * @throws \InvalidArgumentException Thrown if $size is not a power of 2
+     * @throws InvalidArgumentException Thrown if $size is not a power of 2
      */
     public function getIconURL(?int $size = null, string $format = '')
     {
         if (! ImageHelpers::isPowerOfTwo($size)) {
-            throw new \InvalidArgumentException('Invalid size "'.$size.'", expected any powers of 2');
+            throw new InvalidArgumentException('Invalid size "'.$size.'", expected any powers of 2');
         }
 
         if ($this->icon === null) {
@@ -141,7 +145,7 @@ class PartialGuild extends ClientBase
     public function getSplashURL(?int $size = null, string $format = 'png')
     {
         if (! ImageHelpers::isPowerOfTwo($size)) {
-            throw new \InvalidArgumentException('Invalid size "'.$size.'", expected any powers of 2');
+            throw new InvalidArgumentException('Invalid size "'.$size.'", expected any powers of 2');
         }
 
         if ($this->splash !== null) {

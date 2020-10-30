@@ -9,6 +9,8 @@
 
 namespace CharlotteDunois\Yasmin\Models;
 
+use RuntimeException;
+
 /**
  * Represents an user's client status.
  *
@@ -90,7 +92,7 @@ class ClientStatus extends Base
     /**
      * {@inheritdoc}
      * @return mixed
-     * @throws \RuntimeException
+     * @throws RuntimeException
      * @internal
      */
     public function __get($name)

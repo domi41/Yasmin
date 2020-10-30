@@ -10,6 +10,7 @@
 namespace CharlotteDunois\Yasmin\Models;
 
 use CharlotteDunois\Yasmin\Interfaces\GuildStorageInterface;
+use InvalidArgumentException;
 
 /**
  * Guild Storage to store guilds, utilizes Collection.
@@ -22,7 +23,7 @@ class GuildStorage extends Storage implements GuildStorageInterface
      * @param  Guild|string|int  $guild  string/int = guild ID
      *
      * @return Guild
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function resolve($guild)
     {
@@ -38,7 +39,7 @@ class GuildStorage extends Storage implements GuildStorageInterface
             return parent::get($guild);
         }
 
-        throw new \InvalidArgumentException('Unable to resolve unknown guild');
+        throw new InvalidArgumentException('Unable to resolve unknown guild');
     }
 
     /**

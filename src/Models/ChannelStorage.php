@@ -18,6 +18,8 @@ use CharlotteDunois\Yasmin\Interfaces\GroupDMChannelInterface;
 use CharlotteDunois\Yasmin\Interfaces\GuildNewsChannelInterface;
 use CharlotteDunois\Yasmin\Interfaces\GuildStoreChannelInterface;
 use CharlotteDunois\Yasmin\Interfaces\GuildVoiceChannelInterface;
+use InvalidArgumentException;
+
 
 /**
  * Channel Storage to store channels, which utilizes Collection.
@@ -54,7 +56,7 @@ class ChannelStorage extends Storage implements ChannelStorageInterface
      * @param  ChannelInterface|string|int  $channel  string/int = channel ID
      *
      * @return ChannelInterface
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function resolve($channel)
     {
@@ -62,15 +64,15 @@ class ChannelStorage extends Storage implements ChannelStorageInterface
             return $channel;
         }
 
-        if (\is_int($channel)) {
+        if (is_int($channel)) {
             $channel = (string) $channel;
         }
 
-        if (\is_string($channel) && parent::has($channel)) {
+        if (is_string($channel) && parent::has($channel)) {
             return parent::get($channel);
         }
 
-        throw new \InvalidArgumentException('Unable to resolve unknown channel');
+        throw new InvalidArgumentException('Unable to resolve unknown channel');
     }
 
     /**

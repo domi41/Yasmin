@@ -12,6 +12,7 @@ namespace CharlotteDunois\Yasmin\Models;
 use CharlotteDunois\Yasmin\Client;
 use CharlotteDunois\Yasmin\Utils\DataHelpers;
 use CharlotteDunois\Yasmin\Utils\Snowflake;
+use DateTime;
 
 /**
  * Represents a guild audit log entry.
@@ -26,8 +27,8 @@ use CharlotteDunois\Yasmin\Utils\Snowflake;
  * @property mixed|null $extra             Any extra data from the entry, or null.
  * @property mixed|null $target            The target of this entry, or null.
  *
- * @property \DateTime $createdAt         The DateTime instance of createdTimestamp.
- * @property \CharlotteDunois\Yasmin\Models\User|null $user              The user which triggered the audit log.
+ * @property DateTime $createdAt         The DateTime instance of createdTimestamp.
+ * @property User|null $user              The user which triggered the audit log.
  */
 class AuditLogEntry extends ClientBase
 {
@@ -145,7 +146,7 @@ class AuditLogEntry extends ClientBase
         $this->id = (string) $entry['id'];
         $this->changes = $entry['changes'] ?? [];
         $this->userID = (string) $entry['user_id'];
-        $this->actionType = (\array_search($entry['action_type'], self::ACTION_TYPES, true) ?: '');
+        $this->actionType = (array_search($entry['action_type'], self::ACTION_TYPES, true) ?: '');
         $this->reason = DataHelpers::typecastVariable(($entry['reason'] ?? null), 'string');
 
         $this->createdTimestamp = (int) Snowflake::deconstruct($this->id)->timestamp;
@@ -182,7 +183,7 @@ class AuditLogEntry extends ClientBase
         $targetType = self::getTargetType($entry['action_type']);
 
         if ($targetType === 'UNKNOWN') {
-            $this->target = \array_reduce(
+            $this->target = array_reduce(
                 $this->changes,
                 function ($carry, $el) {
                     $carry[$el['key']] = $el['new'] ?? $el['old'] ?? null;
@@ -193,13 +194,13 @@ class AuditLogEntry extends ClientBase
             );
             $this->target['id'] = $entry['target_id'] ?? null;
         } elseif ($targetType === 'USER' || $targetType === 'GUILD') {
-            $method = \strtolower($targetType).'s';
+            $method = strtolower($targetType).'s';
             $this->target = $this->client->$method->get($entry['target_id']);
         } elseif ($targetType === 'WEBHOOK') {
             $this->target = $this->log->webhooks->get($entry['target_id']);
         } elseif ($targetType === 'INVITE') {
             if ($this->log->guild->me->permissions->has(
-                \CharlotteDunois\Yasmin\Models\Permissions::PERMISSIONS['MANAGE_GUILD']
+                Permissions::PERMISSIONS['MANAGE_GUILD']
             )) {
                 $change = null;
 
@@ -222,7 +223,7 @@ class AuditLogEntry extends ClientBase
                     );
                 }
             } else {
-                $this->target = \array_reduce(
+                $this->target = array_reduce(
                     $this->changes,
                     function ($el, $carry) {
                         $carry[$el['key']] = $el['new'] ?? $el['old'] ?? null;
@@ -235,7 +236,7 @@ class AuditLogEntry extends ClientBase
         } elseif ($targetType === 'MESSAGE') {
             $this->target = $this->client->users->get($entry['target_id']);
         } else {
-            $method = \strtolower($targetType).'s';
+            $method = strtolower($targetType).'s';
             $this->target = $this->log->guild->$method->get($entry['target_id']);
         }
     }
@@ -247,7 +248,7 @@ class AuditLogEntry extends ClientBase
      */
     public function __get($name)
     {
-        if (\property_exists($this, $name)) {
+        if (property_exists($this, $name)) {
             return $this->$name;
         }
 
@@ -272,7 +273,7 @@ class AuditLogEntry extends ClientBase
      */
     public static function getActionType(int $actionType)
     {
-        if (\in_array(
+        if (in_array(
             $actionType,
             [
                 self::ACTION_TYPES['CHANNEL_CREATE'],
@@ -287,7 +288,7 @@ class AuditLogEntry extends ClientBase
             return 'CREATE';
         }
 
-        if (\in_array(
+        if (in_array(
             $actionType,
             [
                 self::ACTION_TYPES['CHANNEL_DELETE'],
@@ -305,7 +306,7 @@ class AuditLogEntry extends ClientBase
             return 'DELETE';
         }
 
-        if (\in_array(
+        if (in_array(
             $actionType,
             [
                 self::ACTION_TYPES['CHANNEL_UPDATE'],

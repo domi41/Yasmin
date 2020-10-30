@@ -15,6 +15,9 @@ use CharlotteDunois\Yasmin\Interfaces\GuildVoiceChannelInterface;
 use CharlotteDunois\Yasmin\Traits\GuildChannelTrait;
 use CharlotteDunois\Yasmin\Utils\DataHelpers;
 use CharlotteDunois\Yasmin\Utils\Snowflake;
+use InvalidArgumentException;
+use React\Promise\ExtendedPromiseInterface;
+use RuntimeException;
 
 /**
  * Represents a guild's voice channel.
@@ -31,7 +34,7 @@ use CharlotteDunois\Yasmin\Utils\Snowflake;
  * @property int $userLimit              The maximum amount of users allowed in the channel - 0 means unlimited.
  *
  * @property bool $full                   Checks if the voice channel is full.
- * @property \CharlotteDunois\Yasmin\Models\CategoryChannel|null $parent                 Returns the channel's parent, or null.
+ * @property CategoryChannel|null $parent                 Returns the channel's parent, or null.
  * @method string getId()
  * @method int getCreatedTimestamp()
  * @method string getName()
@@ -138,7 +141,7 @@ class VoiceChannel extends ClientBase implements GuildVoiceChannelInterface
     /**
      * {@inheritdoc}
      * @return mixed
-     * @throws \RuntimeException
+     * @throws RuntimeException
      * @internal
      */
     public function __get($name)
@@ -175,8 +178,8 @@ class VoiceChannel extends ClientBase implements GuildVoiceChannelInterface
      * @param  int  $bitrate
      * @param  string  $reason
      *
-     * @return \React\Promise\ExtendedPromiseInterface
-     * @throws \InvalidArgumentException
+     * @return ExtendedPromiseInterface
+     * @throws InvalidArgumentException
      */
     public function setBitrate(int $bitrate, string $reason = '')
     {
@@ -189,8 +192,8 @@ class VoiceChannel extends ClientBase implements GuildVoiceChannelInterface
      * @param  int  $userLimit
      * @param  string  $reason
      *
-     * @return \React\Promise\ExtendedPromiseInterface
-     * @throws \InvalidArgumentException
+     * @return ExtendedPromiseInterface
+     * @throws InvalidArgumentException
      */
     public function setUserLimit(int $userLimit, string $reason = '')
     {

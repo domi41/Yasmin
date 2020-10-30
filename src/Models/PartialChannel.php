@@ -13,6 +13,12 @@ use CharlotteDunois\Yasmin\Client;
 use CharlotteDunois\Yasmin\HTTP\APIEndpoints;
 use CharlotteDunois\Yasmin\Utils\DataHelpers;
 use CharlotteDunois\Yasmin\Utils\Snowflake;
+use DateTime;
+use InvalidArgumentException;
+
+use RuntimeException;
+
+use function property_exists;
 
 /**
  * Represents a partial channel (of a guild or a group DM).
@@ -23,7 +29,7 @@ use CharlotteDunois\Yasmin\Utils\Snowflake;
  * @property string|null $icon              The icon of the channel, or null.
  * @property int $createdTimestamp  The timestamp when this channel was created.
  *
- * @property \DateTime $createdAt         The DateTime instance of createdTimestamp.
+ * @property DateTime $createdAt         The DateTime instance of createdTimestamp.
  */
 class PartialChannel extends ClientBase
 {
@@ -83,12 +89,12 @@ class PartialChannel extends ClientBase
     /**
      * {@inheritdoc}
      * @return mixed
-     * @throws \RuntimeException
+     * @throws RuntimeException
      * @internal
      */
     public function __get($name)
     {
-        if (\property_exists($this, $name)) {
+        if (property_exists($this, $name)) {
             return $this->$name;
         }
 
@@ -112,7 +118,7 @@ class PartialChannel extends ClientBase
     public function getIconURL(?int $size = null, string $format = 'png')
     {
         if ($size & ($size - 1)) {
-            throw new \InvalidArgumentException('Invalid size "'.$size.'", expected any powers of 2');
+            throw new InvalidArgumentException('Invalid size "'.$size.'", expected any powers of 2');
         }
 
         if ($this->icon !== null) {

@@ -19,8 +19,9 @@ use CharlotteDunois\Yasmin\Utils\MessageHelpers;
 use InvalidArgumentException;
 use React\Promise\ExtendedPromiseInterface;
 use React\Promise\Promise;
-use function React\Promise\resolve;
 use RuntimeException;
+
+use function React\Promise\resolve;
 
 /**
  * Represents a webhook.

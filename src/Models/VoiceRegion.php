@@ -10,6 +10,8 @@
 namespace CharlotteDunois\Yasmin\Models;
 
 use CharlotteDunois\Yasmin\Client;
+use RuntimeException;
+
 
 /**
  * Represents a voice region.
@@ -86,12 +88,12 @@ class VoiceRegion extends ClientBase
     /**
      * {@inheritdoc}
      * @return mixed
-     * @throws \RuntimeException
+     * @throws RuntimeException
      * @internal
      */
     public function __get($name)
     {
-        if (\property_exists($this, $name)) {
+        if (property_exists($this, $name)) {
             return $this->$name;
         }
 

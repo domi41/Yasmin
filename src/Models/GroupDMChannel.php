@@ -13,7 +13,13 @@ use CharlotteDunois\Yasmin\Client;
 use CharlotteDunois\Yasmin\HTTP\APIEndpoints;
 use CharlotteDunois\Yasmin\Interfaces\GroupDMChannelInterface;
 use CharlotteDunois\Yasmin\Utils\DataHelpers;
+use InvalidArgumentException;
+use React\Promise\ExtendedPromiseInterface;
 use React\Promise\Promise;
+
+use RuntimeException;
+
+use function property_exists;
 
 /**
  * Represents a Group DM channel.
@@ -51,8 +57,8 @@ class GroupDMChannel extends DMChannel implements GroupDMChannelInterface
      * @param  string  $accessToken  The OAuth 2.0 access token for the user.
      * @param  string  $nick  The nickname of the user being added.
      *
-     * @return \React\Promise\ExtendedPromiseInterface
-     * @throws \InvalidArgumentException
+     * @return ExtendedPromiseInterface
+     * @throws InvalidArgumentException
      */
     public function addRecipient($user, string $accessToken, string $nick = '')
     {
@@ -104,8 +110,8 @@ class GroupDMChannel extends DMChannel implements GroupDMChannelInterface
      *
      * @param  string|User  $user  The User instance, or the user ID.
      *
-     * @return \React\Promise\ExtendedPromiseInterface
-     * @throws \InvalidArgumentException
+     * @return ExtendedPromiseInterface
+     * @throws InvalidArgumentException
      */
     public function removeRecipient($user)
     {
@@ -128,12 +134,12 @@ class GroupDMChannel extends DMChannel implements GroupDMChannelInterface
     /**
      * {@inheritdoc}
      * @return mixed
-     * @throws \RuntimeException
+     * @throws RuntimeException
      * @internal
      */
     public function __get($name)
     {
-        if (\property_exists($this, $name)) {
+        if (property_exists($this, $name)) {
             return $this->$name;
         }
 
