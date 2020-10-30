@@ -16,7 +16,6 @@ use React\Promise\ExtendedPromiseInterface;
 use React\Promise\Promise;
 use RuntimeException;
 
-
 /**
  * Represents a message reaction.
  *

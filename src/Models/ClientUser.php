@@ -14,11 +14,11 @@ use CharlotteDunois\Yasmin\Utils\DataHelpers;
 use CharlotteDunois\Yasmin\Utils\FileHelpers;
 use CharlotteDunois\Yasmin\WebSocket\WSManager;
 use InvalidArgumentException;
+use function React\Promise\all;
 use React\Promise\ExtendedPromiseInterface;
 use React\Promise\Promise;
-use RuntimeException;
-use function React\Promise\all;
 use function React\Promise\reject;
+use RuntimeException;
 
 /**
  * Represents the Client User.

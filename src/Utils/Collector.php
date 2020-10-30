@@ -164,14 +164,14 @@ class Collector
 
                 $this->emitter->on($this->event, $this->listener);
             }, function (callable $resolve, callable $reject) {
-            if ($this->timer) {
-                self::$loop->cancelTimer($this->timer);
-                $this->timer = null;
-            }
+                if ($this->timer) {
+                    self::$loop->cancelTimer($this->timer);
+                    $this->timer = null;
+                }
 
-            $this->emitter->removeListener($this->event, $this->listener);
-            $reject(new OutOfBoundsException('Operation cancelled'));
-        }
+                $this->emitter->removeListener($this->event, $this->listener);
+                $reject(new OutOfBoundsException('Operation cancelled'));
+            }
         );
     }
 

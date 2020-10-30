@@ -12,10 +12,10 @@ namespace CharlotteDunois\Yasmin\WebSocket\Compression;
 use CharlotteDunois\Yasmin\Interfaces\WSCompressionInterface;
 use CharlotteDunois\Yasmin\WebSocket\DiscordGatewayException;
 use Exception;
-use RuntimeException;
 use function function_exists;
 use function inflate_add;
 use function inflate_init;
+use RuntimeException;
 use const ZLIB_ENCODING_DEFLATE;
 
 /**

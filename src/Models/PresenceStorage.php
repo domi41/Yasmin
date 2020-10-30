@@ -13,7 +13,6 @@ use CharlotteDunois\Yasmin\Client;
 use CharlotteDunois\Yasmin\Interfaces\PresenceStorageInterface;
 use InvalidArgumentException;
 
-
 /**
  * Presence Storage, which utilizes Collection.
  */

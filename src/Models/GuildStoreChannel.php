@@ -18,7 +18,6 @@ use CharlotteDunois\Yasmin\Utils\Snowflake;
 use DateTime;
 use RuntimeException;
 
-
 /**
  * Represents a guild's store channel.
  *

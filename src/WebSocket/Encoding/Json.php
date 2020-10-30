@@ -15,7 +15,6 @@ use Ratchet\RFC6455\Messaging\Frame;
 use Ratchet\RFC6455\Messaging\Message;
 use RuntimeException;
 
-
 /**
  * Handles WS encoding.
  *

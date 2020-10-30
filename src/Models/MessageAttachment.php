@@ -14,7 +14,6 @@ use CharlotteDunois\Yasmin\Utils\Snowflake;
 use DateTime;
 use RuntimeException;
 
-
 /**
  * Represents an attachment (from a message).
  *

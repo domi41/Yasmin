@@ -18,9 +18,9 @@ use React\EventLoop\LoopInterface;
 use React\Promise\Deferred;
 use React\Promise\ExtendedPromiseInterface;
 use React\Promise\Promise;
+use function React\Promise\resolve;
 use RuntimeException;
 use Throwable;
-use function React\Promise\resolve;
 
 /**
  * Handles the API.

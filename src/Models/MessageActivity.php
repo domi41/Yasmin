@@ -13,7 +13,6 @@ use CharlotteDunois\Yasmin\Client;
 use CharlotteDunois\Yasmin\Utils\DataHelpers;
 use RuntimeException;
 
-
 /**
  * Represents a message activity.
  *
