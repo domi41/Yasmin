@@ -97,8 +97,13 @@ class Collector
      * @param  callable|null  $filter
      * @param  array  $options
      */
-    public function __construct($emitter, string $event, callable $handler, ?callable $filter = null, array $options = [])
-    {
+    public function __construct(
+        $emitter,
+        string $event,
+        callable $handler,
+        ?callable $filter = null,
+        array $options = []
+    ) {
         $this->emitter = $emitter;
         $this->event = $event;
         $this->handler = $handler;
@@ -159,14 +164,14 @@ class Collector
 
                 $this->emitter->on($this->event, $this->listener);
             }, function (callable $resolve, callable $reject) {
-                if ($this->timer) {
-                    self::$loop->cancelTimer($this->timer);
-                    $this->timer = null;
-                }
-
-                $this->emitter->removeListener($this->event, $this->listener);
-                $reject(new OutOfBoundsException('Operation cancelled'));
+            if ($this->timer) {
+                self::$loop->cancelTimer($this->timer);
+                $this->timer = null;
             }
+
+            $this->emitter->removeListener($this->event, $this->listener);
+            $reject(new OutOfBoundsException('Operation cancelled'));
+        }
         );
     }
 

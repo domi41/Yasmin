@@ -17,9 +17,10 @@ use CharlotteDunois\Yasmin\Models\MessageAttachment;
 use CharlotteDunois\Yasmin\Models\Role;
 use CharlotteDunois\Yasmin\Models\User;
 use InvalidArgumentException;
-use function React\Promise\all;
 use React\Promise\ExtendedPromiseInterface;
 use React\Promise\Promise;
+
+use function React\Promise\all;
 use function React\Promise\resolve;
 
 /**
