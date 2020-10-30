@@ -15,8 +15,15 @@ use CharlotteDunois\Yasmin\Models\User;
 use CharlotteDunois\Yasmin\Utils\Collector;
 use CharlotteDunois\Yasmin\Utils\MessageHelpers;
 use CharlotteDunois\Yasmin\Utils\Snowflake;
+use InvalidArgumentException;
+use OutOfBoundsException;
+use RangeException;
+use React\EventLoop\TimerInterface;
+use React\Promise\ExtendedPromiseInterface;
 use React\Promise\Promise;
+
 use function React\Promise\resolve;
+
 
 /**
  * The text based channel trait.
@@ -79,13 +86,13 @@ trait TextChannelTrait
      * @param  string  $reason
      * @param  bool  $filterOldMessages  Automatically filters out too old messages (14 days).
      *
-     * @return \React\Promise\ExtendedPromiseInterface
+     * @return ExtendedPromiseInterface
      */
     public function bulkDelete($messages, string $reason = '', bool $filterOldMessages = false)
     {
         return new Promise(
             function (callable $resolve, callable $reject) use ($messages, $reason, $filterOldMessages) {
-                if (\is_numeric($messages)) {
+                if (is_numeric($messages)) {
                     $messages = $this->fetchMessages(['limit' => (int) $messages]);
                 } else {
                     $messages = resolve($messages);
@@ -98,7 +105,7 @@ trait TextChannelTrait
                         }
 
                         if ($filterOldMessages) {
-                            $messages = \array_filter(
+                            $messages = array_filter(
                                 $messages,
                                 function ($message) {
                                     if ($message instanceof Message) {
@@ -107,21 +114,21 @@ trait TextChannelTrait
                                         $timestamp = (int) Snowflake::deconstruct($message)->timestamp;
                                     }
 
-                                    return (\time() - $timestamp) < 1209600;
+                                    return (time() - $timestamp) < 1209600;
                                 }
                             );
                         }
 
-                        $messages = \array_map(
+                        $messages = array_map(
                             function ($message) {
                                 return $message->id;
                             },
                             $messages
                         );
 
-                        if (\count($messages) < 2 || \count($messages) > 100) {
+                        if (count($messages) < 2 || count($messages) > 100) {
                             return $reject(
-                                new \InvalidArgumentException(
+                                new InvalidArgumentException(
                                     'Unable to bulk delete less than 2 or more than 100 messages'
                                 )
                             );
@@ -160,9 +167,9 @@ trait TextChannelTrait
      * @param  callable  $filter  The filter to only collect desired messages. Signature: `function (Message $message): bool`
      * @param  array  $options  The collector options.
      *
-     * @return \React\Promise\ExtendedPromiseInterface  This promise is cancellable.
-     * @throws \RangeException          The exception the promise gets rejected with, if collecting times out.
-     * @throws \OutOfBoundsException    The exception the promise gets rejected with, if the promise gets cancelled.
+     * @return ExtendedPromiseInterface  This promise is cancellable.
+     * @throws RangeException          The exception the promise gets rejected with, if collecting times out.
+     * @throws OutOfBoundsException    The exception the promise gets rejected with, if the promise gets cancelled.
      * @see \CharlotteDunois\Yasmin\Models\Message
      * @see \CharlotteDunois\Yasmin\Utils\Collector
      */
@@ -185,7 +192,7 @@ trait TextChannelTrait
      *
      * @param  string  $id
      *
-     * @return \React\Promise\ExtendedPromiseInterface
+     * @return ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Models\Message
      */
     public function fetchMessage(string $id)
@@ -219,7 +226,7 @@ trait TextChannelTrait
      *
      * @param  array  $options
      *
-     * @return \React\Promise\ExtendedPromiseInterface
+     * @return ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Models\Message
      */
     public function fetchMessages(array $options = [])
@@ -283,7 +290,7 @@ trait TextChannelTrait
      * @param  string  $content  The message content.
      * @param  array  $options  Any message options.
      *
-     * @return \React\Promise\ExtendedPromiseInterface
+     * @return ExtendedPromiseInterface
      * @see \CharlotteDunois\Yasmin\Models\Message
      */
     public function send(string $content, array $options = [])
@@ -309,7 +316,7 @@ trait TextChannelTrait
                             true
                         ));
                         if ($disableEveryone) {
-                            $msg['content'] = \str_replace(
+                            $msg['content'] = str_replace(
                                 ['@everyone', '@here'],
                                 ["@\u{200b}everyone", "@\u{200b}here"],
                                 $msg['content']
@@ -321,18 +328,18 @@ trait TextChannelTrait
                         }
 
                         if (isset($options['split'])) {
-                            $options['split'] = $split = \array_merge(
+                            $options['split'] = $split = array_merge(
                                 Message::DEFAULT_SPLIT_OPTIONS,
-                                (\is_array($options['split']) ? $options['split'] : [])
+                                (is_array($options['split']) ? $options['split'] : [])
                             );
                             $messages = MessageHelpers::splitMessage(
                                 $msg['content'],
                                 $options['split']
                             );
 
-                            if (\count($messages) > 1) {
+                            if (count($messages) > 1) {
                                 $collection = new Collection();
-                                $i = \count($messages);
+                                $i = count($messages);
 
                                 $chunkedSend = function ($msg, $files = null) use ($collection, $reject) {
                                     return $this->client->apimanager()->endpoints->channel->createMessage(
@@ -410,7 +417,7 @@ trait TextChannelTrait
             $fn = function () {
                 $this->client->apimanager()->endpoints->channel->triggerChannelTyping($this->id)->done(
                     function () {
-                        $this->_updateTyping($this->client->user, \time());
+                        $this->_updateTyping($this->client->user, time());
                     },
                     function () {
                         $this->_updateTyping($this->client->user);
@@ -492,7 +499,7 @@ trait TextChannelTrait
             return -1;
         }
 
-        return \time() - $this->typings->get($user->id)['timestamp'];
+        return time() - $this->typings->get($user->id)['timestamp'];
     }
 
     /**
@@ -529,7 +536,7 @@ trait TextChannelTrait
         }
 
         $typing = $this->typings->get($user->id);
-        if ($typing && ($typing['timer'] instanceof \React\EventLoop\Timer\TimerInterface || $typing['timer'] instanceof \React\EventLoop\TimerInterface)) {
+        if ($typing && ($typing['timer'] instanceof \React\EventLoop\Timer\TimerInterface || $typing['timer'] instanceof TimerInterface)) {
             $this->client->cancelTimer($typing['timer']);
         }
 
