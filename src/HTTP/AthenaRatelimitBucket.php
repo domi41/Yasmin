@@ -9,58 +9,73 @@
 
 namespace CharlotteDunois\Yasmin\HTTP;
 
+use CharlotteDunois\Athena\AthenaCache;
+use CharlotteDunois\Yasmin\Interfaces\RatelimitBucketInterface;
+use React\Promise\ExtendedPromiseInterface;
+use RuntimeException;
+use Throwable;
+
+
 /**
  * Manages a route's ratelimit in Redis, using Athena. Requires client option `http.ratelimitbucket.athena` to be set to an instance of `AthenaCache`.
  *
  * Requires the suggested package `charlottedunois/athena`.
+ *
  * @internal
  */
-class AthenaRatelimitBucket implements \CharlotteDunois\Yasmin\Interfaces\RatelimitBucketInterface
+class AthenaRatelimitBucket implements RatelimitBucketInterface
 {
     /**
      * The API manager.
-     * @var \CharlotteDunois\Yasmin\HTTP\APIManager
+     *
+     * @var APIManager
      */
     protected $api;
 
     /**
      * The endpoint.
+     *
      * @var string
      */
     protected $endpoint;
 
     /**
      * The request queue.
-     * @var \CharlotteDunois\Yasmin\HTTP\APIRequest[]
+     *
+     * @var APIRequest[]
      */
     protected $queue;
 
     /**
      * The athena cache instance.
-     * @var \CharlotteDunois\Athena\AthenaCache
+     *
+     * @var AthenaCache
      */
     protected $cache;
 
     /**
      * Whether the bucket is busy.
+     *
      * @var bool
      */
     protected $busy = false;
 
     /**
      * DO NOT initialize this class yourself.
-     * @param \CharlotteDunois\Yasmin\HTTP\APIManager  $api
-     * @param string                                   $endpoint
-     * @throws \RuntimeException
+     *
+     * @param  APIManager  $api
+     * @param  string  $endpoint
+     *
+     * @throws RuntimeException
      */
-    public function __construct(\CharlotteDunois\Yasmin\HTTP\APIManager $api, string $endpoint)
+    public function __construct(APIManager $api, string $endpoint)
     {
         $this->api = $api;
         $this->endpoint = $endpoint;
 
         $this->cache = $this->api->client->getOption('http.ratelimitbucket.athena');
-        if (! ($this->cache instanceof \CharlotteDunois\Athena\AthenaCache)) {
-            throw new \RuntimeException('No Athena Cache instance set for Athena Ratelimit Bucket');
+        if (! ($this->cache instanceof AthenaCache)) {
+            throw new RuntimeException('No Athena Cache instance set for Athena Ratelimit Bucket');
         }
     }
 
@@ -74,6 +89,7 @@ class AthenaRatelimitBucket implements \CharlotteDunois\Yasmin\Interfaces\Rateli
 
     /**
      * Whether we are busy.
+     *
      * @return bool
      */
     public function isBusy(): bool
@@ -83,7 +99,9 @@ class AthenaRatelimitBucket implements \CharlotteDunois\Yasmin\Interfaces\Rateli
 
     /**
      * Sets the busy flag (marking as running).
-     * @param bool  $busy
+     *
+     * @param  bool  $busy
+     *
      * @return void
      */
     public function setBusy(bool $busy): void
@@ -93,34 +111,44 @@ class AthenaRatelimitBucket implements \CharlotteDunois\Yasmin\Interfaces\Rateli
 
     /**
      * Sets the ratelimits from the response.
-     * @param int|null    $limit
-     * @param int|null    $remaining
-     * @param float|null  $resetTime  Reset time in seconds with milliseconds.
-     * @return \React\Promise\ExtendedPromiseInterface|void
+     *
+     * @param  int|null  $limit
+     * @param  int|null  $remaining
+     * @param  float|null  $resetTime  Reset time in seconds with milliseconds.
+     *
+     * @return ExtendedPromiseInterface|void
      */
     public function handleRatelimit(?int $limit, ?int $remaining, ?float $resetTime)
     {
-        return $this->get()->then(function ($data) use ($limit, $remaining, $resetTime) {
-            if ($limit === null && $remaining === null && $resetTime === null) {
-                $limit = $data['limit'];
-                $remaining = $data['remaining'] + 1; // there is no ratelimit...
-                $resetTime = $data['resetTime'];
-            } else {
-                $limit = $limit ?? $data['limit'];
-                $remaining = $remaining ?? $data['remaining'];
-                $resetTime = $resetTime ?? $data['resetTime'];
-            }
+        return $this->get()->then(
+            function ($data) use ($limit, $remaining, $resetTime) {
+                if ($limit === null && $remaining === null && $resetTime === null) {
+                    $limit = $data['limit'];
+                    $remaining = $data['remaining'] + 1; // there is no ratelimit...
+                    $resetTime = $data['resetTime'];
+                } else {
+                    $limit = $limit ?? $data['limit'];
+                    $remaining = $remaining ?? $data['remaining'];
+                    $resetTime = $resetTime ?? $data['resetTime'];
+                }
 
-            if ($remaining === 0 && $resetTime > \microtime(true)) {
-                $this->api->client->emit('debug', 'Endpoint "'.$this->endpoint.'" ratelimit encountered, continueing in '.($resetTime - \microtime(true)).' seconds');
-            }
+                if ($remaining === 0 && $resetTime > microtime(true)) {
+                    $this->api->client->emit(
+                        'debug',
+                        'Endpoint "'.$this->endpoint.'" ratelimit encountered, continueing in '.($resetTime - microtime(
+                                true
+                            )).' seconds'
+                    );
+                }
 
-            return $this->set(['limit' => $limit, 'remaining' => $remaining, 'resetTime' => $resetTime]);
-        });
+                return $this->set(['limit' => $limit, 'remaining' => $remaining, 'resetTime' => $resetTime]);
+            }
+        );
     }
 
     /**
      * Returns the endpoint this bucket is for.
+     *
      * @return string
      */
     public function getEndpoint(): string
@@ -130,19 +158,22 @@ class AthenaRatelimitBucket implements \CharlotteDunois\Yasmin\Interfaces\Rateli
 
     /**
      * Returns the size of the queue.
+     *
      * @return int
      */
     public function size(): int
     {
-        return \count($this->queue);
+        return count($this->queue);
     }
 
     /**
      * Pushes a new request into the queue.
-     * @param \CharlotteDunois\Yasmin\HTTP\APIRequest $request
+     *
+     * @param  APIRequest  $request
+     *
      * @return $this
      */
-    public function push(\CharlotteDunois\Yasmin\HTTP\APIRequest $request)
+    public function push(APIRequest $request)
     {
         $this->queue[] = $request;
 
@@ -151,18 +182,22 @@ class AthenaRatelimitBucket implements \CharlotteDunois\Yasmin\Interfaces\Rateli
 
     /**
      * Unshifts a new request into the queue. Modifies remaining ratelimit.
-     * @param \CharlotteDunois\Yasmin\HTTP\APIRequest $request
+     *
+     * @param  APIRequest  $request
+     *
      * @return $this
      */
-    public function unshift(\CharlotteDunois\Yasmin\HTTP\APIRequest $request)
+    public function unshift(APIRequest $request)
     {
-        \array_unshift($this->queue, $request);
+        array_unshift($this->queue, $request);
 
-        $this->get()->then(function ($data) {
-            $data['remaining']++;
+        $this->get()->then(
+            function ($data) {
+                $data['remaining']++;
 
-            return $this->set($data);
-        })->done(null, [$this->api->client, 'handlePromiseRejection']);
+                return $this->set($data);
+            }
+        )->done(null, [$this->api->client, 'handlePromiseRejection']);
 
         return $this;
     }
@@ -178,45 +213,51 @@ class AthenaRatelimitBucket implements \CharlotteDunois\Yasmin\Interfaces\Rateli
      * )
      * ```
      *
-     * @return \React\Promise\ExtendedPromiseInterface|array
+     * @return ExtendedPromiseInterface|array
      */
     public function getMeta()
     {
-        return $this->get()->then(function ($data) {
-            if ($data['resetTime'] && \microtime(true) > $data['resetTime']) {
-                $data['resetTime'] = null;
-                $limited = false;
-            } else {
-                $limited = ($data['limit'] !== 0 && $data['remaining'] === 0);
-            }
+        return $this->get()->then(
+            function ($data) {
+                if ($data['resetTime'] && microtime(true) > $data['resetTime']) {
+                    $data['resetTime'] = null;
+                    $limited = false;
+                } else {
+                    $limited = ($data['limit'] !== 0 && $data['remaining'] === 0);
+                }
 
-            return ['limited' => $limited, 'resetTime' => $data['resetTime']];
-        });
+                return ['limited' => $limited, 'resetTime' => $data['resetTime']];
+            }
+        );
     }
 
     /**
      * Returns the first queue item or false. Modifies remaining ratelimit.
-     * @return \CharlotteDunois\Yasmin\HTTP\APIRequest|false
+     *
+     * @return APIRequest|false
      */
     public function shift()
     {
-        if (\count($this->queue) === 0) {
+        if (count($this->queue) === 0) {
             return false;
         }
 
-        $item = \array_shift($this->queue);
+        $item = array_shift($this->queue);
 
-        $this->get()->then(function ($data) {
-            $data['remaining']--;
+        $this->get()->then(
+            function ($data) {
+                $data['remaining']--;
 
-            return $this->set($data);
-        })->done(null, [$this->api->client, 'handlePromiseRejection']);
+                return $this->set($data);
+            }
+        )->done(null, [$this->api->client, 'handlePromiseRejection']);
 
         return $item;
     }
 
     /**
      * Unsets all queue items.
+     *
      * @return void
      */
     public function clear(): void
@@ -224,33 +265,42 @@ class AthenaRatelimitBucket implements \CharlotteDunois\Yasmin\Interfaces\Rateli
         $queue = $this->queue;
         $this->queue = [];
 
-        while ($item = \array_shift($queue)) {
+        while ($item = array_shift($queue)) {
             unset($item);
         }
     }
 
     /**
      * Retrieves the cache data.
-     * @return \React\Promise\ExtendedPromiseInterface
+     *
+     * @return ExtendedPromiseInterface
      */
     protected function get()
     {
-        return $this->cache->get('yasmin-ratelimiter-'.$this->endpoint, null, true)->then(null, function () {
-            return ['limit' => 0, 'remaining' => 0, 'resetTime' => null];
-        });
+        return $this->cache->get('yasmin-ratelimiter-'.$this->endpoint, null, true)->then(
+            null,
+            function () {
+                return ['limit' => 0, 'remaining' => 0, 'resetTime' => null];
+            }
+        );
     }
 
     /**
      * Sets the cache data.
-     * @param array  $value
-     * @return \React\Promise\ExtendedPromiseInterface
+     *
+     * @param  array  $value
+     *
+     * @return ExtendedPromiseInterface
      */
     protected function set(array $value)
     {
-        return $this->cache->set('yasmin-ratelimiter-'.$this->endpoint, $value)->then(null, function (\Throwable $e) {
-            if ($e->getMessage() !== 'Client got destroyed') {
-                throw $e;
+        return $this->cache->set('yasmin-ratelimiter-'.$this->endpoint, $value)->then(
+            null,
+            function (Throwable $e) {
+                if ($e->getMessage() !== 'Client got destroyed') {
+                    throw $e;
+                }
             }
-        });
+        );
     }
 }

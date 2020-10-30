@@ -10,6 +10,8 @@
 namespace CharlotteDunois\Yasmin\HTTP;
 
 use CharlotteDunois\Yasmin\Interfaces\RatelimitBucketInterface;
+use React\Promise\ExtendedPromiseInterface;
+
 
 /**
  * Manages a route's ratelimit in memory.
@@ -44,7 +46,7 @@ class RatelimitBucket implements RatelimitBucketInterface
      *
      * @var int
      */
-    protected $remaining = \INF;
+    protected $remaining = INF;
 
     /**
      * When the ratelimit gets reset.
@@ -116,7 +118,7 @@ class RatelimitBucket implements RatelimitBucketInterface
      * @param  int|null  $remaining
      * @param  float|null  $resetTime  Reset time in seconds with milliseconds.
      *
-     * @return \React\Promise\ExtendedPromiseInterface|void
+     * @return ExtendedPromiseInterface|void
      */
     public function handleRatelimit(?int $limit, ?int $remaining, ?float $resetTime)
     {
@@ -133,7 +135,7 @@ class RatelimitBucket implements RatelimitBucketInterface
         if ($this->remaining === 0 && $this->resetTime > microtime(true)) {
             $this->api->client->emit(
                 'debug',
-                'Endpoint "'.$this->endpoint.'" ratelimit encountered, continueing in '.($this->resetTime - \microtime(
+                'Endpoint "'.$this->endpoint.'" ratelimit encountered, continueing in '.($this->resetTime - microtime(
                         true
                     )).' seconds'
             );
@@ -200,13 +202,13 @@ class RatelimitBucket implements RatelimitBucketInterface
      * )
      * ```
      *
-     * @return \React\Promise\ExtendedPromiseInterface|array
+     * @return ExtendedPromiseInterface|array
      */
     public function getMeta()
     {
         if ($this->resetTime && microtime(true) > $this->resetTime) {
             $this->resetTime = null;
-            $this->remaining = ($this->limit ? $this->limit : \INF);
+            $this->remaining = ($this->limit ? $this->limit : INF);
 
             $limited = false;
         } else {

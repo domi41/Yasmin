@@ -16,6 +16,7 @@ use CharlotteDunois\Yasmin\HTTP\Endpoints\Invite;
 use CharlotteDunois\Yasmin\HTTP\Endpoints\User;
 use CharlotteDunois\Yasmin\HTTP\Endpoints\Voice;
 use CharlotteDunois\Yasmin\HTTP\Endpoints\Webhook;
+use React\Promise\ExtendedPromiseInterface;
 
 /**
  * Handles the API endpoints.
@@ -142,7 +143,7 @@ class APIEndpoints
     /**
      * Gets the current OAuth application.
      *
-     * @return \React\Promise\ExtendedPromiseInterface
+     * @return ExtendedPromiseInterface
      */
     public function getCurrentApplication()
     {

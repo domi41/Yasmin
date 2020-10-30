@@ -11,6 +11,7 @@ namespace CharlotteDunois\Yasmin\HTTP;
 
 use CharlotteDunois\Yasmin\DiscordException;
 
+
 /**
  * Represents an error from the Discord HTTP API.
  */
@@ -35,7 +36,7 @@ class DiscordAPIException extends DiscordException
         $flattened = implode('\n', self::flattenErrors(($error['errors'] ?? $error)));
 
         parent::__construct(
-            (! empty($error['message']) && ! empty($flattened) ? $error['message'].\PHP_EOL.$flattened : ($error['message'] ?? $flattened)),
+            (! empty($error['message']) && ! empty($flattened) ? $error['message'].PHP_EOL.$flattened : ($error['message'] ?? $flattened)),
             (int) ($error['code'] ?? 0)
         );
     }
