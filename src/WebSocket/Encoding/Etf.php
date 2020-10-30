@@ -18,13 +18,7 @@ use CharlotteDunois\Yasmin\WebSocket\DiscordGatewayException;
 use Ratchet\RFC6455\Messaging\Frame;
 use Ratchet\RFC6455\Messaging\Message;
 use RuntimeException;
-use function class_exists;
-use function is_array;
-use function is_int;
-use function is_object;
-use function is_string;
-use function mb_substr;
-use const PHP_INT_SIZE;
+
 
 /**
  * Handles WS encoding.
