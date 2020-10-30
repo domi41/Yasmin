@@ -12,7 +12,7 @@ namespace CharlotteDunois\Yasmin\Utils;
 use React\EventLoop\LoopInterface;
 use React\Filesystem\Filesystem;
 use React\Filesystem\FilesystemInterface;
-use React\Promise\PromiseInterface;
+use React\Promise\ExtendedPromiseInterface;
 use function React\Promise\reject;
 use function React\Promise\resolve;
 use RuntimeException;
@@ -83,7 +83,7 @@ class FileHelpers
      *
      * @param  string  $file
      *
-     * @return PromiseInterface
+     * @return ExtendedPromiseInterface
      */
     public static function resolveFileResolvable(string $file)
     {
