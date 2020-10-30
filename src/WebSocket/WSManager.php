@@ -76,7 +76,7 @@ class WSManager implements EventEmitterInterface
      * @internal
      */
     const WS = [
-        'v'        => 6,
+        'v'        => 8,
         'encoding' => 'json',
     ];
 
