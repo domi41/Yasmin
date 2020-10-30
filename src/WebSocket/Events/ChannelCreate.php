@@ -15,6 +15,7 @@ use CharlotteDunois\Yasmin\Interfaces\WSEventInterface;
 use CharlotteDunois\Yasmin\Models\GuildMember;
 use CharlotteDunois\Yasmin\WebSocket\WSConnection;
 use CharlotteDunois\Yasmin\WebSocket\WSManager;
+
 use function React\Promise\all;
 
 /**

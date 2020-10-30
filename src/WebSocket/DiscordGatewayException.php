@@ -9,9 +9,11 @@
 
 namespace CharlotteDunois\Yasmin\WebSocket;
 
+use CharlotteDunois\Yasmin\DiscordException;
+
 /**
  * Represents an exception of the Discord Gateway component.
  */
-class DiscordGatewayException extends \CharlotteDunois\Yasmin\DiscordException
+class DiscordGatewayException extends DiscordException
 {
 }

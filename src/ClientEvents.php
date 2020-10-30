@@ -20,6 +20,8 @@ use CharlotteDunois\Yasmin\Models\Presence;
 use CharlotteDunois\Yasmin\Models\Role;
 use CharlotteDunois\Yasmin\Models\Shard;
 use CharlotteDunois\Yasmin\Models\User;
+use DateTime;
+use Throwable;
 
 /**
  * Documents all Client events. ($client->on('name here', callable)).
@@ -87,7 +89,7 @@ interface ClientEvents
      *
      * @return void
      */
-    public function error(\Throwable $error);
+    public function error(Throwable $error);
 
     /**
      * Debug messages.
@@ -142,7 +144,7 @@ interface ClientEvents
      *
      * @return void
      */
-    public function channelPinsUpdate(ChannelInterface $channel, ?\DateTime $time);
+    public function channelPinsUpdate(ChannelInterface $channel, ?DateTime $time);
 
     /**
      * Emitted when a guild gets joined.

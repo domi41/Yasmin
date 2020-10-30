@@ -9,12 +9,16 @@
 
 namespace CharlotteDunois\Yasmin\WebSocket;
 
+use CharlotteDunois\Yasmin\Interfaces\WSHandlerInterface;
 use CharlotteDunois\Yasmin\WebSocket\Handlers\Dispatch;
 use CharlotteDunois\Yasmin\WebSocket\Handlers\Heartbeat;
 use CharlotteDunois\Yasmin\WebSocket\Handlers\HeartbeatAck;
 use CharlotteDunois\Yasmin\WebSocket\Handlers\Hello;
 use CharlotteDunois\Yasmin\WebSocket\Handlers\InvalidSession;
 use CharlotteDunois\Yasmin\WebSocket\Handlers\Reconnect;
+use Exception;
+use RuntimeException;
+
 
 /**
  * Handles WS messages.
@@ -34,7 +38,7 @@ class WSHandler
     /**
      * The handlers for WS messages, mapped by name.
      *
-     * @var \CharlotteDunois\Yasmin\Interfaces\WSHandlerInterface[]
+     * @var WSHandlerInterface[]
      */
     protected $handlers = [];
 
@@ -67,13 +71,13 @@ class WSHandler
             return $this->$name;
         }
 
-        throw new \RuntimeException('Undefined property: '.get_class($this).'::$'.$name);
+        throw new RuntimeException('Undefined property: '.get_class($this).'::$'.$name);
     }
 
     /**
      * Returns a WS handler.
      *
-     * @return \CharlotteDunois\Yasmin\Interfaces\WSHandlerInterface
+     * @return WSHandlerInterface
      */
     public function getHandler(int $name)
     {
@@ -81,7 +85,7 @@ class WSHandler
             return $this->handlers[$name];
         }
 
-        throw new \Exception('Unable to find handler');
+        throw new Exception('Unable to find handler');
     }
 
     /**
@@ -118,8 +122,8 @@ class WSHandler
      */
     public function register(int $op, string $class)
     {
-        if (! in_array('CharlotteDunois\Yasmin\Interfaces\WSHandlerInterface', \class_implements($class))) {
-            throw new \RuntimeException('Specified handler class does not implement interface');
+        if (! in_array('CharlotteDunois\Yasmin\Interfaces\WSHandlerInterface', class_implements($class))) {
+            throw new RuntimeException('Specified handler class does not implement interface');
         }
 
         $this->handlers[$op] = new $class($this);

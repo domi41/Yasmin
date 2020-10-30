@@ -16,6 +16,7 @@ use CharlotteDunois\Yasmin\Models\User;
 use CharlotteDunois\Yasmin\Models\VoiceChannel;
 use CharlotteDunois\Yasmin\WebSocket\WSConnection;
 use CharlotteDunois\Yasmin\WebSocket\WSManager;
+
 use function React\Promise\resolve;
 
 /**

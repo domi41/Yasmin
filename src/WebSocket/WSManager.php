@@ -12,15 +12,24 @@ namespace CharlotteDunois\Yasmin\WebSocket;
 use CharlotteDunois\Events\EventEmitterInterface;
 use CharlotteDunois\Events\EventEmitterTrait;
 use CharlotteDunois\Yasmin\Client;
+use CharlotteDunois\Yasmin\Interfaces\WSEncodingInterface;
+use Exception;
+use LogicException;
 use Ratchet\Client\Connector;
+use React\Promise\ExtendedPromiseInterface;
 use React\Promise\Promise;
+
+use RuntimeException;
+
+use Throwable;
+
 
 /**
  * Manages the WS connections.
  *
  * @property Client $client
  * @property Connector $connector
- * @property \CharlotteDunois\Yasmin\Interfaces\WSEncodingInterface $encoding
+ * @property WSEncodingInterface $encoding
  * @property string $gateway
  * @property int $lastIdentify
  * @property WSHandler $wshandler
@@ -118,7 +127,7 @@ class WSManager implements EventEmitterInterface
     protected $compression;
 
     /**
-     * @var \CharlotteDunois\Yasmin\Interfaces\WSEncodingInterface
+     * @var WSEncodingInterface
      */
     protected $encoding;
 
@@ -148,7 +157,7 @@ class WSManager implements EventEmitterInterface
      *
      * @param  Client  $client
      *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function __construct(Client $client)
     {
@@ -157,20 +166,20 @@ class WSManager implements EventEmitterInterface
 
         $compression = $this->client->getOption('ws.compression', Client::WS_DEFAULT_COMPRESSION);
 
-        $name = str_replace('-', '', \ucwords($compression, '-'));
+        $name = str_replace('-', '', ucwords($compression, '-'));
         if (strpos($name, '\\') === false) {
             $name = '\\CharlotteDunois\\Yasmin\\WebSocket\\Compression\\'.$name;
         }
 
         if (! class_exists($name, true)) {
-            throw new \RuntimeException('Specified WS compression class does not exist');
+            throw new RuntimeException('Specified WS compression class does not exist');
         }
 
         $name::supported();
 
         $interfaces = class_implements($name);
         if (! in_array('CharlotteDunois\\Yasmin\\Interfaces\\WSCompressionInterface', $interfaces)) {
-            throw new \RuntimeException('Specified WS compression class does not implement necessary interface');
+            throw new RuntimeException('Specified WS compression class does not implement necessary interface');
         }
 
         $this->compression = $name;
@@ -198,14 +207,14 @@ class WSManager implements EventEmitterInterface
 
     /**
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      * @internal
      */
     public function __isset($name)
     {
         try {
             return $this->$name !== null;
-        } catch (\RuntimeException $e) {
+        } catch (RuntimeException $e) {
             if ($e->getTrace()[0]['function'] === '__get') {
                 return false;
             }
@@ -216,7 +225,7 @@ class WSManager implements EventEmitterInterface
 
     /**
      * @return mixed
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function __get($name)
     {
@@ -244,7 +253,7 @@ class WSManager implements EventEmitterInterface
                 break;
         }
 
-        throw new \RuntimeException('Undefined property: '.\get_class($this).'::$'.$name);
+        throw new RuntimeException('Undefined property: '.get_class($this).'::$'.$name);
     }
 
     /**
@@ -266,18 +275,18 @@ class WSManager implements EventEmitterInterface
      * @param  string|null  $gateway
      * @param  array  $querystring
      *
-     * @return \React\Promise\ExtendedPromiseInterface
-     * @throws \Throwable
+     * @return ExtendedPromiseInterface
+     * @throws Throwable
      * @see \CharlotteDunois\Yasmin\WebSocket\WSConnection
      */
     public function connectShard(int $shardID, ?string $gateway = null, array $querystring = [])
     {
         if (! $gateway && ! $this->gateway) {
-            throw new \RuntimeException('Unable to connect to unknown gateway for shard '.$shardID);
+            throw new RuntimeException('Unable to connect to unknown gateway for shard '.$shardID);
         }
 
         if (empty($this->client->token)) {
-            throw new \LogicException('No client token to start with');
+            throw new LogicException('No client token to start with');
         }
 
         if (($this->lastIdentify ?? 0) > (time() - 5)) {
@@ -381,14 +390,14 @@ class WSManager implements EventEmitterInterface
      * @param  array  $querystring
      *
      * @return void
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     protected function handleConnectEncoding(array &$querystring)
     {
         if ($this->encoding === null) {
             $encoding = $querystring['encoding'] ?? self::WS['encoding'];
 
-            $name = str_replace('-', '', \ucwords($encoding, '-'));
+            $name = str_replace('-', '', ucwords($encoding, '-'));
             if (strpos($name, '\\') === false) {
                 $name = '\\CharlotteDunois\\Yasmin\\WebSocket\\Encoding\\'.$name;
             }
@@ -397,7 +406,7 @@ class WSManager implements EventEmitterInterface
 
             $interfaces = class_implements($name);
             if (! in_array('CharlotteDunois\\Yasmin\\Interfaces\\WSEncodingInterface', $interfaces)) {
-                throw new \RuntimeException('Specified WS encoding class does not implement necessary interface');
+                throw new RuntimeException('Specified WS encoding class does not implement necessary interface');
             }
 
             $this->encoding = new $name();
@@ -412,7 +421,7 @@ class WSManager implements EventEmitterInterface
      * @param  array  $querystring
      *
      * @return string
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     protected function handleConnectGateway(string $gateway, array &$querystring)
     {
@@ -423,7 +432,7 @@ class WSManager implements EventEmitterInterface
             }
 
             $this->gatewayQS = $querystring;
-            $gateway = rtrim($gateway, '/').'/?'.\http_build_query($querystring);
+            $gateway = rtrim($gateway, '/').'/?'.http_build_query($querystring);
         }
 
         return $gateway;

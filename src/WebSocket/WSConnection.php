@@ -13,17 +13,30 @@ use CharlotteDunois\Events\EventEmitterInterface;
 use CharlotteDunois\Events\EventEmitterTrait;
 use CharlotteDunois\Yasmin\Client;
 use CharlotteDunois\Yasmin\DiscordException;
+use CharlotteDunois\Yasmin\Interfaces\WSCompressionInterface;
+use CharlotteDunois\Yasmin\Interfaces\WSEncodingInterface;
+use Closure;
+use Exception;
 use Ratchet\Client\WebSocket;
 use Ratchet\RFC6455\Messaging\Message;
+use React\EventLoop\TimerInterface;
 use React\Promise\Deferred;
+use React\Promise\ExtendedPromiseInterface;
 use React\Promise\Promise;
+
+use RuntimeException;
+
+use Throwable;
+
+
+
 use function React\Promise\resolve;
 
 /**
  * Handles the WS connection.
  *
  * @property WSManager $wsmanager
- * @property \CharlotteDunois\Yasmin\Interfaces\WSEncodingInterface $encoding
+ * @property WSEncodingInterface $encoding
  * @property int[] $pings
  * @property bool $ready
  * @property int $shardID
@@ -51,7 +64,7 @@ class WSConnection implements EventEmitterInterface
     protected $ws;
 
     /**
-     * @var \CharlotteDunois\Yasmin\Interfaces\WSCompressionInterface
+     * @var WSCompressionInterface
      */
     protected $compressContext;
 
@@ -70,7 +83,7 @@ class WSConnection implements EventEmitterInterface
     ];
 
     /**
-     * @var \React\EventLoop\TimerInterface
+     * @var TimerInterface
      */
     public $heartbeat = null;
 
@@ -214,14 +227,14 @@ class WSConnection implements EventEmitterInterface
      * @param  string  $name
      *
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      * @internal
      */
     public function __isset($name)
     {
         try {
             return $this->$name !== null;
-        } catch (\RuntimeException $e) {
+        } catch (RuntimeException $e) {
             if ($e->getTrace()[0]['function'] === '__get') {
                 return false;
             }
@@ -234,7 +247,7 @@ class WSConnection implements EventEmitterInterface
      * @param  string  $name
      *
      * @return mixed
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function __get($name)
     {
@@ -242,7 +255,7 @@ class WSConnection implements EventEmitterInterface
             return $this->$name;
         }
 
-        throw new \RuntimeException('Undefined property: '.\get_class($this).'::$'.$name);
+        throw new RuntimeException('Undefined property: '.get_class($this).'::$'.$name);
     }
 
     /**
@@ -260,8 +273,8 @@ class WSConnection implements EventEmitterInterface
      *
      * @param  bool  $reconnect
      *
-     * @return \React\Promise\ExtendedPromiseInterface
-     * @throws \Throwable
+     * @return ExtendedPromiseInterface
+     * @throws Throwable
      */
     public function connect(bool $reconnect = false)
     {
@@ -270,7 +283,7 @@ class WSConnection implements EventEmitterInterface
         }
 
         if (! $this->wsmanager->gateway) {
-            throw new \RuntimeException('Unable to connect to unknown gateway');
+            throw new RuntimeException('Unable to connect to unknown gateway');
         }
 
         if (($this->wsmanager->lastIdentify ?? 0) > (time() - 5)) {
@@ -311,7 +324,7 @@ class WSConnection implements EventEmitterInterface
             function (WebSocket $conn) use (&$ready, $deferred, $reconnect) {
                 $this->initWS($conn, $ready, $reconnect, $deferred);
             },
-            function (\Throwable $error) use ($deferred) {
+            function (Throwable $error) use ($deferred) {
                 $this->status = Client::WS_STATUS_DISCONNECTED;
                 $this->wsmanager->client->emit('error', $error);
 
@@ -323,7 +336,7 @@ class WSConnection implements EventEmitterInterface
                     function () use ($deferred) {
                         $deferred->resolve($this);
                     },
-                    function (\Throwable $e) use ($deferred) {
+                    function (Throwable $e) use ($deferred) {
                         $deferred->reject($e);
                     }
                 );
@@ -381,7 +394,7 @@ class WSConnection implements EventEmitterInterface
      *
      * @param  bool  $forceNewGateway
      *
-     * @return \React\Promise\ExtendedPromiseInterface
+     * @return ExtendedPromiseInterface
      */
     protected function renewConnection(bool $forceNewGateway = true)
     {
@@ -405,7 +418,7 @@ class WSConnection implements EventEmitterInterface
             function ($error) use ($forceNewGateway) {
                 $this->status = Client::WS_STATUS_DISCONNECTED;
 
-                if ($error instanceof \Throwable) {
+                if ($error instanceof Throwable) {
                     $error = str_replace(["\r", "\n"], '', $error->getMessage());
                 }
 
@@ -431,8 +444,8 @@ class WSConnection implements EventEmitterInterface
     /**
      * @param  array  $packet
      *
-     * @return \React\Promise\ExtendedPromiseInterface
-     * @throws \RuntimeException
+     * @return ExtendedPromiseInterface
+     * @throws RuntimeException
      */
     public function send(array $packet)
     {
@@ -440,7 +453,7 @@ class WSConnection implements EventEmitterInterface
             function (callable $resolve, callable $reject) use ($packet) {
                 if ($this->status !== Client::WS_STATUS_NEARLY && $this->status !== Client::WS_STATUS_CONNECTED) {
                     return $reject(
-                        new \RuntimeException('Unable to send WS message before a WS connection is established')
+                        new RuntimeException('Unable to send WS message before a WS connection is established')
                     );
                 }
 
@@ -471,11 +484,11 @@ class WSConnection implements EventEmitterInterface
         $this->running = true;
 
         while ($this->ratelimits['remaining'] > 0 && count($this->queue) > 0) {
-            $element = \array_shift($this->queue);
+            $element = array_shift($this->queue);
             $this->ratelimits['remaining']--;
 
             if (! $this->ws) {
-                $element['reject'](new \RuntimeException('No WS connection'));
+                $element['reject'](new RuntimeException('No WS connection'));
                 break;
             }
 
@@ -632,7 +645,7 @@ class WSConnection implements EventEmitterInterface
      */
     public function _pong($end)
     {
-        $time = \ceil(($end - $this->wsHeartbeat['dateline']) * 1000);
+        $time = ceil(($end - $this->wsHeartbeat['dateline']) * 1000);
         $this->pings[] = (int) $time;
 
         $pings = count($this->pings);
@@ -683,7 +696,7 @@ class WSConnection implements EventEmitterInterface
      * @param  Deferred  $deferred
      *
      * @return void
-     * @throws \Exception
+     * @throws Exception
      */
     protected function initWS(
         WebSocket $conn,
@@ -724,7 +737,7 @@ class WSConnection implements EventEmitterInterface
      * @param  bool  $reconnect
      * @param  Deferred  $deferred
      *
-     * @return \Closure
+     * @return Closure
      */
     protected function initWSSelfReady(bool &$ready, bool $reconnect, Deferred &$deferred)
     {
@@ -748,14 +761,14 @@ class WSConnection implements EventEmitterInterface
      * @param  bool  $ready
      * @param  Deferred  $deferred
      *
-     * @return \Closure
+     * @return Closure
      */
     protected function initWSSelfError(bool &$ready, Deferred &$deferred)
     {
         return function ($error) use (&$ready, $deferred) {
             if (! $ready) {
                 $this->disconnect();
-                $deferred->reject(new \Exception($error));
+                $deferred->reject(new Exception($error));
             }
         };
     }
@@ -766,7 +779,7 @@ class WSConnection implements EventEmitterInterface
      * @param  bool  $ready
      * @param  Deferred  $deferred
      *
-     * @return \Closure
+     * @return Closure
      */
     protected function initWSMessage(bool &$ready, Deferred &$deferred)
     {
@@ -795,7 +808,7 @@ class WSConnection implements EventEmitterInterface
                 return;
             }
 
-            $this->lastPacketTime = \microtime(true);
+            $this->lastPacketTime = microtime(true);
 
             try {
                 $this->wsmanager->wshandler->handle($this, $message);
@@ -811,11 +824,11 @@ class WSConnection implements EventEmitterInterface
      * @param  bool  $ready
      * @param  Deferred  $deferred
      *
-     * @return \Closure
+     * @return Closure
      */
     protected function initWSError(bool &$ready, Deferred &$deferred)
     {
-        return function (\Throwable $error) use (&$ready, $deferred) {
+        return function (Throwable $error) use (&$ready, $deferred) {
             if (! $ready) {
                 return $deferred->reject($error);
             }
@@ -829,7 +842,7 @@ class WSConnection implements EventEmitterInterface
      *
      * @param  Deferred  $deferred
      *
-     * @return \Closure
+     * @return Closure
      */
     protected function initWSClose(Deferred &$deferred)
     {
@@ -865,7 +878,7 @@ class WSConnection implements EventEmitterInterface
             $this->emit('close', $code, $reason);
 
             if (in_array($code, $this->wsCloseCodes['end'])) {
-                return $deferred->reject(new \RuntimeException(WSManager::WS_CLOSE_CODES[$code]));
+                return $deferred->reject(new RuntimeException(WSManager::WS_CLOSE_CODES[$code]));
             }
 
             if ($code === 1000 && $this->expectedClose) {

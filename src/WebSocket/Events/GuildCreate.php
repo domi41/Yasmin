@@ -13,6 +13,7 @@ use CharlotteDunois\Yasmin\Client;
 use CharlotteDunois\Yasmin\Interfaces\WSEventInterface;
 use CharlotteDunois\Yasmin\WebSocket\WSConnection;
 use CharlotteDunois\Yasmin\WebSocket\WSManager;
+
 use function React\Promise\resolve;
 
 /**

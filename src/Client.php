@@ -53,8 +53,9 @@ use React\EventLoop\Timer\Timer;
 use React\EventLoop\TimerInterface;
 use React\Promise\ExtendedPromiseInterface;
 use React\Promise\Promise;
-use function React\Promise\resolve;
 use RuntimeException;
+
+use function React\Promise\resolve;
 
 /**
  * The client. What else do you expect this to say?

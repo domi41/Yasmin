@@ -19,6 +19,7 @@ use CharlotteDunois\Yasmin\Models\MessageReaction;
 use CharlotteDunois\Yasmin\Models\User;
 use CharlotteDunois\Yasmin\WebSocket\WSConnection;
 use CharlotteDunois\Yasmin\WebSocket\WSManager;
+
 use function React\Promise\resolve;
 
 /**
@@ -74,8 +75,7 @@ class MessageReactionRemove implements WSEventInterface
                         if (! $reaction) {
                             $emoji = $this->client->emojis->get($id);
                             if (! $emoji) {
-                                $guild = ($channel instanceof GuildChannelInterface ? $channel->getGuild(
-                                ) : null);
+                                $guild = ($channel instanceof GuildChannelInterface ? $channel->getGuild() : null);
 
                                 $emoji = new Emoji(
                                     $this->client, $guild, $data['emoji']
@@ -89,10 +89,10 @@ class MessageReactionRemove implements WSEventInterface
 
                             $reaction = new MessageReaction(
                                 $this->client, $message, $emoji, [
-                                    'count' => 0,
-                                    'me'    => false,
-                                    'emoji' => $emoji,
-                                ]
+                                                 'count' => 0,
+                                                 'me'    => false,
+                                                 'emoji' => $emoji,
+                                             ]
                             );
                         }
                     }
