@@ -23,9 +23,9 @@ use React\EventLoop\TimerInterface;
 use React\Promise\Deferred;
 use React\Promise\ExtendedPromiseInterface;
 use React\Promise\Promise;
-use function React\Promise\resolve;
 use RuntimeException;
 use Throwable;
+use function React\Promise\resolve;
 
 /**
  * Handles the WS connection.
@@ -562,6 +562,7 @@ class WSConnection implements EventEmitterInterface
             'op' => $op,
             'd'  => [
                 'token'           => $this->wsmanager->client->token,
+                'intents'         => WSManager::GATEWAY_INTENTS['GUILD_MESSAGES'] + WSManager::GATEWAY_INTENTS['DIRECT_MESSAGES'],
                 'properties'      => [
                     '$os'      => php_uname('s'),
                     '$browser' => 'Yasmin '.Client::VERSION,
