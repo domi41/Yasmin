@@ -15,7 +15,6 @@ use CharlotteDunois\Yasmin\Models\Guild;
 use CharlotteDunois\Yasmin\WebSocket\WSConnection;
 use CharlotteDunois\Yasmin\WebSocket\WSManager;
 
-
 /**
  * WS Event.
  *
