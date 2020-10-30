@@ -562,7 +562,7 @@ class WSConnection implements EventEmitterInterface
             'op' => $op,
             'd'  => [
                 'token'           => $this->wsmanager->client->token,
-                'intents'         => 32767,
+                //'intents'         => 32767,
                 'properties'      => [
                     '$os'      => php_uname('s'),
                     '$browser' => 'Yasmin '.Client::VERSION,
