@@ -16,6 +16,8 @@ use CharlotteDunois\Yasmin\Models\GuildMember;
 use CharlotteDunois\Yasmin\WebSocket\WSConnection;
 use CharlotteDunois\Yasmin\WebSocket\WSManager;
 
+use function React\Promise\all;
+
 /**
  * WS Event.
  *
@@ -56,7 +58,7 @@ class ChannelCreate implements WSEventInterface
             }
         }
 
-        \React\Promise\all($prom)->done(
+        all($prom)->done(
             function () use ($channel) {
                 $this->client->queuedEmit('channelCreate', $channel);
             },

@@ -9,25 +9,35 @@
 
 namespace CharlotteDunois\Yasmin\WebSocket\Events;
 
+use CharlotteDunois\Yasmin\Client;
+use CharlotteDunois\Yasmin\Interfaces\WSEventInterface;
+use CharlotteDunois\Yasmin\Models\Emoji;
+use CharlotteDunois\Yasmin\WebSocket\WSConnection;
+use CharlotteDunois\Yasmin\WebSocket\WSManager;
+
 /**
  * WS Event.
+ *
  * @see https://discordapp.com/developers/docs/topics/gateway#guild-emojis-update
  * @internal
  */
-class GuildEmojisUpdate implements \CharlotteDunois\Yasmin\Interfaces\WSEventInterface
+class GuildEmojisUpdate implements WSEventInterface
 {
     /**
      * The client.
-     * @var \CharlotteDunois\Yasmin\Client
+     *
+     * @var Client
      */
     protected $client;
 
-    public function __construct(\CharlotteDunois\Yasmin\Client $client, \CharlotteDunois\Yasmin\WebSocket\WSManager $wsmanager)
-    {
+    public function __construct(
+        Client $client,
+        WSManager $wsmanager
+    ) {
         $this->client = $client;
     }
 
-    public function handle(\CharlotteDunois\Yasmin\WebSocket\WSConnection $ws, $data): void
+    public function handle(WSConnection $ws, $data): void
     {
         $guild = $this->client->guilds->get($data['guild_id']);
         if ($guild) {
@@ -38,7 +48,7 @@ class GuildEmojisUpdate implements \CharlotteDunois\Yasmin\Interfaces\WSEventInt
                 if ($guild->emojis->has($emoji['id'])) {
                     $guild->emojis->get($emoji['id'])->_patch($emoji);
                 } else {
-                    $em = new \CharlotteDunois\Yasmin\Models\Emoji($this->client, $guild, $emoji);
+                    $em = new Emoji($this->client, $guild, $emoji);
                     $guild->emojis->set($em->id, $em);
                 }
             }
