@@ -13,7 +13,7 @@ class Intents
      *
      * @see https://discord.com/developers/docs/topics/gateway#gateway-intents
      */
-    const INTENTS = [
+    protected const INTENTS = [
         'GUILDS'                   => (1 << 0),
         'GUILD_MEMBERS'            => (1 << 1),
         'GUILD_BANS'               => (1 << 2),
