@@ -10,4 +10,4 @@ var_dump(decbin(Intents::bit(Intents::default())));
 var_dump(Intents::only(['GUILD_MESSAGES']));
 var_dump(decbin(Intents::bit(Intents::only(['DIRECT_MESSAGE_TYPING']))));
 var_dump(Intents::except(['GUILD_PRESENCES']));
-var_dump(decbin(Intents::bit(Intents::all())));
+var_dump(decbin(array_sum(Intents::all())));

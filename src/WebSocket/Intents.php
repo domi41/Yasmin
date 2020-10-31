@@ -48,21 +48,6 @@ class Intents
     ];
 
     /**
-     * @param  array  $intents
-     * @return int
-     */
-    public static function bit(array $intents): int
-    {
-        $result = 0;
-
-        foreach ($intents as $intent) {
-            $result = $result | $intent;
-        }
-
-        return $result;
-    }
-
-    /**
      * @return array
      */
     public static function all(): array
@@ -103,5 +88,20 @@ class Intents
         return array_filter(static::INTENTS, function ($key) use ($except) {
             return ! in_array($key, $except);
         }, ARRAY_FILTER_USE_KEY);
+    }
+
+    /**
+     * @param  array  $intents
+     * @return int
+     */
+    public static function bit(array $intents): int
+    {
+        $result = 0;
+
+        foreach ($intents as $intent) {
+            $result = $result | $intent;
+        }
+
+        return $result;
     }
 }
