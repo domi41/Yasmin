@@ -47,7 +47,7 @@ class PermissionOverwrite extends ClientBase
     /**
      * The type of the overwrite (member or role).
      *
-     * @var string
+     * @var int
      */
     protected $type;
 
@@ -78,7 +78,7 @@ class PermissionOverwrite extends ClientBase
         $this->channel = $channel;
 
         $this->id = (string) $permission['id'];
-        $this->type = (string) $permission['type'];
+        $this->type = (int) $permission['type'];
         $this->allow = new Permissions(($permission['allow'] ?? 0));
         $this->deny = new Permissions(($permission['deny'] ?? 0));
     }
@@ -100,7 +100,7 @@ class PermissionOverwrite extends ClientBase
                 return $this->channel->getGuild();
                 break;
             case 'target':
-                return $this->type === 'role' ? $this->channel->getGuild()->roles->get(
+                return $this->type === 0 ? $this->channel->getGuild()->roles->get(
                     $this->id
                 ) : $this->channel->getGuild()->members->get($this->id);
                 break;

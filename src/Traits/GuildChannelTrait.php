@@ -403,7 +403,7 @@ trait GuildChannelTrait
                     function () use ($memberOrRole, $options, $resolve, $reject) {
                         $options['id'] = $memberOrRole;
 
-                        if ($options['type'] === 'member') {
+                        if ($options['type'] === 1) {
                             $fetch = $this->guild->fetchMember($options['id']);
                         } else {
                             $fetch = resolve();
@@ -641,16 +641,16 @@ trait GuildChannelTrait
 
         if ($memberOrRole instanceof GuildMember) {
             $memberOrRole = $memberOrRole->id;
-            $options['type'] = 'member';
+            $options['type'] = 1;
         } elseif ($memberOrRole instanceof Role) {
             $memberOrRole = $memberOrRole->id;
-            $options['type'] = 'role';
+            $options['type'] = 0;
         } else {
             try {
                 $memberOrRole = $this->guild->roles->resolve($memberOrRole)->id;
-                $options['type'] = 'role';
+                $options['type'] = 0;
             } catch (InvalidArgumentException $e) {
-                $options['type'] = 'member';
+                $options['type'] = 1;
             }
         }
 
