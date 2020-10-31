@@ -32,7 +32,7 @@ class Intents
     ];
 
     /**
-     * @return array|int[]
+     * @return array
      */
     public static function all(): array
     {
@@ -40,7 +40,7 @@ class Intents
     }
 
     /**
-     * @return array|int[]
+     * @return array
      */
     public static function default(): array
     {
@@ -54,7 +54,7 @@ class Intents
 
     /**
      * @param  array  $only
-     * @return array|int[]
+     * @return array
      */
     public static function only(array $only): array
     {
@@ -65,7 +65,7 @@ class Intents
 
     /**
      * @param  array  $except
-     * @return array|int[]
+     * @return array
      */
     public static function except(array $except): array
     {
