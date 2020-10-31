@@ -9,6 +9,7 @@ This library is **only** for PHP 7.1 (and later) and use in CLI. Only bot accoun
 - Original API Documents https://laravel-discord.github.io/Yasmin/
 - Minimal changed version `0.9.3` https://github.com/laravel-discord/Yasmin/tree/0.9
 
+After v1.0, I will make major changes to the code.
 ```
 composer require laravel-discord/yasmin
 ```
