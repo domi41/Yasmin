@@ -48,6 +48,21 @@ class Intents
     ];
 
     /**
+     * @param  array  $intents
+     * @return int
+     */
+    public static function bit(array $intents): int
+    {
+        $result = 0;
+
+        foreach ($intents as $intent) {
+            $result = $result | $intent;
+        }
+
+        return $result;
+    }
+
+    /**
      * @return array
      */
     public static function all(): array
