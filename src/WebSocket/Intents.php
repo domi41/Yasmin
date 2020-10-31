@@ -10,6 +10,8 @@ class Intents
      * Without typing : 14335.
      *
      * @var array
+     *
+     * @see https://discord.com/developers/docs/topics/gateway#gateway-intents
      */
     const INTENTS = [
         'GUILDS'                   => (1 << 0),
