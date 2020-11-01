@@ -151,10 +151,8 @@ class ChannelStorage extends Storage implements ChannelStorageInterface
      * Factory to create (or retrieve existing) channels.
      *
      * @param  array  $data
-     * @param  Guild|null  $guilds
-     *
+     * @param  Guild|null  $guild
      * @return ChannelInterface
-     * @throws DiscordException
      * @internal
      */
     public function factory(array $data, ?Guild $guild = null)

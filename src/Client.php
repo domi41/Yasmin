@@ -49,7 +49,6 @@ use InvalidArgumentException;
 use RangeException;
 use React\EventLoop\Factory;
 use React\EventLoop\LoopInterface;
-use React\EventLoop\Timer\Timer;
 use React\EventLoop\TimerInterface;
 use React\Promise\ExtendedPromiseInterface;
 use React\Promise\Promise;
@@ -978,7 +977,7 @@ class Client implements EventEmitterInterface
      * @param  float|int  $timeout
      * @param  callable  $callback
      *
-     * @return Timer
+     * @return TimerInterface
      */
     public function addTimer($timeout, callable $callback)
     {
@@ -1001,7 +1000,7 @@ class Client implements EventEmitterInterface
      * @param  float|int  $interval
      * @param  callable  $callback
      *
-     * @return Timer
+     * @return TimerInterface
      */
     public function addPeriodicTimer($interval, callable $callback)
     {

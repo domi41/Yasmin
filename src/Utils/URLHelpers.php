@@ -14,6 +14,7 @@ use Psr\Http\Message\RequestInterface;
 use React\EventLoop\LoopInterface;
 use React\Http\Browser;
 use React\Promise\ExtendedPromiseInterface;
+use React\Promise\PromiseInterface;
 use function React\Promise\reject;
 use RingCentral\Psr7\MultipartStream;
 use RingCentral\Psr7\Request;
@@ -123,7 +124,7 @@ class URLHelpers
      * @param  RequestInterface  $request
      * @param  array|null  $requestOptions
      *
-     * @return ExtendedPromiseInterface
+     * @return PromiseInterface
      * @see \Psr\Http\Message\ResponseInterface
      */
     public static function makeRequest(RequestInterface $request, ?array $requestOptions = null)
@@ -160,7 +161,7 @@ class URLHelpers
      * @param  string  $url
      * @param  array|null  $requestHeaders
      *
-     * @return ExtendedPromiseInterface
+     * @return PromiseInterface
      */
     public static function resolveURLToData(string $url, ?array $requestHeaders = null)
     {
