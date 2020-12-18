@@ -200,11 +200,16 @@ class Permissions extends Base {
     static function resolveToName($permission) {
         if(\is_int($permission)) {
             $index = \array_search($permission, self::PERMISSIONS, true);
+
             if($index) {
                 return $index;
             }
-        } elseif(\is_string($permission) && isset(self::PERMISSIONS[$permission])) {
-            return $permission;
+        } elseif(\is_string($permission)) {
+            $permission = strtoupper(trim($permission));
+
+            if(isset(self::PERMISSIONS[$permission])) {
+                return $permission;
+            }
         }
         
         throw new \InvalidArgumentException('Unable to resolve unknown permission');
