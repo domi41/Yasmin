@@ -144,6 +144,7 @@ class ChannelStorage extends Storage implements \CharlotteDunois\Yasmin\Interfac
             default:
                 throw new \CharlotteDunois\Yasmin\DiscordException('Unknown channel type');
             break;
+            case 5:
             case 0:
                 if($guild === null) {
                     throw new \CharlotteDunois\Yasmin\DiscordException('Unknown guild for guild channel');
