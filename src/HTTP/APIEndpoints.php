@@ -52,7 +52,7 @@ class APIEndpoints
      */
     const HTTP = [
         'url'     => 'https://discord.com/api/',
-        'version' => 8,
+        'version' => 6,
         'invite'  => 'https://discord.gg/',
     ];
 
