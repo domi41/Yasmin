@@ -39,6 +39,7 @@ class ChannelStorage extends Storage implements ChannelStorageInterface
         4 => 'category',
         5 => 'news',
         6 => 'store',
+        13 => 'announcement',
 
         'text'     => 0,
         'dm'       => 1,
@@ -47,6 +48,7 @@ class ChannelStorage extends Storage implements ChannelStorageInterface
         'category' => 4,
         'news'     => 5,
         'store'    => 6,
+        'announcement' => 13
     ];
 
     /**
@@ -171,8 +173,9 @@ class ChannelStorage extends Storage implements ChannelStorageInterface
         switch ($data['type']) {
             default:
                 throw new DiscordException('Unknown channel type');
-                break;
+
             case 0:
+            case 5:
                 if ($guild === null) {
                     throw new DiscordException('Unknown guild for guild channel');
                 }
@@ -183,6 +186,7 @@ class ChannelStorage extends Storage implements ChannelStorageInterface
                 $channel = new DMChannel($this->client, $data);
                 break;
             case 2:
+            case 13:
                 if ($guild === null) {
                     throw new DiscordException('Unknown guild for guild channel');
                 }
