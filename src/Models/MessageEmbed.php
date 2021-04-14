@@ -197,8 +197,10 @@ class MessageEmbed extends Base
 
             if (! empty($embed['provider'])) {
                 $this->provider = [
-                    'name' => ((string) $embed['provider']['name']),
-                    'url'  => ((string) $embed['provider']['url']),
+                    'name' => (string) $embed['provider']['name'],
+                    'url'  => array_key_exists('url', $embed['provider']) ?
+                        (string) $embed['provider']['url'] :
+                        null,
                 ];
             }
 
