@@ -39,7 +39,7 @@ class ChannelStorage extends Storage implements ChannelStorageInterface
         4 => 'category',
         5 => 'news',
         6 => 'store',
-        13 => 'announcement',
+        13 => 'stage_voice',
 
         'text'     => 0,
         'dm'       => 1,
@@ -48,7 +48,7 @@ class ChannelStorage extends Storage implements ChannelStorageInterface
         'category' => 4,
         'news'     => 5,
         'store'    => 6,
-        'announcement' => 13
+        'stage_voice' => 13
     ];
 
     /**
