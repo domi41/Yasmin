@@ -130,7 +130,9 @@ class Storage extends Collection implements StorageInterface
 
         $key = (string) $key;
 
-        return parent::set($key, $value);
+        parent::set($key, $value);
+
+        return $this;
     }
 
     /**
@@ -146,7 +148,9 @@ class Storage extends Collection implements StorageInterface
 
         $key = (string) $key;
 
-        return parent::delete($key);
+        parent::delete($key);
+
+        return $this;
     }
 
     /**
